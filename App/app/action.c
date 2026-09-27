@@ -74,7 +74,9 @@ inline static void ACTION_ScanRestart() { ACTION_Scan(true); };
 
 void (*const action_opt_table[ACTION_OPT_LEN])(void) = {
     [ACTION_OPT_NONE] = &FUNCTION_NOP,
+#ifndef ENABLE_RX_ONLY
     [ACTION_OPT_POWER] = &ACTION_Power,
+#endif
     [ACTION_OPT_MONITOR] = &ACTION_Monitor,
     [ACTION_OPT_SCAN] = &ACTION_ScanRestart,
     [ACTION_OPT_KEYLOCK] = &COMMON_KeypadLockToggle,
@@ -101,7 +103,9 @@ void (*const action_opt_table[ACTION_OPT_LEN])(void) = {
 #ifdef ENABLE_FEAT_F4HWN
     [ACTION_OPT_RXMODE] = &ACTION_RxMode,
     [ACTION_OPT_MAINONLY] = &ACTION_MainOnly,
+#ifndef ENABLE_RX_ONLY
     [ACTION_OPT_PTT] = &ACTION_Ptt,
+#endif
     [ACTION_OPT_WN] = &ACTION_Wn,
     //#if !defined(ENABLE_SPECTRUM) || !defined(ENABLE_FMRADIO)
         [ACTION_OPT_MUTE] = &ACTION_Mute,

@@ -60,6 +60,22 @@ Paland, licensed under the MIT License. Its license is included at:
 
   App/external/printf/LICENSE
 
+Receive-only Japanese edition (RxJa)
+------------------------------------
+
+The ENABLE_RX_ONLY and ENABLE_JAPANESE changes (RxJa preset, App/ui/ja.c,
+tools/ja/) were made by dosei and are distributed under the same Apache
+License, Version 2.0:
+
+  https://github.com/dosei/uvk1-japanese
+
+The Japanese resource image built by tools/ja/gen_ja_font.py uses the
+Shinonome fonts (Public Domain), originally designed by Yasuyuki
+Furukawa and maintained by /efont/:
+
+  tools/ja/shinonome12_uni.hex  12x12, via efont-unicode-bdf 0.4.2
+  tools/ja/shnm6x12r.bdf        6x12 JIS X 0201 (half-width katakana)
+
 License and endorsement notice
 ------------------------------
 

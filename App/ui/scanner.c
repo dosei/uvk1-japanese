@@ -22,7 +22,47 @@
 #include "external/printf/printf.h"
 #include "misc.h"
 #include "ui/helper.h"
+#ifdef ENABLE_JAPANESE
+    #include "ui/ja.h"
+#endif
 #include "ui/scanner.h"
+
+#ifdef ENABLE_JAPANESE
+// A line in Japanese: "Label:value" as the translated label followed by the
+// value in the 8x16 font, or in Japanese too ("Tone:None"). Returns false,
+// drawing nothing, when the label (or the whole text) has no translation.
+static bool PrintJa(const char *pStr, uint8_t line)
+{
+    char           label[8];
+    const char    *value = strchr(pStr, ':');
+    const uint8_t  y     = line * 8u + 2u;     // 12 px text centred in the two pages
+
+    if (!value)
+        return UI_JaPrintText(pStr, 2, 0, y);
+
+    value++;
+    if ((size_t)(value - pStr) >= sizeof(label))
+        return false;
+    memcpy(label, pStr, value - pStr);
+    label[value - pStr] = '\0';
+
+    const char *ja = UI_JaText(label);
+    if (ja == label)
+        return false;
+    const uint8_t x = UI_JaPrint(ja, 2, 0, y);
+    if (!UI_JaPrintText(value, x, 0, y))
+        UI_PrintString(value, x, 0, line, 8);
+    return true;
+}
+
+static void PrintLine(const char *pStr, uint8_t line)
+{
+    if (!PrintJa(pStr, line))
+        UI_PrintString(pStr, 2, 0, line, 8);
+}
+#else
+    #define PrintLine(pStr, line)   UI_PrintString(pStr, 2, 0, line, 8)
+#endif
 
 void UI_DisplayScanner(void)
 {
@@ -50,7 +90,7 @@ void UI_DisplayScanner(void)
         pPrintStr = "Scan Failed";
     }
 
-    UI_PrintString(pPrintStr, 2, 0, 1, 8);
+    PrintLine(pPrintStr, 1);
 
     // 2nd line
     if (gScanSingleFrequency || (gScanCssState != SCAN_CSS_STATE_OFF && gScanCssState != SCAN_CSS_STATE_FAILED)) {
@@ -60,7 +100,7 @@ void UI_DisplayScanner(void)
         pPrintStr = "Freq:---.-----";
     }
 
-    UI_PrintString(pPrintStr, 2, 0, 3, 8);
+    PrintLine(pPrintStr, 3);
 
     // 3rd line
     if (gScanCssState < SCAN_CSS_STATE_FOUND) {
@@ -75,7 +115,7 @@ void UI_DisplayScanner(void)
         pPrintStr = String;
     }
  
-    UI_PrintString(pPrintStr, 2, 0, 5, 8);
+    PrintLine(pPrintStr, 5);
 
     ST7565_BlitFullScreen();
 }

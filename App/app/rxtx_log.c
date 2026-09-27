@@ -21,6 +21,9 @@
 #include "misc.h"
 #include "settings.h"
 #include "ui/helper.h"
+#ifdef ENABLE_JAPANESE
+    #include "ui/ja.h"
+#endif
 #include "ui/menu.h"
 #include "ui/ui.h"
 
@@ -1279,13 +1282,22 @@ static void RXTX_LOG_DrawSessionMarker(uint8_t line)
 static void RXTX_LOG_ShowEmpty(bool showMessage)
 {
     if (showMessage)
+#ifdef ENABLE_JAPANESE
+        if (!UI_JaPrintText("NO LOG", 0, LCD_WIDTH, 10))
+#endif
         UI_PrintString("NO LOG", 0, 127, 1, 8);
     ST7565_BlitFullScreen();
 }
 
 static void RXTX_LOG_ShowClearConfirm(void)
 {
+#ifdef ENABLE_JAPANESE
+    if (!UI_JaPrintText("CLEAR LOG", 0, LCD_WIDTH, 10))
+#endif
     UI_PrintString("CLEAR LOG", 0, 127, 1, 8);
+#ifdef ENABLE_JAPANESE
+    if (!UI_JaPrintText("SURE?", 0, LCD_WIDTH, 26))
+#endif
     UI_PrintString("SURE?", 0, 127, 3, 8);
     ST7565_BlitFullScreen();
 }

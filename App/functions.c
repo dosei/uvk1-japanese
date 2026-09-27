@@ -205,6 +205,10 @@ void FUNCTION_Transmit()
 
 void FUNCTION_Select(FUNCTION_Type_t Function)
 {
+#ifdef ENABLE_RX_ONLY
+    if (Function == FUNCTION_TRANSMIT)
+        return;
+#endif
     const FUNCTION_Type_t PreviousFunction = gCurrentFunction;
     const bool bWasPowerSave = PreviousFunction == FUNCTION_POWER_SAVE;
 

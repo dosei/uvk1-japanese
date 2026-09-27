@@ -39,6 +39,9 @@ void UI_DrawPixelBuffer(uint8_t (*buffer)[128], uint8_t x, uint8_t y, bool black
     void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y, bool statusbar, bool fill);
     void GUI_DisplaySmallestInverse(const char *pString, uint8_t x, uint8_t Line, bool statusbar, bool fill, uint8_t endX);
     void UI_DisplayUnlockKeyboard(uint8_t shift);
+#ifdef ENABLE_JAPANESE
+    void UI_DisplayUnlockKeyboardJa(uint8_t shift);
+#endif
     bool IsEmptyName(const char *name, uint8_t len);
 #endif
 void UI_DrawLineBuffer(uint8_t (*buffer)[128], int16_t x1, int16_t y1, int16_t x2, int16_t y2, bool black);

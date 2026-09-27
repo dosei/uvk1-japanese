@@ -1,3 +1,86 @@
+# UV-K1 受信専用・日本語化ファームウェア（F4HWN ベース）
+
+> [!NOTE]
+> **AI の利用について**: このリポジトリのうち、F4HWN から変更した部分（受信専用化・日本語化。`App/ui/ja.c`、`tools/ja/` 以下、各所の `ENABLE_RX_ONLY` / `ENABLE_JAPANESE` の変更など）のコードと説明文は、AI（Anthropic の Claude Code）を使って作成しました。仕様・方針・訳語は作者が決めています。元の F4HWN の部分には手を加えておらず、この派生版で AI を使ったのは変更部分だけです。どこが変更部分かはコミット履歴で確認できます。
+
+Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェア](https://github.com/armel/uv-k1-k5v3-firmware-custom) をもとにした派生版です。次の 2 点を加えています。
+
+- **受信専用**: 送信できないようにしてあります（下記）。
+- **日本語表示**: メニュー名・カテゴリ名、メニュー右列の選択肢、起動画面、キーロック・電池切れ・周波数/トーン検索・FM ラジオ・受信ログのメッセージを日本語で表示します（OFF/ON・数字・単位・略語は英語のまま）。漢字・かな・半角カナのフォントは本体の外付け SPI フラッシュに置くので、本体側の容量はほとんど使いません。
+
+ビルドは `RxJa` プリセットです。ほかのプリセット（Fusion など）は元の F4HWN と同じ動きです。
+
+画面に出る名前と版は RxJa 自身のもの（起動画面・本体情報の「RxJa v0.1.0」、マルチブートの「RxJa MULTIBOOT」、本体情報の QR コードはこのリポジトリと Wiki）で、もとにした F4HWN の版は「F4HWN v6.0.0 ベース」として添えています。パソコンのツールが UART で読む版の文字列は「F4HWN v6.0.0」のままです（UV Studio などがこれを見て動きを変えるため）。
+
+> [!WARNING]
+> **実機ではまだ一度も動かしていません**（作者が実機をまだ持っていません）。ビルドとパソコン上のシミュレーションで確認しただけです。書き込みは完全に自己責任で、最悪の場合は無線機が起動しなくなります。書き込んだら、まず [UV Studio](https://armel.github.io/uvstudio/#dump-calib) で校正データをバックアップしてください。
+
+> [!IMPORTANT]
+> 技適のない無線機から電波を出すのは電波法違反です。このファームは送信を止めますが、無線機が技適を取ったことにはなりません。受信だけで使ってください。
+
+## 送信の止め方（`ENABLE_RX_ONLY`）
+
+- 送信状態への切り替えを入口で拒否します（`App/functions.c`）。
+- PTT を押すと「送信禁止」（日本語データを入れる前は「TX DISABLE」）を表示してビープを鳴らし、送信の準備・設定・終了処理を行いません（`App/radio.c` の `RADIO_PrepareTX` / `RADIO_SetTxParameters` / `RADIO_SendEndOfTransmission`）。
+- 無線チップ BK4819 のレジスタ書き込みで、パワーアンプを有効にするビットとバイアスを常に 0 にし、PA 有効化の GPIO も立てません（`App/driver/bk4829.c`）。通常の送信のほか、フォックスハント、追加アプリ、UART からのレジスタ書き込みも最後はここを通るので、どの経路でもここで止まります。
+- 送信用のメニュー（出力、CTCSS/DCS 送信、VOX、ロジャー音、RP STE など）とサイドキーの送信機能を隠しています。
+
+## ビルド済みファイル
+
+自分でビルドしなくても、[Releases](https://github.com/dosei/uvk1-japanese/releases) に最新のビルド済みファイルを置いています。
+
+- `f4hwn.rxja.bin`: ファーム本体。UV Studio で書き込みます（下記）
+- `ja_res.bin`: 日本語データ。`tools/ja/upload.py` で転送します（下記）
+
+どちらも実機で動かしていない「未検証版」です。ファームと日本語データは同じリリースのものを組にして使ってください。
+
+## ビルド
+
+Docker がある場合:
+
+```bash
+./compile-firmware.sh RxJa
+```
+
+ARM GCC（arm-none-eabi 13.3 で確認）と CMake を直接使う場合:
+
+```bash
+cmake --preset RxJa
+cmake --build build/RxJa
+```
+
+`build/RxJa/f4hwn.rxja.bin` ができます。書き込みは元の F4HWN と同じく、[UV Studio の Flash Firmware](https://armel.github.io/uvstudio/#flash) で「ローカルの .bin」を選びます。
+
+## 日本語データの作成と転送
+
+日本語のフォントと訳語はファームとは別のデータ（`ja_res.bin`、約 140KB）で、外付け SPI フラッシュの 0x122000〜0x14BFFF（F4HWN の Apps 領域と音声データの間の空き）に書き込みます。データを入れるまでは英語で表示されます。訳語を直したいときも、このデータを入れ直すだけで済み、ファームの書き直しは不要です。
+
+> [!CAUTION]
+> 2026-09-27 に試作版（旧 rxja-v0.1.0〜v0.2.1）を公開していましたが、取り下げて v0.1.0 からやり直しました。最初の試作版（2026-09-27 公開の旧 v0.1.0）は日本語データを 0x0C0000 に置いていて、そこは F4HWN のマルチブートの設定バンク 1〜4 でした（`App/driver/mb_flash.h`）。手元に試作版のファイルが残っていたら使わないでください。今の版とはデータの識別子・形式と転送コマンドの番号が違うので、混ぜて使っても転送が拒否されるか英語表示のままになり、0x0C0000 には書き込まれません。
+
+```bash
+python3 tools/ja/gen_ja_font.py                # tools/ja/ja_res.bin を作る（標準ライブラリのみ。Releases の ja_res.bin を使うなら不要）
+pip install pyserial
+python3 tools/ja/upload.py /dev/ttyUSB0        # Windows なら COM3 など。RxJa ファームで起動した状態で
+python3 tools/ja/upload.py COM3 ja_res.bin     # ダウンロードした ja_res.bin を指定する場合
+```
+
+- 訳語は `tools/ja/strings_ja.tsv` です（英語の元の文字列<TAB>日本語）。左の列（メニュー名）は 48px、右の列（値）は 78px など、画面ごとの幅を `@width` で決めてあり、全角 1 文字 12px、半角英数 7px、半角カナ 6px です。はみ出す訳は `gen_ja_font.py` がエラーにします。
+- 右の列の値は、OFF/ON・数字・単位・略語（FM/AM など）は英語のまま残し、言葉だけを訳しています。改行は `\n` と書き、同じ英語をメニューごとに訳し分けるときは `メニュー名|値` をキーにします。
+- 転送は本体の UART コマンド（0x0744 書き込み / 0x0746 読み出し）で行い、最後に読み戻して照合します。先頭の識別子を最後に書くので、途中で切れても壊れたデータは使われず、英語表示に戻るだけです。
+- `tools/ja/sim/` は表示をパソコン上で確かめるためのシミュレータです。
+
+## まだできていないこと
+
+- チャンネル名の日本語入力
+- 実機での動作確認（転送の往復、SDR で電波が出ていないことの確認）
+
+## ライセンスと出典
+
+元のファームと同じく Apache License 2.0 です（`LICENSE`、`NOTICE`）。フォントは東雲フォント（12x12 は efont-unicode-bdf 経由、6x12 半角カナは shnm6x12r）で、どちらもパブリックドメインです。F4HWN からの変更は、このリポジトリのコミット履歴のとおりです。
+
+---
+
 # Stats
 
 ![Alt](https://repobeats.axiom.co/api/embed/ecdd86aa536b716f088339a0c5ee734558f78c28.svg "Repobeats analytics image")

@@ -2467,7 +2467,11 @@ static void ProcessKey(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
         goto Skip;
     }
 
+#ifdef ENABLE_RX_ONLY
+    if (false) {  // FUNCTION_TRANSMIT is unreachable; drop DTMF/1750 TX key handling
+#else
     if (gCurrentFunction == FUNCTION_TRANSMIT) {
+#endif
 #ifdef ENABLE_TX1750
         if (!gTx1750Active)
 #endif

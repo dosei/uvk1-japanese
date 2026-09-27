@@ -44,6 +44,10 @@
 #include "misc.h"
 #include "settings.h"
 #include "version.h"
+#ifdef ENABLE_JAPANESE
+    #include "driver/py25q16.h"
+    #include "ui/ja.h"
+#endif
 
 #ifdef ENABLE_FEAT_F4HWN_MULTIBOOT
     #include "driver/mb_flash.h"
@@ -815,7 +819,7 @@ bool UART_IsCommandAvailable(uint32_t Port)
            CRC_Calculate(pUART_Command->Buffer, Size) == Crc;
 }
 
-#ifdef ENABLE_FEAT_F4HWN_MULTIBOOT
+#if defined(ENABLE_FEAT_F4HWN_MULTIBOOT) || defined(ENABLE_JAPANESE)
 /* Timestamp latched by the device-info handshake (0x0514) for this port. Slot
  * writes/erases require it to match, like the EEPROM write command (CMD_051D). */
 static uint32_t mb_port_timestamp(uint32_t Port)
@@ -1138,6 +1142,84 @@ void UART_HandleCommand(uint32_t Port)
             Reply.Slot        = slot;
             Reply.Status      = status;
             SendReply(Port, &Reply, sizeof(Reply));
+            break;
+        }
+#endif
+
+#ifdef ENABLE_JAPANESE
+        // ---- Japanese resource image in SPI (tools/ja/upload.py) ----------
+        case 0x0744: // res write: Data[0..3] offset, [4..5] len, [6..9] timestamp, [10..] bytes
+        {
+            if (pUART_Command->Header.Size < 10u) break;
+            gSerialConfigCountDown_500ms = 12; // keep serial mode alive (6 s)
+            uint32_t offset = (uint32_t)pUART_Command->Data[0]
+                            | ((uint32_t)pUART_Command->Data[1] << 8)
+                            | ((uint32_t)pUART_Command->Data[2] << 16)
+                            | ((uint32_t)pUART_Command->Data[3] << 24);
+            uint16_t len    = (uint16_t)(pUART_Command->Data[4]
+                            | ((uint16_t)pUART_Command->Data[5] << 8));
+            uint32_t ts     = (uint32_t)pUART_Command->Data[6]
+                            | ((uint32_t)pUART_Command->Data[7] << 8)
+                            | ((uint32_t)pUART_Command->Data[8] << 16)
+                            | ((uint32_t)pUART_Command->Data[9] << 24);
+            uint8_t status = 0;
+            if (ts != mb_port_timestamp(Port))
+                status = 1;
+            else if (len > pUART_Command->Header.Size - 10u || offset > JA_FLASH_SIZE - len)
+                status = 2;
+            else
+            {
+                // Append: erases a sector only when a bit must go 0->1, keeps the rest
+                PY25Q16_WriteBuffer(JA_FLASH_BASE + offset, &pUART_Command->Data[10], len, true);
+                UI_JaInvalidate();
+            }
+            struct __attribute__((packed)) {
+                Header_t Header;
+                uint32_t Offset;
+                uint8_t  Status;
+                uint8_t  Padding[3];
+            } Reply;
+            Reply.Header.ID   = 0x0745;
+            Reply.Header.Size = 8;
+            Reply.Offset      = offset;
+            Reply.Status      = status;
+            memset(Reply.Padding, 0, sizeof(Reply.Padding));
+            SendReply(Port, &Reply, sizeof(Reply));
+            break;
+        }
+
+        case 0x0746: // res read (verify): Data[0..3] offset, [4..5] len <= 128
+        {
+            if (pUART_Command->Header.Size < 6u) break;
+            gSerialConfigCountDown_500ms = 12; // keep serial mode alive (6 s)
+            struct __attribute__((packed)) {
+                Header_t Header;
+                uint32_t Offset;
+                uint16_t Len;
+                uint8_t  Status;
+                uint8_t  Padding;
+                uint8_t  Data[128];
+            } Reply;
+            uint32_t offset = (uint32_t)pUART_Command->Data[0]
+                            | ((uint32_t)pUART_Command->Data[1] << 8)
+                            | ((uint32_t)pUART_Command->Data[2] << 16)
+                            | ((uint32_t)pUART_Command->Data[3] << 24);
+            uint16_t len    = (uint16_t)(pUART_Command->Data[4]
+                            | ((uint16_t)pUART_Command->Data[5] << 8));
+            Reply.Status  = 0;
+            Reply.Padding = 0;
+            if (len > sizeof(Reply.Data) || offset > JA_FLASH_SIZE - len)
+            {
+                len          = 0;
+                Reply.Status = 2;
+            }
+            else
+                PY25Q16_ReadBuffer(JA_FLASH_BASE + offset, Reply.Data, len);
+            Reply.Header.ID   = 0x0747;
+            Reply.Header.Size = 8 + len;
+            Reply.Offset      = offset;
+            Reply.Len         = len;
+            SendReply(Port, &Reply, sizeof(Header_t) + 8 + len);
             break;
         }
 #endif

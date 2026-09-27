@@ -7,7 +7,11 @@
 
 #ifdef ENABLE_FEAT_F4HWN
     const char Version[]         = AUTHOR_STRING_2 " " VERSION_STRING_2;
+#ifdef RXJA_VERSION_STRING
+    const char DisplayVersion[]  = EDITION_STRING " " RXJA_VERSION_STRING;
+#else
     const char DisplayVersion[]  = AUTHOR_STRING_2 " " DISPLAY_VERSION_STRING_2;
+#endif
     const char Edition[]         = EDITION_STRING;
     const char BuildDate[]       = __DATE__;
     const char BuildTime[]       = __TIME__;

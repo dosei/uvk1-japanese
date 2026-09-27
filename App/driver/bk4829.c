@@ -253,6 +253,14 @@ uint16_t BK4819_ReadRegister(BK4819_REGISTER_t Register)
 
 void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data)
 {
+#ifdef ENABLE_RX_ONLY
+    // Chip-level TX lock: every path (radio, foxhunt, overlay apps, UART
+    // register writes) ends up here, so the PA can never be driven.
+    if (Register == BK4819_REG_30)
+        Data &= ~BK4819_REG_30_ENABLE_PA_GAIN;
+    else if (Register == BK4819_REG_36)
+        Data = 0;   // PA bias 0 V, PA-CTL output disabled
+#endif
     if (Register == BK4819_REG_30)
     {
         if (Data == reg_30_cache)
@@ -433,6 +441,10 @@ int16_t BK4819_GetRSSI_dBm(void)
 
 void BK4819_ToggleGpioOut(BK4819_GPIO_PIN_t Pin, bool bSet)
 {
+#ifdef ENABLE_RX_ONLY
+    if (Pin == BK4819_GPIO1_PIN29_PA_ENABLE)
+        bSet = false;
+#endif
     if (bSet)
         gBK4819_GpioOutState |=  (0x40u >> Pin);
     else

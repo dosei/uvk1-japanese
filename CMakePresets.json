@@ -203,6 +203,28 @@
                 "EDITION_STRING": "Max",
                 "TARGET": "f4hwn.max"
             }
+        },
+        {
+            "name": "RxJa",
+            "inherits": "Fusion",
+            "cacheVariables": {
+                "ENABLE_RX_ONLY": true,
+                "ENABLE_JAPANESE": true,
+                "ENABLE_VOX": false,
+                "ENABLE_TX1750": false,
+                "ENABLE_DTMF_CALLING": false,
+                "ENABLE_AIRCOPY": false,
+                "ENABLE_FEAT_F4HWN_PMR": false,
+                "ENABLE_FEAT_F4HWN_GMRS_FRS_MURS": false,
+                "ENABLE_FEAT_F4HWN_RESCUE_OPS": false,
+                "ENABLE_FEAT_F4HWN_BEAM": false,
+                "ENABLE_FEAT_F4HWN_FOXHUNT": false,
+                "ENABLE_FEAT_F4HWN_BEACON": false,
+                "ENABLE_FEAT_F4HWN_OVERLAY_APPS": false,
+                "EDITION_STRING": "RxJa",
+                "RXJA_VERSION_STRING": "v0.1.0",
+                "TARGET": "f4hwn.rxja"
+            }
         }
     ],
     "buildPresets": [
@@ -229,6 +251,10 @@
         {
             "name": "Max",
             "configurePreset": "Max"
+        },
+        {
+            "name": "RxJa",
+            "configurePreset": "RxJa"
         }
     ]
 }

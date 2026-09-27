@@ -42,6 +42,9 @@
 #include "ui/inputbox.h"
 #include "ui/main.h"
 #include "ui/ui.h"
+#ifdef ENABLE_JAPANESE
+    #include "ui/ja.h"
+#endif
 #include "audio.h"
 #include "menu.h"
 
@@ -1740,7 +1743,15 @@ void UI_DisplayMain(void)
         if (state != VFO_STATE_NORMAL)
         {
             if (state < ARRAY_SIZE(VfoStateStr))
+            {
+#ifdef ENABLE_JAPANESE
+                const char *ja = UI_JaText(VfoStateStr[state]);
+                if (UI_JaReady() && ja != VfoStateStr[state])
+                    UI_JaPrint(ja, 35, 0, line * 8 + 2);   // centred in the two 8x16 pages
+                else
+#endif
                 UI_PrintString(VfoStateStr[state], 35, 0, line, 8);
+            }
         }
         else if (gInputBoxIndex > 0 && IS_FREQ_CHANNEL(gEeprom.ScreenChannel[vfo_num]) && gEeprom.TX_VFO == vfo_num)
         {   // user entering a frequency
@@ -2461,5 +2472,8 @@ void UI_DisplayMain(void)
     //#endif
 #endif
 
+#ifdef ENABLE_JAPANESE
+    UI_DisplayUnlockKeyboardJa(isMainOnly() ? 5 : 3);
+#endif
     ST7565_BlitFullScreen();
 }

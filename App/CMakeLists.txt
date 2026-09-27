@@ -76,6 +76,12 @@ if(ENABLE_FEAT_F4HWN)
     )
 endif()
 
+# RxJa's own version, shown on screen instead of the upstream one. Version[]
+# (UART reply, read by the PC tools) keeps the upstream version.
+if(RXJA_VERSION_STRING)
+    target_compile_definitions(App INTERFACE "RXJA_VERSION_STRING=\"${RXJA_VERSION_STRING}\"")
+endif()
+
 target_compile_definitions(App INTERFACE 
     "AUTHOR_STRING=\"${AUTHOR_STRING}\""
     "VERSION_STRING=\"${VERSION_STRING}\""
@@ -144,6 +150,10 @@ enable_feature(ENABLE_PWRON_PASSWORD
 enable_feature(ENABLE_DTMF_CALLING)
 enable_feature(ENABLE_FLASHLIGHT
     app/flashlight.c
+)
+enable_feature(ENABLE_RX_ONLY)
+enable_feature(ENABLE_JAPANESE
+    ui/ja.c
 )
 
 # ---- CUSTOM MODS ----

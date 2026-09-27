@@ -27,6 +27,9 @@
 #include "ui/fmradio.h"
 #include "ui/helper.h"
 #include "ui/inputbox.h"
+#ifdef ENABLE_JAPANESE
+    #include "ui/ja.h"
+#endif
 #include "ui/ui.h"
 
 void UI_DisplayFM(void)
@@ -79,6 +82,9 @@ void UI_DisplayFM(void)
         pPrintStr = "M-SCAN";
     }
 
+#ifdef ENABLE_JAPANESE
+    if (!((gAskToSave || gAskToDelete) && UI_JaPrintText(pPrintStr, 0, LCD_WIDTH, 26)))
+#endif
     UI_PrintString(pPrintStr, 0, 127, 3, 10); // memory, vfo, scan
 
     if (gAskToSave || (gEeprom.FM_IsMrMode && gInputBoxIndex > 0)) {
@@ -103,12 +109,18 @@ void UI_DisplayFM(void)
         }
 
         UI_DisplayFrequency(String, 36, 1, gInputBoxIndex == 0);  // frequency
+#ifdef ENABLE_JAPANESE
+        UI_DisplayUnlockKeyboardJa(5);
+#endif
         ST7565_BlitFullScreen();
         return;
     }
 
     UI_PrintString(String, 0, 127, 1, 10);
 
+#ifdef ENABLE_JAPANESE
+    UI_DisplayUnlockKeyboardJa(5);
+#endif
     ST7565_BlitFullScreen();
 }
 

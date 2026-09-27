@@ -64,6 +64,7 @@
 #include "ui/lock.h"
 #include "ui/welcome.h"
 #include "ui/menu.h"
+#include "app/menu.h"
 
 #include "external/printf/printf.h"
 
@@ -182,12 +183,18 @@ void Main(void)
                 gMenuCategory = CAT_ALL;
             #endif
             gMenuCursor = UI_MENU_GetMenuIdx(FIRST_HIDDEN_MENU_ITEM);
+#ifndef ENABLE_RX_ONLY
             gSubMenuSelection = gSetting_F_LOCK;
+#endif
         #endif
     }
 
     // build the current menu view (Etape 1: vue = All, identite)
     UI_MENU_BuildView();
+#ifdef ENABLE_RX_ONLY
+    if (gF_LOCK)
+        MENU_ShowCurrentSetting();   // first hidden item is BatCal, not F Lock
+#endif
 
     // wait for user to release all butts before moving on
     if (GPIO_IsPttPressed() ||

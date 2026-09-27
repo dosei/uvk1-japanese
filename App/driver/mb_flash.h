@@ -144,7 +144,9 @@ uint8_t MB_SlotWrite(uint8_t slot, uint32_t offset, const uint8_t *data, uint32_
 /*   0x0F0000  bank 4 config  (64 KiB)                 ]                      */
 /*   0x100000  multiboot state A (4 KiB marker)        ] shared               */
 /*   0x101000  multiboot state B (4 KiB marker)        ] redundant            */
-/*   0x102000  -- free ~888 KiB --                                            */
+/*   0x102000  overlay Apps (16 x 8 KiB, apps/app_overlay.h) ] shared         */
+/*   0x122000  Japanese resource (168 KiB, ui/ja.h, RxJa)    ] shared         */
+/*   0x14C000  voice prompts (factory data, audio.c)         ] shared         */
 /*   0x1E0000  RX/TX log (32 KiB)                      ] shared               */
 /*                                                                            */
 /* Banks are 64 KiB for headroom; the live config footprint is ~44 KiB (max   */

@@ -44,6 +44,9 @@
 #include "menu.h"
 #include "ui.h"
 #include "welcome.h"
+#ifdef ENABLE_JAPANESE
+    #include "ja.h"
+#endif
 #ifdef ENABLE_FEAT_F4HWN_MULTIBOOT
     #include "driver/mb_flash.h"
     #include "multiboot.h"
@@ -54,21 +57,27 @@ const t_menu_item MenuList[] =
 {
 //   text,          menu ID
     {"Step",        MENU_STEP          },
+#ifndef ENABLE_RX_ONLY
     {"Power",       MENU_TXP           }, // was "TXP"
+#endif
     {"RxDCS",       MENU_R_DCS         }, // was "R_DCS"
     {"RxCTCS",      MENU_R_CTCS        }, // was "R_CTCS"
+#ifndef ENABLE_RX_ONLY
     {"TxDCS",       MENU_T_DCS         }, // was "T_DCS"
     {"TxCTCS",      MENU_T_CTCS        }, // was "T_CTCS"
     {"TxODir",      MENU_SFT_D         }, // was "SFT_D"
     {"TxOffs",      MENU_OFFSET        }, // was "OFFSET"
+#endif
     {"W/N",         MENU_W_N           },
 #ifndef ENABLE_FEAT_F4HWN
     {"Scramb",      MENU_SCR           }, // was "SCR"
 #endif
-    {"BusyCL",      MENU_BCL           }, // was "BCL"
+#ifndef ENABLE_RX_ONLY
+    {"BusyCL",      MENU_BCL           }, // was "BCL" (blocks TX on a busy channel)
+#endif
     {"Compnd",      MENU_COMPAND       },
     {"Mode",        MENU_AM            }, // was "AM"
-#ifdef ENABLE_FEAT_F4HWN
+#if defined(ENABLE_FEAT_F4HWN) && !defined(ENABLE_RX_ONLY)
     {"TXLock",      MENU_TX_LOCK       }, 
 #endif
     {"ChList",      MENU_LIST_CH       },
@@ -93,11 +102,15 @@ const t_menu_item MenuList[] =
     {"M Long",      MENU_MLONG         },
 
     {"KeyLck",      MENU_AUTOLK        }, // was "AUTOLk"
+#ifndef ENABLE_RX_ONLY
     {"TxTOut",      MENU_TOT           }, // was "TOT"
+#endif
     {"BatSav",      MENU_SAVE          }, // was "SAVE"
     {"BatTxt",      MENU_BAT_TXT       },
+#ifndef ENABLE_RX_ONLY
     {"Mic",         MENU_MIC           },
     {"MicBar",      MENU_MIC_BAR       },
+#endif
     {"ChDisp",      MENU_MDF           }, // was "MDF"
     {"POnMsg",      MENU_PONMSG        },
     {"BLTime",      MENU_ABR           }, // was "ABR"
@@ -108,28 +121,38 @@ const t_menu_item MenuList[] =
 #ifdef ENABLE_VOICE
     {"Voice",       MENU_VOICE         },
 #endif
+#ifndef ENABLE_RX_ONLY
     {"Roger",       MENU_ROGER         },
+#endif
     {"STE",         MENU_STE           },
-    {"RP STE",      MENU_RP_STE        },
+#ifndef ENABLE_RX_ONLY
+    {"RP STE",      MENU_RP_STE        }, // only extends TX after PTT release
+#endif
     {"1 Call",      MENU_1_CALL        },
 #ifdef ENABLE_DTMF_CALLING
     {"ANI ID",      MENU_ANI_ID        },
 #endif
+#ifndef ENABLE_RX_ONLY
     {"UPCode",      MENU_UPCODE        },
     {"DWCode",      MENU_DWCODE        },
     {"PTT ID",      MENU_PTT_ID        },
     {"D ST",        MENU_D_ST          },
+#endif
 #ifdef ENABLE_DTMF_CALLING
     {"D Resp",      MENU_D_RSP         },
     {"D Hold",      MENU_D_HOLD        },
 #endif
+#ifndef ENABLE_RX_ONLY
     {"D Prel",      MENU_D_PRE         },
+#endif
 #ifdef ENABLE_DTMF_CALLING
     {"D Decd",      MENU_D_DCD         },
     {"D List",      MENU_D_LIST        },
 #endif
     {"D Live",      MENU_D_LIVE_DEC    }, // live DTMF decoder
+#ifndef ENABLE_RX_ONLY
     {"VOX",         MENU_VOX           },
+#endif
 #ifdef ENABLE_FEAT_F4HWN
     {"SysInf",      MENU_VOL           }, // was "VOL"
 #else
@@ -138,10 +161,12 @@ const t_menu_item MenuList[] =
     {"RxMode",      MENU_TDR           },
     {"Sql",         MENU_SQL           },
 #ifdef ENABLE_FEAT_F4HWN
+#ifndef ENABLE_RX_ONLY
     {"SetPwr",      MENU_SET_PWR       },
     {"SetPTT",      MENU_SET_PTT       },
     {"SetTOT",      MENU_SET_TOT       },
     {"SetEOT",      MENU_SET_EOT       },
+#endif
     {"SetCtr",      MENU_SET_CTR       },
     {"SetInv",      MENU_SET_INV       },
     {"SetLck",      MENU_SET_LCK       },
@@ -178,13 +203,17 @@ const t_menu_item MenuList[] =
 #endif
     // hidden menu items from here on
     // enabled if pressing both the PTT and upper side button at power-on
+#ifndef ENABLE_RX_ONLY
     {"F Lock",      MENU_F_LOCK        },
+#endif
 #ifndef ENABLE_FEAT_F4HWN
     {"Tx 200",      MENU_200TX         }, // was "200TX"
     {"Tx 350",      MENU_350TX         }, // was "350TX"
     {"Tx 500",      MENU_500TX         }, // was "500TX"
 #endif
+#ifndef ENABLE_RX_ONLY
     {"350 En",      MENU_350EN         }, // was "350EN"
+#endif
 #ifndef ENABLE_FEAT_F4HWN
     {"ScraEn",      MENU_SCREN         }, // was "SCREN"
 #endif
@@ -199,7 +228,11 @@ const t_menu_item MenuList[] =
     {"",                              0xff               }  // end of list - DO NOT delete or move this this
 };
 
+#ifdef ENABLE_RX_ONLY
+const uint8_t FIRST_HIDDEN_MENU_ITEM = MENU_BATCAL;   // F Lock / 350 En are TX band settings
+#else
 const uint8_t FIRST_HIDDEN_MENU_ITEM = MENU_F_LOCK;
+#endif
 
 const char* const gSubMenu_TXP[] =
 {
@@ -676,6 +709,26 @@ void UI_MENU_BuildCategoryScreen(void)
     }
 }
 
+#ifdef ENABLE_JAPANESE
+// Japanese left column: previous / current (highlighted) / next on 12 px rows,
+// centred in [0, width). prev or next may be NULL.
+static void UI_MENU_DrawJaColumn(const char *prev, const char *cur, const char *next, uint8_t width)
+{
+    if (prev)
+        UI_JaPrint(UI_JaText(prev), 0, width, 1);
+    UI_JaPrint(UI_JaText(cur), 0, width, 16);
+    UI_JaInvert(0, width, 15, 29);
+    if (next)
+        UI_JaPrint(UI_JaText(next), 0, width, 31);
+}
+
+// menu name for UI_JaValue / UI_JaPrintValue, NULL outside a menu item
+static const char *UI_MENU_JaMenuName(void)
+{
+    return (gMenuCursor < gMenuListCount) ? MenuList[gMenuIndices[gMenuCursor]].name : NULL;
+}
+#endif
+
 // Rendu de l'ecran des categories (niveau 1).
 static void UI_MENU_DrawCategories(void)
 {
@@ -696,17 +749,31 @@ static void UI_MENU_DrawCategories(void)
     int prev = cur - 1; if (prev < 0)      prev = count - 1;
     int next = cur + 1; if (next >= count) next = 0;
 
-    if (count > 1)
-        UI_PrintStringSmallNormal(CategoryNames[gCatOrder[prev]], 0, 0, 1);
-    UI_PrintString(CategoryNames[gCatOrder[cur]], 0, 0, 2, 8);
-    if (count > 1)
-        UI_PrintStringSmallNormal(CategoryNames[gCatOrder[next]], 0, 0, 4);
+#ifdef ENABLE_JAPANESE
+    if (UI_JaReady())
+        UI_MENU_DrawJaColumn((count > 1) ? CategoryNames[gCatOrder[prev]] : NULL,
+                             CategoryNames[gCatOrder[cur]],
+                             (count > 1) ? CategoryNames[gCatOrder[next]] : NULL, sep);
+    else
+#endif
+    {
+        if (count > 1)
+            UI_PrintStringSmallNormal(CategoryNames[gCatOrder[prev]], 0, 0, 1);
+        UI_PrintString(CategoryNames[gCatOrder[cur]], 0, 0, 2, 8);
+        if (count > 1)
+            UI_PrintStringSmallNormal(CategoryNames[gCatOrder[next]], 0, 0, 4);
+    }
 
     sprintf(str, "%02u/%02u", 1 + cur, count);
     UI_PrintStringSmallNormal(str, 6, 0, 6);
 
     sprintf(str, "%02u", UI_MENU_CategoryItemCount(gCatOrder[cur]));
     UI_PrintString(str, x1, x2, 1, 8);
+#ifdef ENABLE_JAPANESE
+    if (UI_JaReady())
+        UI_JaPrint(UI_JaText("items"), x1, x2, 34);
+    else
+#endif
     UI_PrintStringSmallNormal("items", x1, x2, 5);
 
     ST7565_BlitFullScreen();
@@ -907,17 +974,27 @@ void UI_DisplayMenu(void)
                 if (prev_index < 0) {
                     prev_index = menu_count - 1;
                 }
-                UI_PrintStringSmallNormal(MenuList[gMenuIndices[prev_index]].name, 0, 0, 1);
-
-                // current menu item - keep big n fat
-                UI_PrintString(MenuList[gMenuIndices[menu_index]].name, 0, 0, 2, 8);
-
-                // trailing menu item - small text
                 int next_index = menu_index + 1;
                 if (next_index >= menu_count) {
                     next_index = 0;
                 }
-                UI_PrintStringSmallNormal(MenuList[gMenuIndices[next_index]].name, 0, 0, 4);
+
+    #ifdef ENABLE_JAPANESE
+                if (UI_JaReady())
+                    UI_MENU_DrawJaColumn(MenuList[gMenuIndices[prev_index]].name,
+                                         MenuList[gMenuIndices[menu_index]].name,
+                                         MenuList[gMenuIndices[next_index]].name, 48);
+                else
+    #endif
+                {
+                    UI_PrintStringSmallNormal(MenuList[gMenuIndices[prev_index]].name, 0, 0, 1);
+
+                    // current menu item - keep big n fat
+                    UI_PrintString(MenuList[gMenuIndices[menu_index]].name, 0, 0, 2, 8);
+
+                    // trailing menu item - small text
+                    UI_PrintStringSmallNormal(MenuList[gMenuIndices[next_index]].name, 0, 0, 4);
+                }
 
 
                 // draw the menu index number/count
@@ -930,6 +1007,11 @@ void UI_DisplayMenu(void)
             {   
                 // current menu item
 //              strcat(String, ":");
+    #ifdef ENABLE_JAPANESE
+                if (UI_JaReady())
+                    UI_JaPrint(UI_JaText(MenuList[gMenuIndices[menu_index]].name), 0, 48, 1);
+                else
+    #endif
                 UI_PrintString(MenuList[gMenuIndices[menu_index]].name, 0, 0, 0, 8);
 //              UI_PrintStringSmallNormal(String, 0, 0, 0);
             }
@@ -1168,6 +1250,9 @@ void UI_DisplayMenu(void)
         {
             if(gSubMenuSelection == MR_CHANNELS_MAX)
             {
+#ifdef ENABLE_JAPANESE
+                if (!UI_JaReady() || !UI_JaPrintValue(UI_MENU_JaMenuName(), "None", menu_item_x1, menu_item_x2, 56))
+#endif
                 UI_PrintString("None", menu_item_x1, menu_item_x2, 2, 8);
                 already_printed = true;
                 break;
@@ -1403,8 +1488,17 @@ void UI_DisplayMenu(void)
             if (page == p++) {
                 // Page 0: firmware identity.
 #ifdef ENABLE_FEAT_F4HWN
+#ifdef RXJA_VERSION_STRING
+                // RxJa and its version, then the upstream release it is based on
+                // (3x5 font: the small one does not fit "F4HWN v6.0.0 base")
+                static const char base[] = AUTHOR_STRING_2 " " DISPLAY_VERSION_STRING_2 " BASE";
+                sprintf(String, "%s\n%s", EDITION_STRING, RXJA_VERSION_STRING);
+                GUI_DisplaySmallest(base, (uint8_t)(menu_item_x1 - 1 + (menu_item_x2 - menu_item_x1 + 2 - (sizeof(base) - 1) * 4 + 1) / 2),
+                                    49, false, true);
+#else
                 sprintf(String, "%s\n%s", AUTHOR_STRING_2, DISPLAY_VERSION_STRING_2);
                 UI_PrintStringSmallNormal(Edition, menu_item_x1 - 1, menu_item_x2, 6);
+#endif
 #ifdef ENABLE_FEAT_F4HWN_MULTIBOOT
                 /* Two 3x5 inverse-capsule labels on one line (scan-list "label"
                  * style): the running firmware slot (M = Main) and the active
@@ -1722,6 +1816,19 @@ void UI_DisplayMenu(void)
     }
     //#endif
 
+#ifdef ENABLE_JAPANESE
+    if (!already_printed && String[0] != '\0' && UI_JaReady())
+    {   // keep clear of a gauge or bottom badge (page p = pixel rows p * 8 .. p * 8 + 7)
+        uint8_t bottom = 56;
+        if (gaugeLine != 0)
+            bottom = gaugeLine * 8;
+        if (top_right_badge[0] != '\0' && top_right_badge_line > 1 && top_right_badge_line * 8 < bottom)
+            bottom = top_right_badge_line * 8;
+        if (UI_JaPrintValue(UI_MENU_JaMenuName(), String, menu_item_x1, menu_item_x2, bottom))
+            already_printed = true;
+    }
+#endif
+
     if (!already_printed)
     {   // we now do multi-line text in a single string
 
@@ -1786,7 +1893,15 @@ void UI_DisplayMenu(void)
     }
 
     if ((m == MENU_R_CTCS || m == MENU_R_DCS) && gCssBackgroundScan)
+    {
+#ifdef ENABLE_JAPANESE
+        const char *ja = UI_JaReady() ? UI_JaValue(UI_MENU_JaMenuName(), "SCAN") : NULL;
+        if (ja)
+            UI_JaPrint(ja, menu_item_x1, menu_item_x2, 34);   // centred in pages 4-5 like the 8x16 text
+        else
+#endif
         UI_PrintString("SCAN", menu_item_x1, menu_item_x2, 4, 8);
+    }
 
 #ifdef ENABLE_DTMF_CALLING
     if (m == MENU_D_LIST && gIsDtmfContactValid) {
@@ -1837,6 +1952,12 @@ void UI_DisplayMenu(void)
          m == MENU_DEL_CH) && gAskForConfirmation)
     {   // display confirmation
         char *pPrintStr = (gAskForConfirmation == 1) ? "SURE?" : "WAIT!";
+#ifdef ENABLE_JAPANESE
+        const char *ja = UI_JaReady() ? UI_JaValue(UI_MENU_JaMenuName(), pPrintStr) : NULL;
+        if (ja)
+            UI_JaPrint(ja, menu_item_x1, menu_item_x2, 42);   // centred in pages 5-6 like the 8x16 text
+        else
+#endif
         UI_PrintString(pPrintStr, menu_item_x1, menu_item_x2, 5, 8);
     }
 

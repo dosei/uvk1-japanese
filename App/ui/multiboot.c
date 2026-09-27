@@ -116,12 +116,16 @@ static uint8_t mb_copy_slot_version(char *dst, uint8_t cap, const mb_slot_header
     return n;
 }
 
-/* "F4HWN MULTIBOOT" banner in the top status bar, shown on every screen - the
+/* "F4HWN MULTIBOOT" ("RxJa MULTIBOOT") banner in the top status bar, shown on every screen - the
  * same way the firmware puts mode labels there (inverse 3x5 capsule). */
 static void mb_status_bar(void)
 {
     UI_StatusClear();
+#ifdef RXJA_VERSION_STRING
+    GUI_DisplaySmallestInverse(EDITION_STRING " MULTIBOOT", 36, 0, true, true, 92);
+#else
     GUI_DisplaySmallestInverse("F4HWN MULTIBOOT", 34, 0, true, true, 94);
+#endif
 
     /* Thin line dressing up the otherwise blank row between the status bar and
      * the first content row. Drawn on gFrameBuffer[0] (line 0), which every
@@ -217,7 +221,7 @@ static KEY_Code_t mb_get_key(void)
 }
 
 /* Shown from the normal settings menu (SetCfg), not the boot selector, so it does
- * NOT paint the "F4HWN MULTIBOOT" status banner - just a plain acknowledged message. */
+ * NOT paint the MULTIBOOT status banner - just a plain acknowledged message. */
 void UI_MultibootShowConfigError(uint8_t err)
 {
 #ifdef ENABLE_FEAT_F4HWN_K5VIEWER

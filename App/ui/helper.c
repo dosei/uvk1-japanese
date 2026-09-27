@@ -21,6 +21,9 @@
 #include "font.h"
 #include "ui/helper.h"
 #include "ui/inputbox.h"
+#ifdef ENABLE_JAPANESE
+    #include "ui/ja.h"
+#endif
 #include "misc.h"
 #include "settings.h"
 
@@ -328,6 +331,10 @@ static void sort(int16_t *a, int16_t *b)
         {   // tell user how to unlock the keyboard
             
             //memcpy(gFrameBuffer[shift] + 2, gFontKeyLock, sizeof(gFontKeyLock));
+#ifdef ENABLE_JAPANESE
+            if (UI_JaReady())
+                return;     // UI_DisplayUnlockKeyboardJa draws it once the screen is complete
+#endif
             UI_PrintStringSmallBold("UNLOCK KEYBOARD", 12, 0, shift);
             //memcpy(gFrameBuffer[shift] + 120, gFontKeyLock, sizeof(gFontKeyLock));
 
@@ -339,6 +346,29 @@ static void sort(int16_t *a, int16_t *b)
             */
         }
     }
+
+#ifdef ENABLE_JAPANESE
+    // The Japanese hint is a 12 px line centred on page shift, reaching into the
+    // pages around it, so it goes over a cleared band after everything else.
+    void UI_DisplayUnlockKeyboardJa(uint8_t shift) {
+        static const char unlock[] = "UNLOCK KEYBOARD";
+
+        if (!gEeprom.KEY_LOCK || gKeypadLocked == 0 || !UI_JaReady())
+            return;
+
+        const char *ja = UI_JaText(unlock);
+        if (ja == unlock) {
+            UI_PrintStringSmallBold(unlock, 12, 0, shift);
+            return;
+        }
+
+        const uint8_t y = shift * 8u - 2u;
+        for (uint8_t r = y; r < y + JA_LINE_HEIGHT; r++)
+            for (uint8_t x = 0; x < LCD_WIDTH; x++)
+                gFrameBuffer[r >> 3][x] &= ~(1u << (r & 7));
+        UI_JaPrint(ja, 0, LCD_WIDTH, y);
+    }
+#endif
 
     bool IsEmptyName(const char *name, uint8_t len) {
         if (name[0] == '\0' || name[0] == '\xff')
@@ -398,8 +428,14 @@ void UI_DisplayPopup(const char *string)
     //  UI_DrawPixelBuffer(117, y, true);
     // }
     // DrawRectangle(9,9, 118,38, true);
-    UI_PrintString(string, 9, 118, 2, 8);
-    UI_PrintStringSmallNormal("Press EXIT", 9, 118, 6);
+#ifdef ENABLE_JAPANESE
+    if (!UI_JaPrintText(string, 9, 118, 18))
+#endif
+        UI_PrintString(string, 9, 118, 2, 8);
+#ifdef ENABLE_JAPANESE
+    if (!UI_JaPrintText("Press EXIT", 9, 118, 44))
+#endif
+        UI_PrintStringSmallNormal("Press EXIT", 9, 118, 6);
 }
 
 void UI_DisplayClear(void)

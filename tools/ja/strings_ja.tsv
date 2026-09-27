@@ -1,0 +1,184 @@
+# Japanese UI strings: English key <TAB> Japanese. The key must match the
+# firmware string byte for byte (App/ui/menu.c, main.c and the other screens
+# listed in gen_ja_font.py SOURCES). Untranslated keys are shown
+# in English. "@width N" sets the pixel limit checked for the lines below it
+# (full-width char 12 px, ASCII 7 px, half-width katakana ｱｲｳ 6 px).
+# "\n" in a key or translation is a line break. "<menu name>|<value>" is looked
+# up before the plain value, for words whose meaning depends on the menu.
+# Edit, rerun gen_ja_font.py, upload.py.
+
+@width 48	menu item names, left column of the menu screen
+Step	ステップ
+RxDCS	DCS
+RxCTCS	CTCS
+W/N	帯域幅
+Compnd	ｺﾝﾊﾟﾝﾀﾞ
+Mode	変調
+ChList	CH一覧
+ChSave	CH保存
+ChDele	CH削除
+ChName	CH名称
+ScList	ｽｷｬﾝﾘｽﾄ
+ScPri	SC優先
+PriCh1	優先CH1
+PriCh2	優先CH2
+ScnRev	SC再開
+F1Shrt	F1短押
+F1Long	F1長押
+F2Shrt	F2短押
+F2Long	F2長押
+M Long	M長押
+KeyLck	自動ﾛｯｸ
+BatSav	省電力
+BatTxt	電池表示
+ChDisp	CH表示
+POnMsg	起動表示
+BLTime	照明時間
+BLMin	照明最小
+BLMax	照明最大
+BLTxRx	受信ﾗｲﾄ
+Beep	操作音
+STE	SQﾃｰﾙ消
+1 Call	1コール
+D Live	DTMF
+SysInf	本体情報
+RxMode	受信方式
+Sql	スケルチ
+SetCtr	画面濃度
+SetInv	白黒反転
+SetLck	ﾛｯｸ対象
+SetMet	Sﾒｰﾀｰ
+SetGUI	画面様式
+SetRxA	受信音質
+SetTmr	タイマー
+SetOff	自動OFF
+SetNFM	狭帯域
+SetVol	音量
+SetScn	SC速度
+SetSav	省電画面
+SetCfg	設定切替
+BatCal	電池校正
+BatTyp	電池種類
+SetNav	矢印操作
+Reset	初期化
+
+@width 64	menu categories, left column of the category screen
+Channels	チャンネル
+Scan	スキャン
+Keys	キー
+Power	電源
+Display	表示
+Timers	タイマー
+Audio	音声
+Radio	無線
+DTMF	DTMF
+Service	保守
+All	すべて
+
+@width 61	right column of the category screen
+items	項目
+
+@width 78	right column of the menu screen (values). OFF/ON, numbers, units and
+#	abbreviations (FM, AM, VFO, PTT, VOX, ...) stay in English on purpose.
+WIDE	広帯域
+NARROW	狭帯域
+NARROWER	超狭帯域
+FREQ	周波数
+CHANNEL\nNUMBER	CH番号
+NAME	名称
+NAME\n+\nFREQ	名称+周波数
+ALL	すべて
+SOUND	音のみ
+MESSAGE	メッセージ
+VOLTAGE	電圧
+LOGO	ロゴ
+NONE	なし
+PERCENT	パーセント
+STOP	再開しない
+# ScnRev: first line of "CARRIER\n00s:250ms" / "TIMEOUT\n00m:05s"
+CARRIER	信号断後
+TIMEOUT	時間経過
+# RxMode, by what the receiver does (RX-only build: CROSS BAND receives the other VFO only)
+MAIN\nONLY	メインのみ
+DUAL RX\nRESPOND	2波受信\n追従
+CROSS\nBAND	サブ\nのみ
+MAIN TX\nDUAL RX	2波受信\nメイン固定
+# SetLck (ACTIONS = the side key functions)
+KEYS	キー
+KEYS\nACTIONS	キー\n+機能
+KEYS\nPTT	キー\n+PTT
+KEYS\nACTIONS\nPTT	キー\n+機能\n+PTT
+TINY	小型
+CLASSIC	従来
+NORMAL	標準
+FAST	高速
+LOGO+	ロゴ+
+MATRIX	マトリクス
+# SetRxA, FM then AM (OPEN = wide filter for weak signals)
+FLAT	フラット
+CLEAN	クリア
+MID	中間
+BOOST	強め
+MAX	最大
+SHARP	シャープ
+STOCK	標準
+OPEN	高感度
+LEFT\nRIGHT\nUV-K1	左右\nUV-K1
+UP\nDOWN\nUV-K5(8)	上下\nUV-K5(8)
+# side key functions (F1Shrt ... M Long)
+FLASH\nLIGHT	フラッシュ\nライト
+POWER	送信出力
+MONITOR	モニター
+SCAN	スキャン
+FM RADIO	FMラジオ
+LOCK\nKEYPAD	キーロック
+VFO\nMEM	VFO\nメモリ
+MODE	変調切替
+RX MODE	受信方式
+MAIN ONLY	メインのみ
+WIDE\nNARROW	帯域幅切替
+MUTE	消音
+RxA	受信音質
+RF LOG	受信ログ
+BEAM	ビーム
+POWER\nHIGH	高出力
+REMOVE\nOFFSET	オフセット\n解除
+FOX HUNT	フォックス\nハント
+BEACON	ビーコン
+# drawn outside the common value path
+None	なし
+SURE?	実行する?
+WAIT!	処理中
+RxCTCS|SCAN	スキャン中
+RxDCS|SCAN	スキャン中
+
+@width 92	main screen, VFO state label (x=35..127); RX-only builds only show TX DISABLE
+TX DISABLE	送信禁止
+
+@width 128	whole-width messages: welcome, release keys, key lock hint, FM radio, RF log
+WELCOME	ようこそ
+RELEASE ALL KEYS	キーを離してください
+UNLOCK KEYBOARD	F長押しで解除
+SAVE?	保存?
+DEL?	削除?
+NO LOG	記録なし
+CLEAR LOG	ログ消去
+
+@width 37	welcome screen, after "F4HWN v6.0.0 " (91 px)
+base	ﾍﾞｰｽ
+
+@width 109	popup (x=9..117)
+LOW BATTERY	電池残量低下
+Press EXIT	EXITで戻る
+
+@width 124	frequency / tone search (F+*), first line (x=2..125)
+Search Freq	周波数検索中
+Search Tone	トーン検索中
+Scan Complete	完了
+Scan Failed	失敗
+Save?	保存?
+
+@width 52	frequency / tone search, labels before a value in the 8x16 font (9 x 8 px)
+Freq:	周波数:
+Tone:	トーン:
+Save:	保存:
