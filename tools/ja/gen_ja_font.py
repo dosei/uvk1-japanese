@@ -9,6 +9,7 @@ Half-width katakana U+FF61..U+FF9F: Shinonome 6x12 JIS X 0201 (shnm6x12r.bdf,
 Public Domain), stored in the same 18-byte slots with columns 6..11 empty; the
 firmware advances 6 px for that range (App/ui/ja.c).
 UI strings: strings_ja.tsv (English key -> Japanese, see the file header).
+Range-scan presets: presets_ja.tsv (ENABLE_RXJA_PRESET, see the file header).
 
 Image layout (little-endian), written to SPI at JA_FLASH_BASE (App/ui/ja.h):
     +0   char[4]  magic "JF03" (withdrawn test builds: "JF12", so their upload.py refuses this)
@@ -18,12 +19,19 @@ Image layout (little-endian), written to SPI at JA_FLASH_BASE (App/ui/ja.h):
     +12  u16[N]   code points, ascending
     +..  N x 18   glyphs: 12 columns x 12 bits, bit 0 = top row; column c is
                   bits 12c..12c+11 of the 144-bit little-endian glyph
-    +T   u16      string count M, u16 padding
+    +T   u16      string count M
+    +T+2 u16      preset table offset from T in 4-byte units, 0 = none
+                  (was padding: older firmware ignores it, so no format bump)
     +..  u32[M]   FNV-1a hash of the English key, ascending
     +..  u16[M]   offset of each string from the end of this array
     +..           UTF-8 strings, NUL terminated
+    +P   u16      preset count K, u16 record size (40)
+    +..  K x      u32 lower, u32 upper (10 Hz units, inclusive), u8 step
+                  (STEP_Setting_t), u8 modulation, u8 bandwidth, u8 flags (0),
+                  char[28] UTF-8 name, NUL padded (JA_Preset_t in App/ui/ja.h)
 Usage: gen_ja_font.py [out.bin]   (default: tools/ja/ja_res.bin)
 """
+import decimal
 import pathlib
 import re
 import struct
@@ -34,13 +42,24 @@ MENU_C = HERE.parent.parent / 'App' / 'ui' / 'menu.c'
 MAIN_C = HERE.parent.parent / 'App' / 'ui' / 'main.c'
 # other files with translated strings, searched for the keys
 SOURCES = [MAIN_C] + [HERE.parent.parent / 'App' / f for f in (
-    'ui/welcome.c', 'ui/helper.c', 'ui/scanner.c', 'ui/fmradio.c', 'app/rxtx_log.c')]
+    'ui/welcome.c', 'ui/helper.c', 'ui/scanner.c', 'ui/fmradio.c', 'app/rxtx_log.c',
+    'app/preset.c')]
 MAGIC = b'JF03'             # JA_MAGIC in App/ui/ja.c
 VERSION = 3
 TEXT_MAX = 48               # JA_TEXT_MAX in App/ui/ja.h, incl. NUL
 FLASH_BASE = 0x122000      # JA_FLASH_BASE: right after the overlay Apps (0x102000..0x122000)
 FLASH_LIMIT = 0x14C000     # voice prompts; 0x0C0000..0x100000 are multiboot config banks
 HALF_FIRST, HALF_LAST = 0xFF61, 0xFF9F  # half-width katakana, 6 px (HALF_WIDTH in ja.c)
+
+# presets: STEP_Setting_t order and gStepFrequencyTable (10 Hz units), App/frequencies.c
+STEPS = [250, 500, 625, 1000, 1250, 2500, 833, 1, 5, 10, 25, 50, 100, 125,
+         900, 1500, 2000, 3000, 5000, 10000, 12500, 20000, 25000, 50000]
+MODULATIONS = {'FM': 0, 'AM': 1, 'USB': 2}      # ModulationMode_t
+BANDWIDTHS = {'W': 0, 'N': 1}                   # BANDWIDTH_WIDE / BANDWIDTH_NARROW
+PRESET_NAME = 28            # JA_PRESET_NAME in App/ui/ja.h, incl. NUL
+PRESET_NAME_WIDTH = 128 - 18  # LCD_WIDTH - NAME_X in App/app/preset.c
+RX_LOWER, RX_UPPER = 1800000, 130000000         # BX4819_band1.lower, BX4819_band2.upper
+GAP_LOWER, GAP_UPPER = 63000000, 84000000       # BK4819 cannot receive [63, 84) MHz
 
 
 def load_hex(path):
@@ -160,6 +179,68 @@ def check_against_menu(pairs):
               ' '.join(left))
 
 
+def load_presets(path, glyphs):
+    """Records of presets_ja.tsv (name, lower, upper, step, mode, bandwidth), checked."""
+    presets, errors = [], []
+    if not path.exists():
+        return presets
+    for n, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+        if not line.strip() or line.startswith('#'):
+            continue
+        cols = line.split('\t')
+        where = '%s:%d' % (path.name, n)
+        if len(cols) != 6:
+            errors.append('%s: need 6 tab-separated columns, got %d' % (where, len(cols)))
+            continue
+        name, lower, upper, step, mode, bw = (c.strip() for c in cols)
+        where += ' %r' % name
+        try:
+            lo = decimal.Decimal(lower) * 100000
+            hi = decimal.Decimal(upper) * 100000
+            st = decimal.Decimal(step) * 100
+        except decimal.InvalidOperation:
+            errors.append('%s: bad number' % where)
+            continue
+        if lo != int(lo) or hi != int(hi):
+            errors.append('%s: frequency finer than 10 Hz' % where)
+        lo, hi = int(lo), int(hi)
+        if st != int(st) or int(st) not in STEPS:
+            errors.append('%s: step %s kHz is not one of the radio\'s steps' % (where, step))
+        elif (hi - lo) % int(st):
+            print('warning: %s: range is not a whole number of steps, %s is not scanned' % (where, upper))
+        if not lo < hi:
+            errors.append('%s: lower must be below upper' % where)
+        if lo < RX_LOWER or hi > RX_UPPER:
+            errors.append('%s: outside 18..1300 MHz' % where)
+        if lo < GAP_UPPER and hi >= GAP_LOWER:
+            errors.append('%s: overlaps 63..84 MHz, which the BK4819 cannot receive' % where)
+        if lo < 40000000 and hi >= 35000000:
+            print('warning: %s: 350..400 MHz needs the 350En setting' % where)
+        if mode not in MODULATIONS:
+            errors.append('%s: mode must be one of %s' % (where, '/'.join(MODULATIONS)))
+        if bw not in BANDWIDTHS:
+            errors.append('%s: bandwidth must be W or N' % where)
+        missing = [ch for ch in name if ord(ch) >= 0x80 and ord(ch) not in glyphs]
+        if missing:
+            errors.append('%s: not in the font: %s' % (where, ''.join(missing)))
+        if len(name.encode()) >= PRESET_NAME:
+            errors.append('%s: name longer than %d bytes' % (where, PRESET_NAME - 1))
+        if text_width(name) > PRESET_NAME_WIDTH:
+            errors.append('%s: name is %d px, limit %d' % (where, text_width(name), PRESET_NAME_WIDTH))
+        if not errors:
+            presets.append((name, lo, hi, STEPS.index(int(st)), MODULATIONS[mode], BANDWIDTHS[bw]))
+    if errors:
+        raise SystemExit('\n'.join(errors))
+    return presets
+
+
+def build_preset_table(presets):
+    out = struct.pack('<HH', len(presets), struct.calcsize('<IIBBBB%ds' % PRESET_NAME))
+    for name, lo, hi, step, mode, bw in presets:
+        out += struct.pack('<IIBBBB%ds' % PRESET_NAME, lo, hi, step, mode, bw, 0, name.encode())
+    return out
+
+
 def build_text_table(pairs):
     entries = sorted((fnv1a(k.encode()), ja.encode() + b'\0', k) for k, ja in pairs)
     for a, b in zip(entries, entries[1:]):
@@ -186,6 +267,7 @@ def main():
 
     pairs = load_strings(HERE / 'strings_ja.tsv', glyphs)
     check_against_menu(pairs)
+    presets = load_presets(HERE / 'presets_ja.tsv', glyphs)
 
     out = bytearray(MAGIC)
     out += struct.pack('<HHI', len(codes), VERSION, 0)
@@ -193,13 +275,20 @@ def main():
     for c in codes:
         out += pack_glyph(rows_to_columns(glyphs[c]))
     out += b'\0' * (-len(out) % 4)
-    struct.pack_into('<I', out, 8, len(out))
+    text = len(out)
+    struct.pack_into('<I', out, 8, text)
     out += build_text_table(pairs)
+    if presets:
+        out += b'\0' * (-len(out) % 4)
+        assert pairs and (len(out) - text) // 4 < 0xFFFF
+        struct.pack_into('<H', out, text + 2, (len(out) - text) // 4)
+        out += build_preset_table(presets)
 
     end = FLASH_BASE + len(out)
     assert end <= FLASH_LIMIT, 'image overflows SPI region: ends at 0x%06X' % end
     out_path.write_bytes(out)
-    print('glyphs: %d (U+%04X..U+%04X), strings: %d' % (len(codes), codes[0], codes[-1], len(pairs)))
+    print('glyphs: %d (U+%04X..U+%04X), strings: %d, presets: %d'
+          % (len(codes), codes[0], codes[-1], len(pairs), len(presets)))
     print('%s: %d bytes, SPI 0x%06X..0x%06X' % (out_path.name, len(out), FLASH_BASE, end))
 
 

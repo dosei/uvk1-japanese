@@ -45,6 +45,14 @@ uint8_t CHFRSCANNER_GetScanRssiSparklineLevel(uint8_t index);
     void CHFRSCANNER_ScanRange(void);
 #endif
 
+#ifdef ENABLE_RXJA_PRESET
+    // Arm the range scan with [lower, upper] instead of the two VFOs. The range
+    // is marked as coming from a preset, which is not resumed after power-off
+    // (the resume logic can only rebuild a range from VFO A/B).
+    extern bool gScanRangeFromPreset;
+    void CHFRSCANNER_SetRange(uint32_t lower, uint32_t upper);
+#endif
+
 #ifdef ENABLE_FEAT_F4HWN
     extern uint32_t lastFoundFrqOrChan;
     extern uint32_t lastFoundFrqOrChanOld;

@@ -300,6 +300,10 @@ void ACTION_Scan(bool bRestart)
         {
             gEeprom.CURRENT_STATE = 2;
         }
+#ifdef ENABLE_RXJA_PRESET
+        if (gScanRangeStart && gScanRangeFromPreset)
+            gEeprom.CURRENT_STATE = 0;  // resume would rebuild the range from VFO A/B
+#endif
         SETTINGS_WriteCurrentState();
         #endif
         // start scanning

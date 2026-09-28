@@ -63,4 +63,26 @@ uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y);
 // XOR pixel rows [y0, y1) between x Start and End, e.g. to highlight a 12 px line
 void    UI_JaInvert(uint8_t Start, uint8_t End, uint8_t y0, uint8_t y1);
 
+#ifdef ENABLE_RXJA_PRESET
+// Range-scan presets (tools/ja/presets_ja.tsv), stored after the string table.
+// The table's pad field holds its offset from the string table in 4-byte
+// units (0 = none): u16 count, u16 record size, then count records.
+#define JA_PRESET_NAME  28          // bytes, NUL-padded UTF-8
+
+typedef struct {
+    uint32_t lower;                 // 10 Hz units, inclusive
+    uint32_t upper;
+    uint8_t  step;                  // STEP_Setting_t
+    uint8_t  modulation;            // ModulationMode_t
+    uint8_t  bandwidth;             // BANDWIDTH_WIDE / BANDWIDTH_NARROW
+    uint8_t  flags;                 // reserved, 0
+    char     name[JA_PRESET_NAME];
+} JA_Preset_t;                      // layout of a record in the image
+
+uint16_t UI_JaPresetCount(void);
+
+// read preset index (< UI_JaPresetCount()); the name is always NUL-terminated
+bool    UI_JaPreset(uint16_t index, JA_Preset_t *pPreset);
+#endif
+
 #endif

@@ -33,6 +33,9 @@
 #ifdef ENABLE_FEAT_F4HWN_RXTX_LOG
     #include "app/rxtx_log.h"
 #endif
+#ifdef ENABLE_RXJA_PRESET
+    #include "app/preset.h"
+#endif
 #include "ui/inputbox.h"
 #include "ui/main.h"
 #include "ui/menu.h"
@@ -69,6 +72,9 @@ void (*const UI_DisplayFunctions[])(void) = {
 
 #ifdef ENABLE_FEAT_F4HWN_RXTX_LOG
     [DISPLAY_RXTX_LOG] = &UI_DisplayRxTxLog,
+#endif
+#ifdef ENABLE_RXJA_PRESET
+    [DISPLAY_PRESET] = &UI_DisplayPreset,
 #endif
 };
 

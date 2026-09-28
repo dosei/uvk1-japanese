@@ -1,0 +1,32 @@
+# Range-scan presets (ENABLE_RXJA_PRESET), F+7 or a long 7 on the main screen.
+# One per line, tab-separated:
+#   name <TAB> lower MHz <TAB> upper MHz <TAB> step kHz <TAB> FM/AM/USB <TAB> W/N
+# Both ends are scanned. The step must be one of the radio's steps (2.5, 5,
+# 6.25, 8.33, 9, 10, 12.5, 15, 20, 25, 30, 50, 100 ... kHz), the name at most
+# 27 bytes and 110 px (full-width char 12 px, ASCII 7 px, half-width kana 6 px).
+# 1..9 and 0 on the preset screen pick the first ten, in this order.
+# Edit, rerun gen_ja_font.py, upload.py (no firmware rebuild).
+#
+# Sources (checked 2026-09-28): 特小 = テレコム チャンネル互換表 5版 (2024.10)
+# and RCR STD-20 channel table; air band = 総務省 VHF 航空無線 ナロー化資料
+# (Japan still assigns 25 kHz); marine = 国際VHF channel plan; amateur = JARL
+# band plan 2025-07-17 (FM segments; 20 kHz is Japanese practice).
+
+# 特定小電力 (voice, 12.5 kHz, analog FM narrow). 単信 L01-L09 / 01-20 incl. the
+# 422.1875 control channel (no voice). 中継 pairs are 18.45 MHz apart, so both
+# halves are listed (440.2500 / 421.8000 are control channels).
+特小 単信	422.0500	422.3000	12.5	FM	N
+特小 中継 440	440.0250	440.3625	12.5	FM	N
+特小 中継 421	421.5750	421.9125	12.5	FM	N
+
+# aeronautical VHF voice (108-117.975 MHz is navigation, no voice)
+エアバンド	118.000	136.975	25	AM	W
+
+# marine VHF: ship transmit / coast station transmit (AIS 161.975, 162.025 left out)
+国際VHF 船舶	156.025	157.425	25	FM	W
+国際VHF 海岸	160.625	161.950	25	FM	W
+
+# amateur FM (the segments also carry D-STAR / C4FM, which cannot be demodulated)
+アマ144 FM	144.700	145.640	20	FM	W
+アマ430 FM	432.100	434.000	20	FM	W
+アマ430 レピータ	439.000	440.000	20	FM	W

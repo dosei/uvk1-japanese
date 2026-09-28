@@ -210,6 +210,7 @@
             "cacheVariables": {
                 "ENABLE_RX_ONLY": true,
                 "ENABLE_JAPANESE": true,
+                "ENABLE_RXJA_PRESET": true,
                 "ENABLE_VOX": false,
                 "ENABLE_TX1750": false,
                 "ENABLE_DTMF_CALLING": false,
@@ -222,7 +223,7 @@
                 "ENABLE_FEAT_F4HWN_BEACON": false,
                 "ENABLE_FEAT_F4HWN_OVERLAY_APPS": false,
                 "EDITION_STRING": "RxJa",
-                "RXJA_VERSION_STRING": "v0.1.1",
+                "RXJA_VERSION_STRING": "v0.1.2",
                 "TARGET": "f4hwn.rxja"
             }
         }

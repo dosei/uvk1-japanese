@@ -155,6 +155,12 @@ enable_feature(ENABLE_RX_ONLY)
 enable_feature(ENABLE_JAPANESE
     ui/ja.c
 )
+enable_feature(ENABLE_RXJA_PRESET
+    app/preset.c
+)
+if(ENABLE_RXJA_PRESET AND NOT (ENABLE_JAPANESE AND ENABLE_SCAN_RANGES))
+    message(FATAL_ERROR "ENABLE_RXJA_PRESET requires ENABLE_JAPANESE (the presets live in the resource image) and ENABLE_SCAN_RANGES.")
+endif()
 
 # ---- CUSTOM MODS ----
 

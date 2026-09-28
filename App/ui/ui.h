@@ -38,6 +38,10 @@ enum GUI_DisplayType_t
     DISPLAY_RXTX_LOG,
 #endif
 
+#ifdef ENABLE_RXJA_PRESET
+    DISPLAY_PRESET,
+#endif
+
     DISPLAY_N_ELEM,
     DISPLAY_INVALID = 0xFFu
 };

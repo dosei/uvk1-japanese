@@ -27,6 +27,11 @@ static uint16_t gJaCount = 0xFFFF;  // glyphs in the image; 0xFFFF = not read ye
 static uint32_t gJaTextOff;         // UI string table, 0 = none
 static uint16_t gJaTextCount;
 static char     gJaText[JA_TEXT_MAX];
+#ifdef ENABLE_RXJA_PRESET
+static uint32_t gJaPresetOff;       // preset table, 0 = none
+static uint16_t gJaPresetCount;
+static uint16_t gJaPresetSize;      // record size in the image
+#endif
 
 bool UI_JaReady(void)
 {
@@ -42,13 +47,35 @@ bool UI_JaReady(void)
 
         gJaTextOff   = 0;
         gJaTextCount = 0;
+#ifdef ENABLE_RXJA_PRESET
+        gJaPresetOff   = 0;
+        gJaPresetCount = 0;
+#endif
         if (gJaCount)
         {
-            uint16_t n = 0;
+            uint16_t n[2] = {0, 0};     // count, pad (= preset table offset / 4)
             memcpy(&gJaTextOff, hdr + 8, 4);
             if (gJaTextOff && gJaTextOff < JA_FLASH_SIZE)
-                PY25Q16_ReadBuffer(JA_FLASH_BASE + gJaTextOff, &n, 2);
-            gJaTextCount = (n == 0xFFFF) ? 0 : n;
+                PY25Q16_ReadBuffer(JA_FLASH_BASE + gJaTextOff, n, sizeof(n));
+            gJaTextCount = (n[0] == 0xFFFF) ? 0 : n[0];
+#ifdef ENABLE_RXJA_PRESET
+            if (gJaTextCount && n[1] && n[1] != 0xFFFF)
+            {
+                const uint32_t off = gJaTextOff + n[1] * 4u;
+                uint16_t       p[2];
+                if (off + sizeof(p) <= JA_FLASH_SIZE)
+                {
+                    PY25Q16_ReadBuffer(JA_FLASH_BASE + off, p, sizeof(p));
+                    if (p[0] != 0xFFFF && p[1] >= sizeof(JA_Preset_t) &&
+                        off + sizeof(p) + (uint32_t)p[0] * p[1] <= JA_FLASH_SIZE)
+                    {
+                        gJaPresetOff   = off;
+                        gJaPresetCount = p[0];
+                        gJaPresetSize  = p[1];
+                    }
+                }
+            }
+#endif
         }
     }
     return gJaCount != 0;
@@ -318,3 +345,20 @@ bool UI_JaPrintValue(const char *pMenu, const char *pValue, uint8_t Start, uint8
     }
     return true;
 }
+
+#ifdef ENABLE_RXJA_PRESET
+uint16_t UI_JaPresetCount(void)
+{
+    return UI_JaReady() ? gJaPresetCount : 0;
+}
+
+bool UI_JaPreset(uint16_t index, JA_Preset_t *pPreset)
+{
+    if (index >= UI_JaPresetCount())
+        return false;
+    PY25Q16_ReadBuffer(JA_FLASH_BASE + gJaPresetOff + 4u + (uint32_t)index * gJaPresetSize,
+                       pPreset, sizeof(*pPreset));
+    pPreset->name[JA_PRESET_NAME - 1] = '\0';
+    return true;
+}
+#endif

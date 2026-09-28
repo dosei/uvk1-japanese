@@ -25,6 +25,9 @@
 #endif
 #include "app/generic.h"
 #include "app/main.h"
+#ifdef ENABLE_RXJA_PRESET
+    #include "app/preset.h"
+#endif
 #include "app/scanner.h"
 
 #ifdef ENABLE_SPECTRUM
@@ -272,6 +275,10 @@ static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
             break;
 
         case KEY_7:
+#ifdef ENABLE_RXJA_PRESET
+            // RxJa: F + 7 and a long 7 open the range-scan presets
+            PRESET_Open();
+#else
             // F + 7 opens the overlay-apps menu when that support is built;
             // otherwise it launches the resident game (GAME); otherwise VOX.
 #if defined(ENABLE_FEAT_F4HWN_OVERLAY_APPS) || defined(ENABLE_FEAT_F4HWN_GAME)
@@ -290,6 +297,7 @@ static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
 #endif
 #if defined(ENABLE_FEAT_F4HWN_OVERLAY_APPS) || defined(ENABLE_FEAT_F4HWN_GAME)
             }
+#endif
 #endif
 
             break;

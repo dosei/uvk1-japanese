@@ -155,13 +155,14 @@ RxDCS|SCAN	スキャン中
 @width 92	main screen, VFO state label (x=35..127); RX-only builds only show TX DISABLE
 TX DISABLE	送信禁止
 
-@width 128	whole-width messages: welcome, release keys, key lock hint, FM radio, RF log
+@width 128	whole-width messages: welcome, release keys, key lock hint, FM radio, RF log, presets
 WELCOME	ようこそ
 RELEASE ALL KEYS	キーを離してください
 UNLOCK KEYBOARD	F長押しで解除
 SAVE?	保存?
 DEL?	削除?
 NO LOG	記録なし
+NO PRESET	プリセットなし
 CLEAR LOG	ログ消去
 
 @width 37	welcome screen, after "F4HWN v6.0.0 " (91 px)

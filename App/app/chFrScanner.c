@@ -21,6 +21,9 @@ bool              gScanPauseMode;
 #ifdef ENABLE_SCAN_RANGES
 uint32_t          gScanRangeStart;
 uint32_t          gScanRangeStop;
+#ifdef ENABLE_RXJA_PRESET
+bool              gScanRangeFromPreset;
+#endif
 
 #if defined(ENABLE_FEAT_F4HWN_SCAN_SUBAUDIBLE) && ENABLE_FEAT_F4HWN_SCAN_SUBAUDIBLE
 DCS_CodeType_t    gScanRangeCssType  = CODE_TYPE_OFF;
@@ -733,8 +736,20 @@ static void SetMemScanProgressChannel(uint16_t channel)
             return;
         }
 
+#ifdef ENABLE_RXJA_PRESET
+        CHFRSCANNER_SetRange(gTxVfo->pRX->Frequency,
+                             gEeprom.VfoInfo[!gEeprom.TX_VFO].freq_config_RX.Frequency);
+        gScanRangeFromPreset = false;
+    }
+
+    void CHFRSCANNER_SetRange(uint32_t lower, uint32_t upper) {
+        gScanRangeStart = lower;
+        gScanRangeStop = upper;
+        gScanRangeFromPreset = true;
+#else
         gScanRangeStart = gTxVfo->pRX->Frequency;
         gScanRangeStop = gEeprom.VfoInfo[!gEeprom.TX_VFO].freq_config_RX.Frequency;
+#endif
 #ifdef ENABLE_FEAT_F4HWN_SCAN_FASTER
         ScanFastResetState();
 #endif
