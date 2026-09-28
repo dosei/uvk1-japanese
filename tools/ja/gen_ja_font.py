@@ -11,7 +11,7 @@ firmware advances 6 px for that range (App/ui/ja.c).
 UI strings: strings_ja.tsv (English key -> Japanese, see the file header).
 
 Image layout (little-endian), written to SPI at JA_FLASH_BASE (App/ui/ja.h):
-    +0   char[4]  magic "JF03" (rxja-v0.1.0: "JF12", so its upload.py refuses this)
+    +0   char[4]  magic "JF03" (withdrawn test builds: "JF12", so their upload.py refuses this)
     +4   u16      glyph count N
     +6   u16      format version
     +8   u32      text table offset T (0 = none)

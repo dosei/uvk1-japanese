@@ -9,7 +9,7 @@
 #include "ui/ja.h"
 
 #define JA_HDR_SIZE     12u
-#define JA_MAGIC        "JF03"  // v0.1.0 used "JF12" at 0x0C0000, see ja.h
+#define JA_MAGIC        "JF03"  // withdrawn test builds used "JF12" at 0x0C0000, see ja.h
 #define JA_VERSION      3u
 #define JA_GLYPH_BYTES  18u     // 12 columns x 12 bits packed LSB first, bit 0 = top row
 

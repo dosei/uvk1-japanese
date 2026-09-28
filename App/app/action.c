@@ -70,7 +70,13 @@ static void ACTION_Scan_FM(bool bRestart);
 static void ACTION_1750(void);
 #endif
 
+#if defined(ENABLE_FMRADIO_EMBEDDED) && defined(RXJA_VERSION_STRING)
+// RxJa: in the FM radio the SCAN side key seeks like a short *, because the
+// auto scan (F+* / long *) first erases all the stored FM stations
+inline static void ACTION_ScanRestart() { ACTION_Scan(!gFmRadioMode); };
+#else
 inline static void ACTION_ScanRestart() { ACTION_Scan(true); };
+#endif
 
 void (*const action_opt_table[ACTION_OPT_LEN])(void) = {
     [ACTION_OPT_NONE] = &FUNCTION_NOP,

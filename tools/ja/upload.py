@@ -6,10 +6,11 @@ Uses the firmware's UART commands (ENABLE_JAPANESE, App/app/uart.c):
     0x0514 hello     -> 0x0515  latches the session timestamp
     0x0744 res write -> 0x0745  offset u32, len u16, timestamp u32, bytes
     0x0746 res read  -> 0x0747  offset u32, len u16 (<= 128)
-Offsets are relative to JA_FLASH_BASE (0x122000). rxja-v0.1.0 put the image
-at 0x0C0000 over the multiboot config banks with commands 0x0740/0x0742; the
-IDs and the magic changed with the address so that neither this tool nor this
-image can be used with that firmware or its upload.py.
+Offsets are relative to JA_FLASH_BASE (0x122000). The withdrawn test builds
+(before the version numbers were restarted at v0.1.0) put the image at
+0x0C0000 over the multiboot config banks with commands 0x0740/0x0742; the IDs
+and the magic changed with the address so that neither this tool nor this
+image can be used with those builds or their upload.py.
 
 The magic "JF03" is written last, so an interrupted upload leaves an image the
 firmware ignores (it then shows no Japanese) rather than a half-written one.
@@ -108,7 +109,7 @@ class Radio:
             if r is not None:
                 return r
         cmd = payload[0] | (payload[1] << 8)
-        hint = ' (not RxJa firmware, or older than rxja-v0.2.0)' if cmd in (0x0744, 0x0746) else ''
+        hint = ' (is the radio running RxJa?)' if cmd in (0x0744, 0x0746) else ''
         raise SystemExit('no reply to 0x%04X%s' % (cmd, hint))
 
     def hello(self):
