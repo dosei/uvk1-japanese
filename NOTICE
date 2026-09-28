@@ -60,8 +60,8 @@ Paland, licensed under the MIT License. Its license is included at:
 
   App/external/printf/LICENSE
 
-Receive-only Japanese edition (RxJa)
-------------------------------------
+Receive-only Japanese edition (UVK1-RxJa)
+-----------------------------------------
 
 The ENABLE_RX_ONLY and ENABLE_JAPANESE changes (RxJa preset, App/ui/ja.c,
 tools/ja/) were made by dosei and are distributed under the same Apache

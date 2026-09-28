@@ -222,7 +222,7 @@
                 "ENABLE_FEAT_F4HWN_FOXHUNT": false,
                 "ENABLE_FEAT_F4HWN_BEACON": false,
                 "ENABLE_FEAT_F4HWN_OVERLAY_APPS": false,
-                "EDITION_STRING": "RxJa",
+                "EDITION_STRING": "UVK1-RxJa",
                 "RXJA_VERSION_STRING": "v0.1.2",
                 "TARGET": "f4hwn.rxja"
             }

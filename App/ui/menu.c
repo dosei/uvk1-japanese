@@ -1489,7 +1489,8 @@ void UI_DisplayMenu(void)
                 // Page 0: firmware identity.
 #ifdef ENABLE_FEAT_F4HWN
 #ifdef RXJA_VERSION_STRING
-                // RxJa and its version, then the upstream release it is based on
+                // UVK1-RxJa and its version, then the upstream release it is based on
+                // (8x16: "UVK1-RxJa" is 9 * 8 = 72 px of the 78 px column)
                 // (3x5 font: the small one does not fit "F4HWN v6.0.0 base")
                 static const char base[] = AUTHOR_STRING_2 " " DISPLAY_VERSION_STRING_2 " BASE";
                 sprintf(String, "%s\n%s", EDITION_STRING, RXJA_VERSION_STRING);

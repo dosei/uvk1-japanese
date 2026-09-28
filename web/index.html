@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- RxJa Tools: a modified version of UV Studio by F4HWN (Armel FAUVEAU),
-     Apache License 2.0. Modified by the RxJa project; see NOTICE. -->
+<!-- UVK1-RxJa Tools: a modified version of UV Studio by F4HWN (Armel FAUVEAU),
+     Apache License 2.0. Modified by the UVK1-RxJa project; see NOTICE. -->
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RxJa Tools</title>
-<script src="js/studio-version.js?v=1.5.0"></script>
+<title>UVK1-RxJa Tools</title>
+<script src="js/studio-version.js?v=1.5.0-rxja2"></script>
 <link rel="icon" type="image/svg+xml" href="assets/uv-studio-radio.svg">
 <link href="css/core.css?v=3" rel="stylesheet">
 <link href="css/viewer.css?v=13" rel="stylesheet">
@@ -49,7 +49,7 @@
                 </g>
             </svg>
         </span>
-        <span class="sb-title"><span class="sb-name">RxJa <b>Tools</b></span><span class="sb-sub">based on UV Studio</span></span>
+        <span class="sb-title"><span class="sb-name">UVK1-RxJa <b>Tools</b></span><span class="sb-sub">based on UV Studio</span></span>
         <span class="topbar-divider"></span>
         <span class="section-name" id="sectionName" data-i18n="studio_nav_live">Live Viewer</span>
     </div>
@@ -99,7 +99,7 @@
                 <span class="nav-item-label" data-i18n="studio_nav_flash">Flash Firmware</span>
             </button>
             <button class="nav-item" data-route="ja-data" data-app="tools" data-tool-view="ja-data" data-name="Japanese data" data-section-i18n="studio_nav_ja_data">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M12 5v2M7 9h10c0 5-4 9-9 10M9 12c1.5 3 5 6 9 7"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
                 <span class="nav-item-label" data-i18n="studio_nav_ja_data">Japanese data</span>
             </button>
             <button class="nav-item" data-route="firmware-slots" data-app="tools" data-tool-view="slots" data-name="Firmware Slots" data-section-i18n="studio_nav_slots">
@@ -132,7 +132,7 @@
             </button>
         </div>
         <div class="nav-group nav-group-studio">
-            <div class="nav-label">RxJa Tools</div>
+            <div class="nav-label">UVK1-RxJa Tools</div>
             <button class="nav-item" data-route="about" data-app="about"
                     data-name="About" data-section-i18n="studio_nav_about">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -556,7 +556,7 @@
           </div>
         </section>
 
-        <!-- ── About RxJa Tools (based on UV Studio) ── -->
+        <!-- ── About UVK1-RxJa Tools (based on UV Studio) ── -->
         <section class="pane" id="pane-about">
             <article class="about-card">
                 <div class="about-mark" aria-hidden="true">
@@ -580,7 +580,7 @@
                     </svg>
                 </div>
                 <div class="about-heading">
-                    <p class="about-kicker">RxJa Tools</p>
+                    <p class="about-kicker">UVK1-RxJa Tools</p>
                     <h1 data-i18n="studio_about_title">About UV Studio</h1>
                     <p class="about-intro" data-i18n="studio_about_intro">
                         K5Viewer and UVTools2, brought together in one consistent interface.
@@ -608,7 +608,7 @@
                     UV Studio communicates directly with compatible radios through the Web Serial API. No installation, server or account is required. UV Studio is open-source software licensed under the Apache License 2.0.
                 </p>
                 <nav class="about-links" data-i18n-aria-label="studio_about_documents" aria-label="Project documents">
-                    <a href="https://github.com/dosei/uvk1-japanese" target="_blank" rel="noopener">RxJa (GitHub)</a>
+                    <a href="https://github.com/dosei/uvk1-japanese" target="_blank" rel="noopener">UVK1-RxJa (GitHub)</a>
                     <a href="https://armel.github.io/uvstudio/" target="_blank" rel="noopener">UV Studio</a>
                     <a href="LICENSE" target="_blank" rel="noopener">LICENSE</a>
                     <a href="NOTICE" target="_blank" rel="noopener">NOTICE</a>
@@ -695,8 +695,8 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja1"></script>
-<script src="locales/ja.js?v=rxja1"></script>
+<script src="locales/en.js?v=rxja2"></script>
+<script src="locales/ja.js?v=rxja2"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
@@ -706,7 +706,7 @@
 <script src="js/flash.js?v=21"></script>
 <script src="js/flash-catalog.js?v=17"></script>
 <script src="js/app-catalog.js?v=1"></script>
-<script src="js/studio.js?v=12"></script>
+<script src="js/studio.js?v=13"></script>
 <script type="module" src="js/rxja-ja.js?v=1"></script>
 </body>
 </html>

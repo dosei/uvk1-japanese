@@ -116,13 +116,17 @@ static uint8_t mb_copy_slot_version(char *dst, uint8_t cap, const mb_slot_header
     return n;
 }
 
-/* "F4HWN MULTIBOOT" ("RxJa MULTIBOOT") banner in the top status bar, shown on every screen - the
+/* "F4HWN MULTIBOOT" ("UVK1-RxJa MULTIBOOT") banner in the top status bar, shown on every screen - the
  * same way the firmware puts mode labels there (inverse 3x5 capsule). */
 static void mb_status_bar(void)
 {
     UI_StatusClear();
 #ifdef RXJA_VERSION_STRING
-    GUI_DisplaySmallestInverse(EDITION_STRING " MULTIBOOT", 36, 0, true, true, 92);
+    /* 3x5 glyphs are 4 px apart; the capsule spans [x-2 .. x+4*len], centred
+     * like the F4HWN one (19 chars -> x=26, capsule 24..102). */
+    static const char banner[] = EDITION_STRING " MULTIBOOT";
+    GUI_DisplaySmallestInverse(banner, (uint8_t)(64u - 2u * (sizeof(banner) - 1u)), 0, true, true,
+                               (uint8_t)(64u + 2u * (sizeof(banner) - 1u)));
 #else
     GUI_DisplaySmallestInverse("F4HWN MULTIBOOT", 34, 0, true, true, 94);
 #endif

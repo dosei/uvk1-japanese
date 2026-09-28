@@ -1,4 +1,4 @@
-# Publishes web/ (RxJa Tools, a fork of UV Studio) to GitHub Pages, with the
+# Publishes web/ (UVK1-RxJa Tools, a fork of UV Studio) to GitHub Pages, with the
 # firmware (f4hwn.rxja.bin) and Japanese data (ja_res.bin) of every published
 # rxja-v* release bundled under firmware/<tag>/ and listed in
 # firmware/index.json. Release assets are bundled because GitHub serves them

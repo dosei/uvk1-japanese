@@ -68,7 +68,7 @@
     }
 
     function applyBranding() {
-        document.title = "RxJa Tools";
+        document.title = "UVK1-RxJa Tools";
         if (versionLabel) versionLabel.textContent = `v${version}`;
         if (aboutVersion) aboutVersion.textContent = `v${version}`;
     }
@@ -166,7 +166,7 @@
             const sectionKey = item.dataset.sectionI18n;
             if (sectionKey) sectionName.setAttribute("data-i18n", sectionKey);
             const label = item.querySelector(".nav-item-label");
-            sectionName.textContent = label ? label.textContent.trim() : (item.dataset.name || "RxJa Tools");
+            sectionName.textContent = label ? label.textContent.trim() : (item.dataset.name || "UVK1-RxJa Tools");
         }
         if (stage) stage.scrollTop = 0;
 

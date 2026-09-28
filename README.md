@@ -1,9 +1,9 @@
-# UV-K1 受信専用・日本語化ファームウェア（F4HWN ベース）
+# UVK1-RxJa: UV-K1 受信専用・日本語化ファームウェア（F4HWN ベース）
 
 > [!NOTE]
 > **AI の利用について**: このリポジトリのうち、F4HWN から変更した部分（受信専用化・日本語化。`App/ui/ja.c`、`tools/ja/` 以下、各所の `ENABLE_RX_ONLY` / `ENABLE_JAPANESE` の変更など）のコードと説明文は、AI（Anthropic の Claude Code）を使って作成しました。仕様・方針・訳語は作者が決めています。元の F4HWN の部分には手を加えておらず、この派生版で AI を使ったのは変更部分だけです。どこが変更部分かはコミット履歴で確認できます。
 
-Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェア](https://github.com/armel/uv-k1-k5v3-firmware-custom) をもとにした派生版です。次の 2 点を加えています。
+Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェア](https://github.com/armel/uv-k1-k5v3-firmware-custom) をもとにした派生版 UVK1-RxJa（以下 RxJa）です。次の 2 点を加えています。
 
 - **受信専用**: 送信できないようにしてあります（下記）。
 - **日本語表示**: メニュー名・カテゴリ名、メニュー右列の選択肢、起動画面、キーロック・電池切れ・周波数/トーン検索・FM ラジオ・受信ログのメッセージを日本語で表示します（OFF/ON・数字・単位・略語は英語のまま）。漢字・かな・半角カナのフォントは本体の外付け SPI フラッシュに置くので、本体側の容量はほとんど使いません。
@@ -34,9 +34,9 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 
 どちらも実機で動かしていない「未検証版」です。ファームと日本語データは同じリリースのものを組にして使ってください。ふつうは下の RxJa Tools を使えば、ファイルをダウンロードしなくても両方をまとめて書き込めます。
 
-## ブラウザで書き込む（RxJa Tools）
+## ブラウザで書き込む（UVK1-RxJa Tools）
 
-[RxJa Tools](https://dosei.github.io/uvk1-japanese/) は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
+[UVK1-RxJa Tools](https://dosei.github.io/uvk1-japanese/)（以下 RxJa Tools）は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
 
 - **ファーム書き込み**: 一覧から RxJa の版を選び、無線機を DFU モード（PTT を押したまま電源を入れる）にして書き込みます。書き終わると、同じ版の日本語データを続けて自動で書き込みます。
 - **日本語データ**: ファームはそのままで、日本語データだけを書き直すページです。訳語を直したときや、自分で作った `ja_res.bin` を入れるときに使います。
