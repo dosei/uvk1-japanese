@@ -29,10 +29,20 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 
 自分でビルドしなくても、[Releases](https://github.com/dosei/uvk1-japanese/releases) に最新のビルド済みファイルを置いています。
 
-- `f4hwn.rxja.bin`: ファーム本体。UV Studio で書き込みます（下記）
-- `ja_res.bin`: 日本語データ。[ブラウザの書き込みページ](https://dosei.github.io/uvk1-japanese/)か `tools/ja/upload.py` で転送します（下記）
+- `f4hwn.rxja.bin`: ファーム本体
+- `ja_res.bin`: 日本語データ
 
-どちらも実機で動かしていない「未検証版」です。ファームと日本語データは同じリリースのものを組にして使ってください。
+どちらも実機で動かしていない「未検証版」です。ファームと日本語データは同じリリースのものを組にして使ってください。ふつうは下の RxJa Tools を使えば、ファイルをダウンロードしなくても両方をまとめて書き込めます。
+
+## ブラウザで書き込む（RxJa Tools）
+
+[RxJa Tools](https://dosei.github.io/uvk1-japanese/) は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
+
+- **ファーム書き込み**: 一覧から RxJa の版を選び、無線機を DFU モード（PTT を押したまま電源を入れる）にして書き込みます。書き終わると、同じ版の日本語データを続けて自動で書き込みます。
+- **日本語データ**: ファームはそのままで、日本語データだけを書き直すページです。訳語を直したときや、自分で作った `ja_res.bin` を入れるときに使います。
+- ほかに、ライブビューア、RF ログ、校正データの保存・復元も UV Studio と同じように使えます。
+
+ページには各リリースの `f4hwn.rxja.bin` と `ja_res.bin` が同梱されています（GitHub の Releases のファイルはブラウザから直接読めないため）。`.github/workflows/pages.yml` が `rxja-v` で始まるリリースをすべて取り込み、`SHA256SUMS` で照合してから GitHub Pages に公開します。新しいリリースを公開すると自動で作り直されます。反映されないときは `gh workflow run pages.yml -R dosei/uvk1-japanese` で手動で作り直せます。
 
 ## ビルド
 
@@ -49,7 +59,7 @@ cmake --preset RxJa
 cmake --build build/RxJa
 ```
 
-`build/RxJa/f4hwn.rxja.bin` ができます。書き込みは元の F4HWN と同じく、[UV Studio の Flash Firmware](https://armel.github.io/uvstudio/#flash) で「ローカルの .bin」を選びます。
+`build/RxJa/f4hwn.rxja.bin` ができます。自分でビルドしたファームは、RxJa Tools（または元の [UV Studio](https://armel.github.io/uvstudio/#flash)）のファーム書き込みで「ローカルの .bin」を選んで書き込みます。この場合、日本語データは自動では書き込まれないので、RxJa Tools の日本語データのページか下のコマンドで入れてください。
 
 ## 日本語データの作成と転送
 
@@ -58,7 +68,7 @@ cmake --build build/RxJa
 > [!CAUTION]
 > 2026-09-27 に試作版（旧 rxja-v0.1.0〜v0.2.1）を公開していましたが、取り下げて v0.1.0 からやり直しました。最初の試作版（2026-09-27 公開の旧 v0.1.0）は日本語データを 0x0C0000 に置いていて、そこは F4HWN のマルチブートの設定バンク 1〜4 でした（`App/driver/mb_flash.h`）。手元に試作版のファイルが残っていたら使わないでください。今の版とはデータの識別子・形式と転送コマンドの番号が違うので、混ぜて使っても転送が拒否されるか英語表示のままになり、0x0C0000 には書き込まれません。
 
-いちばん簡単なのは、パソコン版の Chrome か Edge で [RxJa 日本語データ書き込み](https://dosei.github.io/uvk1-japanese/) を開く方法です。最新リリースの `ja_res.bin` が同梱されていて、ボタンを押してポートを選ぶだけで書き込みと照合をします（Web Serial を使うので Firefox と Safari では動きません）。自分で作った `ja_res.bin` も選べます。ページのソースは `web/` にあり、`.github/workflows/pages.yml` が GitHub Pages に公開します。
+いちばん簡単なのは [RxJa Tools](https://dosei.github.io/uvk1-japanese/)（上記）です。RxJa のファームを書き込むと日本語データも続けて書き込まれます。日本語データだけを入れ直すときは、RxJa Tools の日本語データのページで、同梱の版か自分で作った `ja_res.bin` を選び、RxJa ファームで起動した状態でポートを選ぶと、書き込みと照合をします。
 
 コマンドラインで書く場合:
 

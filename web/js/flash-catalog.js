@@ -3,6 +3,10 @@
 // Contents API. Selected builds feed into either the main flash pipeline or the
 // multiboot-slot pipeline through window.UVStudioFlash. Pure helpers are exported
 // for Node tests; the browser runtime is guarded and self-boots.
+//
+// Modified by the RxJa project: RxJa releases bundled with this site
+// (firmware/index.json) are listed first; picking one also tells rxja-ja.js to
+// write the matching Japanese data after the flash.
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -35,11 +39,14 @@
   const MIN_SLOT_MAJOR_VERSION = 6;
 
   // Group labels are technical terms shared across every language.
+  const RXJA_MANIFEST_URL = 'firmware/index.json';
+
   const GROUP_ORDER = [
-    'fusion', 'fieldops', 'transfer', 'labs',
+    'rxja', 'fusion', 'fieldops', 'transfer', 'labs',
     'development', 'fusion_k1', 'fusion_k5v3', 'stock'
   ];
   const GROUP_LABELS = {
+    rxja: 'RxJa',
     fusion: 'F4HWN Fusion (stable)',
     fieldops: 'F4HWN FieldOps',
     transfer: 'F4HWN Transfer',
@@ -170,8 +177,42 @@
     return groups;
   }
 
+  // RxJa manifest release → catalog entry. Paths are resolved against baseURL
+  // (the page) so flash.js always receives an absolute URL.
+  function rxjaEntriesFromManifest(manifest, baseURL) {
+    const releases = manifest && Array.isArray(manifest.releases) ? manifest.releases : [];
+    return releases
+      .filter(r => r && r.tag && r.firmware && r.firmware.path)
+      .map(r => ({
+        name: String(r.firmware.path).split('/').pop(),
+        brand: 'rxja',
+        group: 'rxja',
+        model: '',
+        tag: r.tag,
+        version: r.version || String(r.tag).replace(/^rxja-v/, ''),
+        prerelease: Boolean(r.prerelease),
+        isBeta: false,
+        isSa818: false,
+        isDevelopment: false,
+        size: r.firmware.size,
+        sha256: r.firmware.sha256 || '',
+        url: new URL(r.firmware.path, baseURL).href,
+        ja: r.ja && r.ja.path ? {
+          url: new URL(r.ja.path, baseURL).href,
+          size: r.ja.size,
+          sha256: r.ja.sha256 || ''
+        } : null
+      }));
+  }
+
   // Compact option label, e.g. "v5.7.0 · 58 KB" or "K1 v7.03.01 · 61 KB".
-  function formatOptionLabel(entry) {
+  function formatOptionLabel(entry, translate) {
+    if (entry.group === 'rxja') {
+      let label = `v${entry.version}`;
+      if (entry.prerelease) label += translate ? translate('rxja_prerelease') : ' (pre-release)';
+      if (Number.isFinite(entry.size)) label += ` · ${Math.round(entry.size / 1024)} KB`;
+      return label;
+    }
     const parts = [];
     if (entry.group === 'stock' && entry.model) parts.push(entry.model);
     // Kept in English like the other technical tags (stable / dev / stock).
@@ -190,7 +231,8 @@
     hasSharedChirpDriver,
     isOffered,
     isSlotOffered,
-    mergeCatalogFiles
+    mergeCatalogFiles,
+    rxjaEntriesFromManifest
   };
 
   // ========== BROWSER RUNTIME ==========
@@ -217,6 +259,8 @@
     let loaded = false;
     let loading = false;
     let retryUntil = 0; // epoch ms before which we must not re-hit a rate-limited API
+    let rxjaEntries = null; // bundled RxJa releases (same origin, never rate limited)
+    let upstreamLoaded = false;
 
     function t(key) {
       return window.uvStudioI18n ? window.uvStudioI18n.t(key) : key;
@@ -262,11 +306,11 @@
         if (!entries.length) return;
 
         const optgroup = document.createElement('optgroup');
-        optgroup.label = GROUP_LABELS[id];
+        optgroup.label = id === 'rxja' ? t('rxja_group_label') : GROUP_LABELS[id];
         entries.forEach(entry => {
           const option = document.createElement('option');
           option.value = entry.url;
-          option.textContent = formatOptionLabel(entry);
+          option.textContent = formatOptionLabel(entry, t);
           optgroup.appendChild(option);
           optionCount += 1;
         });
@@ -288,9 +332,18 @@
       };
     }
 
-    async function load() {
-      if (loading || loaded || Date.now() < retryUntil) return;
-      loading = true;
+    async function fetchRxjaEntries() {
+      try {
+        const response = await fetch(RXJA_MANIFEST_URL, { cache: 'no-cache' });
+        if (!response.ok) return null;
+        return rxjaEntriesFromManifest(await response.json(), window.location.href);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function fetchUpstreamFiles() {
+      if (Date.now() < retryUntil) return null;
       try {
         const response = await fetch(API_URL, { cache: 'no-cache' });
         if (!response.ok) {
@@ -301,31 +354,54 @@
           if ((response.status === 403 || response.status === 429) && remaining === '0' && reset) {
             retryUntil = reset * 1000;
           }
-          throw new Error(`HTTP ${response.status}`);
+          return null;
         }
         const stableFiles = await response.json();
         const developmentFile = await fetchDevelopmentFile();
-        const files = mergeCatalogFiles(stableFiles, developmentFile);
-        groups = categorize(files);
+        return mergeCatalogFiles(stableFiles, developmentFile);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    // RxJa entries come from this site; the upstream F4HWN / stock listing (kept
+    // for reverting) comes from the GitHub API and may be unavailable. Either
+    // source alone is enough to show the picker; with neither, only the local
+    // file input remains — exactly the pre-catalog experience. A missing source
+    // is retried the next time a firmware view is opened.
+    async function load() {
+      if (loading || loaded) return;
+      loading = true;
+      try {
+        const [rxja, files] = await Promise.all([
+          rxjaEntries ? Promise.resolve(rxjaEntries) : fetchRxjaEntries(),
+          upstreamLoaded ? Promise.resolve(null) : fetchUpstreamFiles()
+        ]);
+        if (rxja) rxjaEntries = rxja;
+        if (files) {
+          groups = categorize(files);
+          upstreamLoaded = true;
+        } else if (!groups) {
+          groups = categorize([]);
+        }
+        groups.set('rxja', rxjaEntries || []);
         const counts = render();
         showCatalog(counts.flash > 0, counts.slots > 0);
-        loaded = counts.flash > 0 || counts.slots > 0;
-      } catch (error) {
-        // No connection, or the API is unreachable / rate limited: keep the whole
-        // picker hidden so only the local-file input remains — same as offline.
-        // loaded stays false, so reopening the view (or coming back online, once
-        // any rate-limit window has passed) retries the fetch.
-        groups = null;
-        showCatalog(false, false);
+        loaded = Boolean(rxjaEntries) && upstreamLoaded;
       } finally {
         loading = false;
       }
+    }
+
+    function findEntry(url) {
+      return (rxjaEntries || []).find(entry => entry.url === url) || null;
     }
 
     if (select) {
       select.addEventListener('change', () => {
         const url = select.value;
         if (!url) return;
+        window.RxJaData?.setPending(findEntry(url));
         const flash = window.UVStudioFlash;
         if (flash && typeof flash.loadFirmwareFromURL === 'function') {
           flash.loadFirmwareFromURL(url);
@@ -344,6 +420,11 @@
       });
     }
 
+    // The Japanese data view offers the same bundled releases.
+    window.RxJaCatalog = Object.freeze({
+      releases: async () => rxjaEntries || (rxjaEntries = await fetchRxjaEntries()) || []
+    });
+
     // Re-localize the placeholder and option groups when the language changes.
     window.addEventListener('uvstudio:languagechange', () => {
       if (groups) render();
@@ -354,6 +435,7 @@
     window.addEventListener('uvstudio:firmwareselect', event => {
       if (select && event.detail && event.detail.source === 'local' && select.options.length) {
         select.selectedIndex = 0;
+        window.RxJaData?.setPending(null);
       }
     });
 

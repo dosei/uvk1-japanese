@@ -1,0 +1,78 @@
+/* RxJa Tools additions (RxJa project; not part of UV Studio). Uses the UV Studio
+   design tokens from core.css so light and dark themes follow automatically. */
+
+#pane-tools .rxja-hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+#pane-tools .rxja-hint:empty { display: none; }
+
+#pane-tools .rxja-panel {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+#pane-tools .rxja-panel[hidden] { display: none; }
+#pane-tools .rxja-panel[data-state="done"] { border-left-color: var(--success); }
+#pane-tools .rxja-panel[data-state="error"],
+#pane-tools .rxja-panel[data-state="timeout"] { border-left-color: var(--error); }
+#pane-tools .rxja-panel[data-state="skipped"],
+#pane-tools .rxja-panel[data-state="idle"] { border-left-color: var(--border); }
+
+#pane-tools .rxja-panel-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#pane-tools .rxja-status {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+#pane-tools .rxja-panel[data-state="error"] .rxja-status,
+#pane-tools .rxja-panel[data-state="timeout"] .rxja-status { color: var(--error); }
+
+#pane-tools .rxja-image {
+  margin: 4px 0 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+#pane-tools .rxja-image:empty { display: none; }
+#pane-tools .rxja-image[data-bad="true"] { color: var(--error); }
+
+#pane-tools .rxja-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+#pane-tools .rxja-note[hidden] { display: none; }
+
+#pane-tools .rxja-progress {
+  margin-top: 10px;
+  height: 22px;
+  border-radius: 11px;
+}
+#pane-tools .rxja-progress .progress-label { font-size: 12px; }
+
+#pane-tools .rxja-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+#pane-tools .rxja-actions [hidden] { display: none; }
+#pane-tools .rxja-actions button:not(.btn) { margin: 0; }
+#pane-tools .rxja-actions .btn { white-space: normal; text-align: left; }
+
+#pane-tools #ja-data-content .logo-checkbox-label { margin-top: 4px; }

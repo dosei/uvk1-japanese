@@ -185,6 +185,16 @@ export class Radio {
     return new TextDecoder('ascii').decode(end < 0 ? r : r.slice(0, end));
   }
 
+  // A single hello with a short timeout: the version string, or null when
+  // nothing answers (e.g. the radio is still in the bootloader).
+  async ping(timeoutMs = 800) {
+    await this.writer.write(frame(pack(['H', 0x0514], ['H', 4], ['I', this.ts])));
+    const r = await this._reply(0x0515, timeoutMs);
+    if (r === null) return null;
+    const end = r.indexOf(0);
+    return new TextDecoder('ascii').decode(end < 0 ? r : r.slice(0, end));
+  }
+
   async write(offset, data) {
     const r = await this.call(pack(['H', 0x0744], ['H', 10 + data.length], ['I', offset],
                                    ['H', data.length], ['I', this.ts], data), 0x0745);

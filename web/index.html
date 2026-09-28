@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- RxJa Tools: a modified version of UV Studio by F4HWN (Armel FAUVEAU),
+     Apache License 2.0. Modified by the RxJa project; see NOTICE. -->
+<html lang="ja">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>UV Studio by F4HWN</title>
+<title>RxJa Tools</title>
 <script src="js/studio-version.js?v=1.5.0"></script>
 <link rel="icon" type="image/svg+xml" href="assets/uv-studio-radio.svg">
 <link href="css/core.css?v=3" rel="stylesheet">
 <link href="css/viewer.css?v=13" rel="stylesheet">
 <link href="css/tools.css?v=11" rel="stylesheet">
 <link href="css/studio.css?v=19" rel="stylesheet">
+<link href="css/rxja.css?v=1" rel="stylesheet">
 </head>
 <body data-theme="light">
 
@@ -46,16 +49,11 @@
                 </g>
             </svg>
         </span>
-        <span class="sb-title"><span class="sb-name">UV <b>Studio</b></span><span class="sb-sub">by F4HWN</span></span>
+        <span class="sb-title"><span class="sb-name">RxJa <b>Tools</b></span><span class="sb-sub">based on UV Studio</span></span>
         <span class="topbar-divider"></span>
         <span class="section-name" id="sectionName" data-i18n="studio_nav_live">Live Viewer</span>
     </div>
     <div class="topbar-actions">
-        <div class="flash-counter" id="flashCounter" role="status" aria-live="polite" hidden>
-            <span class="flash-counter-icon" aria-hidden="true">🔥</span>
-            <span class="flash-counter-value" id="flashCounterValue">—</span>
-            <span class="flash-counter-unit" data-i18n="studio_flash_counter_unit">flashed</span>
-        </div>
         <div class="studio-serial-status" id="studioSerialStatus"
              data-state="disconnected" role="status" aria-live="polite"
              aria-label="Disconnected" title="Disconnected">
@@ -74,16 +72,8 @@
             </svg>
         </button>
         <select id="languageSelect" aria-label="Language" data-i18n-aria-label="studio_language">
-            <option value="en">🇬🇧 English</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="it">🇮🇹 Italiano</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="pt">🇵🇹 Português</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="pl">🇵🇱 Polski</option>
-            <option value="zh">🇨🇳 中文</option>
-            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
         </select>
     </div>
 </header>
@@ -107,6 +97,10 @@
             <button class="nav-item" data-route="flash" data-app="tools" data-tool-view="flash" data-name="Flash Firmware" data-section-i18n="studio_nav_flash">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
                 <span class="nav-item-label" data-i18n="studio_nav_flash">Flash Firmware</span>
+            </button>
+            <button class="nav-item" data-route="ja-data" data-app="tools" data-tool-view="ja-data" data-name="Japanese data" data-section-i18n="studio_nav_ja_data">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M12 5v2M7 9h10c0 5-4 9-9 10M9 12c1.5 3 5 6 9 7"/></svg>
+                <span class="nav-item-label" data-i18n="studio_nav_ja_data">Japanese data</span>
             </button>
             <button class="nav-item" data-route="firmware-slots" data-app="tools" data-tool-view="slots" data-name="Firmware Slots" data-section-i18n="studio_nav_slots">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -138,7 +132,7 @@
             </button>
         </div>
         <div class="nav-group nav-group-studio">
-            <div class="nav-label">UV Studio</div>
+            <div class="nav-label">RxJa Tools</div>
             <button class="nav-item" data-route="about" data-app="about"
                     data-name="About" data-section-i18n="studio_nav_about">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -150,7 +144,7 @@
                 <span class="nav-item-label" data-i18n="studio_nav_about">About</span>
             </button>
         </div>
-        <div class="sidebar-foot">UV Studio · <span id="studioVersion">v—</span></div>
+        <div class="sidebar-foot">RxJa Tools · UV Studio <span id="studioVersion">v—</span></div>
     </aside>
 
     <!-- ═══════════ Stage ═══════════ -->
@@ -296,6 +290,7 @@
                         <option value="" disabled selected data-i18n="flash_catalog_placeholder">— Select a version —</option>
                     </select>
                 </section>
+                <p class="rxja-hint" id="rxjaFlashHint"></p>
                 <p class="catalog-or" id="firmwareCatalogOr" data-i18n="flash_catalog_or" hidden>or load a local file</p>
                 <section class="section" aria-labelledby="labelFirmwareFile">
                     <label id="labelFirmwareFile" for="firmwareFile">Firmware File (.bin)</label>
@@ -308,9 +303,52 @@
                     </div>
                 </section>
                 <button id="flashBtn" disabled aria-live="polite">Flash firmware</button>
+                <section class="rxja-panel" id="rxjaChain" data-state="idle" aria-live="polite" hidden>
+                    <h3 class="rxja-panel-title" id="rxjaChainTitle"></h3>
+                    <p class="rxja-status" id="rxjaChainStatus"></p>
+                    <div class="progress-bar rxja-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="progress-fill" id="rxjaChainFill"></div>
+                        <div class="progress-label" id="rxjaChainLabel"></div>
+                    </div>
+                    <p class="rxja-note" id="rxjaChainNote" hidden></p>
+                    <div class="rxja-actions">
+                        <button class="btn" id="rxjaChainRepick" type="button" data-i18n="rxja_chain_repick" hidden>Choose port again</button>
+                        <button class="btn" id="rxjaChainSkip" type="button" data-i18n="rxja_chain_skip">Write Japanese data later</button>
+                    </div>
+                </section>
                 <div class="download-link" id="chirpDriverDownload">
                     <a href="#" id="chirpDriverLink" rel="noopener"><svg class="dl-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span id="chirpDriverText" data-i18n="flash_chirp_driver_download">Download CHIRP driver</span></a>
                 </div>
+            </div>
+
+            <div class="tool-view" id="ja-data-content" role="region" hidden>
+                <p class="tab-description" data-i18n="rxja_ja_description">Writes the RxJa Japanese data (ja_res.bin) to the radio.</p>
+                <section class="section">
+                    <label for="rxjaJaSource" data-i18n="rxja_ja_source">Data to write</label>
+                    <select id="rxjaJaSource" class="firmware-catalog-select"></select>
+                </section>
+                <section class="section" id="rxjaJaFileSection" hidden>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="rxjaJaFile" accept=".bin" />
+                        <div class="file-input-label" id="rxjaJaFileLabel">
+                            <span class="file-name" id="rxjaJaFileName">No file selected</span>
+                            <span class="file-button" data-i18n="fileChoose">Choose file</span>
+                        </div>
+                    </div>
+                </section>
+                <p class="rxja-status rxja-image" id="rxjaJaImage"></p>
+                <label class="logo-checkbox-label"><input type="checkbox" id="rxjaJaVerify" checked /><span data-i18n="rxja_ja_verify">Read back and verify after writing (recommended)</span></label>
+                <div class="rxja-actions">
+                    <button id="rxjaJaStart" type="button" data-i18n="rxja_ja_start" disabled>Choose port and write</button>
+                    <button class="btn" id="rxjaJaStop" type="button" data-i18n="rxja_ja_stop" hidden>Stop</button>
+                </div>
+                <section class="rxja-panel" id="rxjaJaPanel" data-state="idle" aria-live="polite">
+                    <p class="rxja-status" id="rxjaJaStatus" data-state="idle" data-i18n="rxja_ja_idle">Idle</p>
+                    <div class="progress-bar rxja-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="progress-fill" id="rxjaJaFill"></div>
+                        <div class="progress-label" id="rxjaJaLabel"></div>
+                    </div>
+                </section>
             </div>
 
             <div class="tool-view" id="dump-content" role="region" hidden>
@@ -518,7 +556,7 @@
           </div>
         </section>
 
-        <!-- ── About UV Studio ── -->
+        <!-- ── About RxJa Tools (based on UV Studio) ── -->
         <section class="pane" id="pane-about">
             <article class="about-card">
                 <div class="about-mark" aria-hidden="true">
@@ -542,7 +580,7 @@
                     </svg>
                 </div>
                 <div class="about-heading">
-                    <p class="about-kicker">UV Studio</p>
+                    <p class="about-kicker">RxJa Tools</p>
                     <h1 data-i18n="studio_about_title">About UV Studio</h1>
                     <p class="about-intro" data-i18n="studio_about_intro">
                         K5Viewer and UVTools2, brought together in one consistent interface.
@@ -555,7 +593,7 @@
                     </div>
                     <div>
                         <dt data-i18n="studio_about_author">Author</dt>
-                        <dd>F4HWN</dd>
+                        <dd>F4HWN (Armel FAUVEAU)</dd>
                     </div>
                     <div>
                         <dt data-i18n="studio_about_operation">Operation</dt>
@@ -570,7 +608,8 @@
                     UV Studio communicates directly with compatible radios through the Web Serial API. No installation, server or account is required. UV Studio is open-source software licensed under the Apache License 2.0.
                 </p>
                 <nav class="about-links" data-i18n-aria-label="studio_about_documents" aria-label="Project documents">
-                    <a href="README.md" target="_blank" rel="noopener">README</a>
+                    <a href="https://github.com/dosei/uvk1-japanese" target="_blank" rel="noopener">RxJa (GitHub)</a>
+                    <a href="https://armel.github.io/uvstudio/" target="_blank" rel="noopener">UV Studio</a>
                     <a href="LICENSE" target="_blank" rel="noopener">LICENSE</a>
                     <a href="NOTICE" target="_blank" rel="noopener">NOTICE</a>
                 </nav>
@@ -656,16 +695,8 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=32"></script>
-<script src="locales/fr.js?v=32"></script>
-<script src="locales/it.js?v=32"></script>
-<script src="locales/es.js?v=32"></script>
-<script src="locales/de.js?v=32"></script>
-<script src="locales/pt.js?v=32"></script>
-<script src="locales/ru.js?v=32"></script>
-<script src="locales/pl.js?v=32"></script>
-<script src="locales/zh.js?v=32"></script>
-<script src="locales/nl.js?v=32"></script>
+<script src="locales/en.js?v=rxja1"></script>
+<script src="locales/ja.js?v=rxja1"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
@@ -676,6 +707,6 @@
 <script src="js/flash-catalog.js?v=17"></script>
 <script src="js/app-catalog.js?v=1"></script>
 <script src="js/studio.js?v=12"></script>
-<script src="js/studio-flash-counter.js?v=2"></script>
+<script type="module" src="js/rxja-ja.js?v=1"></script>
 </body>
 </html>

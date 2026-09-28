@@ -1,4 +1,5 @@
-/* UV Studio shell: navigation, route persistence, branding, and serial ownership. */
+/* UV Studio shell: navigation, route persistence, branding, and serial ownership.
+   Modified by the RxJa project: RxJa Tools branding, Japanese data operation. */
 (function () {
     const ROUTE_STORAGE_KEY = "uvstudio.activeSection";
     const items = Array.from(document.querySelectorAll(".nav-item[data-route]"));
@@ -29,7 +30,8 @@
         "restore-calibration": "studio_operation_restore_calibration",
         "upload-logo": "studio_operation_upload_logo",
         "dump-logo": "studio_operation_dump_logo",
-        "export-rf-log": "studio_operation_export_rf_log"
+        "export-rf-log": "studio_operation_export_rf_log",
+        "ja-upload": "studio_operation_ja_upload"
     };
 
     function translate(key) {
@@ -49,7 +51,9 @@
                 ? "studio_serial_connected_viewer"
                 : lastSerialSnapshot.owner === "tools"
                     ? "studio_serial_connected_tools"
-                    : "studio_serial_connected";
+                    : lastSerialSnapshot.owner === "rxja"
+                        ? "studio_serial_connected_rxja"
+                        : "studio_serial_connected";
         } else {
             key = `studio_serial_${lastSerialSnapshot.state || "disconnected"}`;
         }
@@ -64,7 +68,7 @@
     }
 
     function applyBranding() {
-        document.title = `UV Studio v${version} by F4HWN`;
+        document.title = "RxJa Tools";
         if (versionLabel) versionLabel.textContent = `v${version}`;
         if (aboutVersion) aboutVersion.textContent = `v${version}`;
     }
@@ -162,7 +166,7 @@
             const sectionKey = item.dataset.sectionI18n;
             if (sectionKey) sectionName.setAttribute("data-i18n", sectionKey);
             const label = item.querySelector(".nav-item-label");
-            sectionName.textContent = label ? label.textContent.trim() : (item.dataset.name || "UV Studio");
+            sectionName.textContent = label ? label.textContent.trim() : (item.dataset.name || "RxJa Tools");
         }
         if (stage) stage.scrollTop = 0;
 

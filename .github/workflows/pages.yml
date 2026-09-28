@@ -1,11 +1,21 @@
-# Publishes web/ (the browser uploader for ja_res.bin) to GitHub Pages, with the
-# ja_res.bin of the newest release bundled next to it.
+# Publishes web/ (RxJa Tools, a fork of UV Studio) to GitHub Pages, with the
+# firmware (f4hwn.rxja.bin) and Japanese data (ja_res.bin) of every published
+# rxja-v* release bundled under firmware/<tag>/ and listed in
+# firmware/index.json. Release assets are bundled because GitHub serves them
+# without CORS headers, so the page cannot fetch them directly.
 #
-# Runs on pushes to main that touch web/, and by hand (Actions > Pages > Run
-# workflow, or `gh workflow run pages.yml`) -- run it after publishing a new
-# release so the bundled ja_res.bin follows. It is not triggered by the release
-# event itself because the github-pages environment only accepts deployments
-# from the default branch.
+# Triggers:
+#   - push to main touching web/ or this file
+#   - a release being published, edited or deleted
+#   - by hand: Actions > Pages > Run workflow, or
+#     `gh workflow run pages.yml -R dosei/uvk1-japanese`
+#
+# The github-pages environment only accepts deployments from main, and a
+# release event runs on the tag ref, so a release event does not build here:
+# the `redispatch` job re-runs this workflow on main via workflow_dispatch
+# (which GITHUB_TOKEN is allowed to trigger). Note that a release event uses
+# the workflow file of the tagged commit, so tags made before this file existed
+# do not trigger it; run it by hand in that case.
 
 name: Pages
 
@@ -15,6 +25,8 @@ on:
     paths:
       - 'web/**'
       - '.github/workflows/pages.yml'
+  release:
+    types: [ published, edited, deleted ]
   workflow_dispatch:
 
 permissions:
@@ -27,28 +39,135 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  redispatch:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Assemble site
+      - name: Re-run Pages on the default branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p _site dl
-          cp web/* _site/
-          tag=$(gh release list -R "$GITHUB_REPOSITORY" --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')
-          gh release download "$tag" -R "$GITHUB_REPOSITORY" -p ja_res.bin -p SHA256SUMS -D dl
-          (cd dl && sha256sum -c --ignore-missing SHA256SUMS)
-          cp dl/ja_res.bin _site/
-          sum=$(sha256sum _site/ja_res.bin | cut -d' ' -f1)
-          size=$(stat -c %s _site/ja_res.bin)
-          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag"
-          printf '{"tag":"%s","sha256":"%s","size":%d,"release_url":"%s"}\n' \
-            "$tag" "$sum" "$size" "$url" > _site/ja_res.json
-          cat _site/ja_res.json
+          gh workflow run pages.yml -R "$GITHUB_REPOSITORY" \
+            --ref "${{ github.event.repository.default_branch }}"
+          echo "Release ${{ github.event.release.tag_name }} was ${{ github.event.action }}; dispatched Pages on the default branch."
+
+  build:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Copy web/
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp -r web/. _site/
+
+      - name: Bundle RxJa releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SITE: _site
+          WORK: _work
+        run: |
+          set -euo pipefail
+          mkdir -p "$SITE/firmware" "$WORK"
+          bins="f4hwn.rxja.bin ja_res.bin"
+
+          gh release list -R "$GITHUB_REPOSITORY" --exclude-drafts --limit 1000 \
+            --json tagName,isDraft,isPrerelease,publishedAt,name \
+            --jq '[.[] | select(.isDraft | not) | select(.tagName | startswith("rxja-v"))]' \
+            > "$WORK/releases.json"
+          : > "$WORK/kept.txt"
+
+          for tag in $(jq -r '.[].tagName' "$WORK/releases.json"); do
+            echo "::group::$tag"
+            assets=$(gh release view "$tag" -R "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+            missing=""
+            for f in $bins; do
+              grep -qxF "$f" <<<"$assets" || missing="$missing $f"
+            done
+            if [ -n "$missing" ]; then
+              echo "::warning::$tag: skipped, release has no$missing"
+              echo "::endgroup::"
+              continue
+            fi
+            if ! grep -qxF SHA256SUMS <<<"$assets"; then
+              echo "::error::$tag: release has no SHA256SUMS"
+              exit 1
+            fi
+
+            dir="$SITE/firmware/$tag"
+            mkdir -p "$dir"
+            gh release download "$tag" -R "$GITHUB_REPOSITORY" -D "$dir" \
+              -p f4hwn.rxja.bin -p ja_res.bin -p SHA256SUMS
+            for f in $bins; do
+              n=$(awk -v f="$f" '{ n = $2; sub(/^\*/, "", n); if (n == f) c++ } END { print c + 0 }' "$dir/SHA256SUMS")
+              if [ "$n" -ne 1 ]; then
+                echo "::error::$tag: SHA256SUMS lists $f $n times (expected once)"
+                exit 1
+              fi
+            done
+            (cd "$dir" && sha256sum -c --ignore-missing SHA256SUMS) || {
+              echo "::error::$tag: checksum mismatch"
+              exit 1
+            }
+            echo "$tag" >> "$WORK/kept.txt"
+            echo "::endgroup::"
+          done
+
+          python3 - <<'EOF'
+          import datetime, hashlib, json, os
+
+          site, work = os.environ["SITE"], os.environ["WORK"]
+          with open(os.path.join(work, "releases.json")) as f:
+              meta = {r["tagName"]: r for r in json.load(f)}
+          with open(os.path.join(work, "kept.txt")) as f:
+              kept = [line.strip() for line in f if line.strip()]
+
+          def entry(tag, name):
+              path = f"firmware/{tag}/{name}"
+              with open(os.path.join(site, path), "rb") as f:
+                  data = f.read()
+              return {"path": path, "size": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest()}
+
+          releases = []
+          for tag in kept:
+              r = meta[tag]
+              releases.append({
+                  "tag": tag,
+                  "version": tag[len("rxja-v"):],
+                  "name": r.get("name") or tag,
+                  "prerelease": bool(r.get("isPrerelease")),
+                  "published_at": r.get("publishedAt") or "",
+                  "firmware": entry(tag, "f4hwn.rxja.bin"),
+                  "ja": entry(tag, "ja_res.bin"),
+              })
+          releases.sort(key=lambda r: r["published_at"], reverse=True)
+
+          index = {
+              "generated": datetime.datetime.now(datetime.timezone.utc)
+                           .strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "releases": releases,
+          }
+          with open(os.path.join(site, "firmware", "index.json"), "w", encoding="utf-8") as f:
+              json.dump(index, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          EOF
+          cat "$SITE/firmware/index.json"
+
+      - name: Check index.json
+        run: |
+          set -euo pipefail
+          n=$(jq '.releases | length' _site/firmware/index.json)
+          echo "releases bundled: $n"
+          if [ "$n" -lt 1 ]; then
+            echo "::error::firmware/index.json has no releases"
+            exit 1
+          fi
 
       - uses: actions/configure-pages@v6
 

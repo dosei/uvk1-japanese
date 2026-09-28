@@ -1,5 +1,8 @@
 ;(function(){
 // js/flash.js
+// Modified by the RxJa project: same-origin firmware URLs (bundled RxJa
+// releases), no flash counter, Japanese data upload chained after a flash,
+// info box for the Japanese data view.
 // UV-K5 Web Flasher core logic (Web Serial + protocol)
 // Adds: 
 // - Auto-load of firmware from URL param ?firmwareURL=... (or ?fw=...)
@@ -283,6 +286,8 @@ function updateInfoBox() {
     infoBoxEl.innerHTML = t('infoBoxSlots');
   } else if (tabName === 'apps') {
     infoBoxEl.innerHTML = t('infoBoxApps');
+  } else if (tabName === 'ja-data') {
+    infoBoxEl.innerHTML = t('infoBoxJa');
   } else {
     infoBoxEl.innerHTML = t('infoBoxDump');
   }
@@ -423,7 +428,7 @@ async function maybeOfferChirpDriver(fname) {
 function normalizeFirmwareDownloadURL(url) {
   const urlObj = new URL(url);
 
-  if (urlObj.protocol !== 'https:') {
+  if (urlObj.protocol !== 'https:' && urlObj.origin !== window.location.origin) {
     throw new Error(t('urlHttpNotHttps'));
   }
 
@@ -926,15 +931,19 @@ flashBtn.addEventListener('click', async () => {
   const fw = firmwareData;
   const operation = beginToolsOperation('flash-firmware', true);
   if (!operation) return;
+  let flashedPort = null;
   try {
     if (!port) await connect();
     await flashFirmware(fw);
+    flashedPort = port;
   } catch (e) {
     log(t('flashError', e?.message ?? String(e)), 'error');
   } finally {
     if (port) await disconnect();
     endToolsOperation(operation);
   }
+  // RxJa: continue with the Japanese data once the radio reboots into RxJa.
+  if (flashedPort) window.RxJaData?.afterFlash({ port: flashedPort, fileName: firmwareFileName });
 });
 
 async function flashFirmware(fw) {
@@ -978,10 +987,6 @@ async function flashFirmware(fw) {
 
   updateProgress(100);
   log(t('programmingComplete'), 'success');
-
-  // Global community counter: a firmware was successfully flashed.
-  // Best-effort — never blocks or fails the flash.
-  try { window.UVStudioFlashCounter?.increment(); } catch (e) {}
 
   // Offer the matching CHIRP driver for download. Best-effort, never blocks.
   maybeOfferChirpDriver(firmwareFileName);

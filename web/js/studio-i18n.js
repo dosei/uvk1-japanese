@@ -1,5 +1,7 @@
 /* UV Studio shared internationalization runtime.
-   Uses local JavaScript dictionaries so index.html remains file:// friendly. */
+   Uses local JavaScript dictionaries so index.html remains file:// friendly.
+   Modified by the RxJa project: Japanese added and made the default; only
+   Japanese and English are shipped. */
 ;(function () {
     "use strict";
 
@@ -8,7 +10,7 @@
     // theme's shared "isDarkTheme" key. Older keys stay as read-only fallbacks.
     const STORAGE_KEY = "currentLanguage";
     const LEGACY_STORAGE_KEYS = ["uvstudio.language", "uv-k5-flasher-lang"];
-    const SUPPORTED_LANGUAGES = ["en", "fr", "it", "es", "de", "pt", "ru", "pl", "zh", "nl"];
+    const SUPPORTED_LANGUAGES = ["ja", "en"];
     const dictionaries = window.UVSTUDIO_LOCALES || {};
     const preferences = window.UVStudioPreferences;
 
@@ -18,7 +20,7 @@
             const value = preferences.get(key, "");
             if (value) return value;
         }
-        return "en";
+        return "ja";
     }
 
     function storeLanguage(language) {
@@ -26,7 +28,7 @@
     }
 
     function normalizeLanguage(language) {
-        return SUPPORTED_LANGUAGES.includes(language) ? language : "en";
+        return SUPPORTED_LANGUAGES.includes(language) ? language : "ja";
     }
 
     function interpolate(template, values) {
