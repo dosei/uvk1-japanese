@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- UVK1-RxJa Tools: a modified version of UV Studio by F4HWN (Armel FAUVEAU),
-     Apache License 2.0. Modified by the UVK1-RxJa project; see NOTICE. -->
+     Apache License 2.0. Modified by the UVK1-RxJa project; see NOTICE.txt. -->
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
@@ -174,7 +174,7 @@
                         <div class="k1-keyboard-header">
                             <div class="k1-model-tabs" role="group" data-i18n-aria-label="radio_model" aria-label="Radio model">
                                 <button class="k1-model-tab" id="tabK1" aria-pressed="false">UV-K1</button>
-                                <button class="k1-model-tab" id="tabK5" aria-pressed="false">UV-K5</button>
+                                <button class="k1-model-tab" id="tabK5" aria-pressed="false">UV-K5 V3</button>
                                 <span class="radio-leds" aria-label="Radio LED state" data-i18n-aria-label="radio_led_state">
                                     <span class="radio-led radio-led-red" id="radioLedRed" title="Red LED" data-i18n-title="radio_led_red"></span>
                                     <span class="radio-led radio-led-green" id="radioLedGreen" title="Green LED" data-i18n-title="radio_led_green"></span>
@@ -430,6 +430,7 @@
             <div class="tool-view" id="slots-content" role="region" hidden>
                 <section class="section">
                     <p class="tab-description" data-i18n="slotsDescription">Store several compatible F4HWN firmwares on the radio and pick one at boot (hold MENU). Writing only touches the external flash, so the radio stays usable.</p>
+                    <p class="rxja-hint" data-i18n="rxja_slot_hint">Only the firmware is written to a slot, not the Japanese data (ja_res.bin). The Japanese data is shared by all slots, so if it is already on the radio an RxJa slot uses it as is. If not, start the radio with RxJa from that slot and write it on the Japanese data page; until then RxJa shows English.</p>
                 </section>
                 <section class="section">
                     <div class="slots-table-wrap">
@@ -610,8 +611,8 @@
                 <nav class="about-links" data-i18n-aria-label="studio_about_documents" aria-label="Project documents">
                     <a href="https://github.com/dosei/uvk1-japanese" target="_blank" rel="noopener">UVK1-RxJa (GitHub)</a>
                     <a href="https://armel.github.io/uvstudio/" target="_blank" rel="noopener">UV Studio</a>
-                    <a href="LICENSE" target="_blank" rel="noopener">LICENSE</a>
-                    <a href="NOTICE" target="_blank" rel="noopener">NOTICE</a>
+                    <a href="LICENSE.txt" target="_blank" rel="noopener">LICENSE</a>
+                    <a href="NOTICE.txt" target="_blank" rel="noopener">NOTICE</a>
                 </nav>
             </article>
         </section>
@@ -646,7 +647,7 @@
                 <div class="section-title" data-i18n="radio_controls">Radio Controls</div>
                 <div class="shortcuts">
                     <div class="shortcut"><span class="shortcut-key">← → (UV-K1)</span><span class="shortcut-desc" data-i18n="radio_navigate_k1_desc">Navigate</span></div>
-                    <div class="shortcut"><span class="shortcut-key">↑ ↓ (UV-K5)</span><span class="shortcut-desc" data-i18n="radio_navigate_k5_desc">Navigate</span></div>
+                    <div class="shortcut"><span class="shortcut-key">↑ ↓ (UV-K5 V3)</span><span class="shortcut-desc" data-i18n="radio_navigate_k5_desc">Navigate</span></div>
                     <div class="shortcut"><span class="shortcut-key">0 – 9</span><span class="shortcut-desc" data-i18n="radio_short_desc">Short press</span></div>
                     <div class="shortcut"><span class="shortcut-key">Shift+0 – 9</span><span class="shortcut-desc" data-i18n="radio_long_desc">Long press</span></div>
                     <div class="shortcut"><span class="shortcut-key">Ctrl / F</span><span class="shortcut-desc" data-i18n="radio_hash_desc"># short press</span></div>
@@ -695,8 +696,8 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja2"></script>
-<script src="locales/ja.js?v=rxja2"></script>
+<script src="locales/en.js?v=rxja3"></script>
+<script src="locales/ja.js?v=rxja3"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
@@ -704,7 +705,7 @@
     <script src="js/k5viewer.js?v=31"></script>
 <script src="js/keypad-detach.js?v=1"></script>
 <script src="js/flash.js?v=21"></script>
-<script src="js/flash-catalog.js?v=17"></script>
+<script src="js/flash-catalog.js?v=18"></script>
 <script src="js/app-catalog.js?v=1"></script>
 <script src="js/studio.js?v=13"></script>
 <script type="module" src="js/rxja-ja.js?v=1"></script>

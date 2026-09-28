@@ -36,7 +36,7 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 
 ## ブラウザで書き込む（UVK1-RxJa Tools）
 
-[UVK1-RxJa Tools](https://dosei.github.io/uvk1-japanese/)（以下 RxJa Tools）は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
+[UVK1-RxJa Tools](https://dosei.github.io/uvk1-japanese/)（以下 RxJa Tools）は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE.txt`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
 
 - **ファーム書き込み**: 一覧から RxJa の版を選び、無線機を DFU モード（PTT を押したまま電源を入れる）にして書き込みます。書き終わると、同じ版の日本語データを続けて自動で書き込みます。
 - **日本語データ**: ファームはそのままで、日本語データだけを書き直すページです。訳語を直したときや、自分で作った `ja_res.bin` を入れるときに使います。

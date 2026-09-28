@@ -14,5 +14,7 @@ armel/armel.github.io, uvstudio/, commit 2ca63bcf, 2026-09-09), adapted by
 the UVK1-RxJa project (https://github.com/dosei/uvk1-japanese). Changes:
 rebranded as UVK1-RxJa Tools; Japanese UI added (and made the default); other
 locales and the flash counter removed; RxJa releases added to the firmware
-catalog; automatic upload of the Japanese data (ja_res.bin) after flashing
-RxJa; and a page for writing the Japanese data.
+catalog, including the Multiboot slot catalog; automatic upload of the
+Japanese data (ja_res.bin) after flashing RxJa; a page for writing the
+Japanese data; the Live Viewer keypad tab labelled "UV-K5 V3"; and LICENSE /
+NOTICE renamed to .txt so that browsers display them instead of downloading.

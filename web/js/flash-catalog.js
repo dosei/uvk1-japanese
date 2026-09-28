@@ -126,7 +126,10 @@
 
   // Multiboot slots offer stable v6+ F4HWN editions. Older images, the rolling
   // development build and Quansheng stock images do not embed multiboot.
+  // RxJa numbers its own releases (0.x) but is built on the v6 Fusion preset,
+  // so every RxJa release carries multiboot.
   function isSlotOffered(entry) {
+    if (entry && entry.brand === 'rxja') return true;
     return Boolean(entry) && isOffered(entry) && entry.brand === 'f4hwn' &&
       !entry.isDevelopment && majorVersion(entry.version) >= MIN_SLOT_MAJOR_VERSION;
   }
