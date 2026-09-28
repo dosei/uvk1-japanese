@@ -251,7 +251,7 @@ window.UVSTUDIO_LOCALES.en = {
   "studio_nav_flash": "Flash Firmware",
   "studio_nav_slots": "Firmware Slots",
   "slotsDescription": "Store several compatible F4HWN firmwares on the radio and pick one at boot (hold MENU). Writing only touches the external flash, so the radio stays usable.",
-  "rxja_slot_hint": "Only the firmware is written to a slot, not the Japanese data (ja_res.bin). The Japanese data is shared by all slots, so if it is already on the radio an RxJa slot uses it as is. If not, start the radio with RxJa from that slot and write it on the Japanese data page; until then RxJa shows English.",
+  "rxja_slot_hint": "Only the firmware is written to a slot, <strong>not the Japanese data (ja_res.bin)</strong>. The Japanese data is shared by all slots, so if it is already on the radio an RxJa slot uses it as is. If not, start the radio with RxJa from that slot and write it on the Japanese data page; until then RxJa shows English.",
   "slotColIdx": "#",
   "slotColEdition": "Edition",
   "slotColVersion": "Version",

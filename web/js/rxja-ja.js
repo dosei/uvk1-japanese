@@ -293,6 +293,8 @@ window.addEventListener('uvstudio:firmwareselect', event => {
 function renderFlashHint() {
   const hint = $('rxjaFlashHint');
   if (hint) hint.innerHTML = t('rxja_flash_hint');
+  const slotHint = $('rxjaSlotHint');
+  if (slotHint) slotHint.innerHTML = t('rxja_slot_hint');
 }
 
 // ---------- "Japanese data" view ----------
