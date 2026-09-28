@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RxJa 日本語データ書き込み</title>
+<meta name="description" content="UV-K1 受信専用・日本語化ファーム RxJa の日本語データ（ja_res.bin）をブラウザから本体へ書き込みます。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>RxJa 日本語データ書き込み</h1>
+  <p class="lead">UV-K1 受信専用・日本語化ファーム <a href="https://github.com/dosei/uvk1-japanese">RxJa</a> の日本語データ（ja_res.bin）を、ブラウザから本体へ書き込みます。</p>
+
+  <div id="unsupported" class="note warn" hidden>
+    このブラウザは Web Serial に対応していません。パソコン版の <b>Chrome</b> か <b>Edge</b> で開いてください（Firefox・Safari は非対応です）。
+  </div>
+
+  <section>
+    <h2>準備</h2>
+    <ol>
+      <li>本体に <b>RxJa ファーム</b>（f4hwn.rxja.bin）を書き込んでおきます（UV Studio など）。日本語データは RxJa ファームが受け取るので、純正ファームのままでは書けません。</li>
+      <li>書き込みケーブルで本体とパソコンをつなぎ、本体の電源を<b>普通に</b>入れます（PTT を押しながらのブートローダ起動ではありません）。</li>
+      <li>UV Studio など、ほかのソフトがポートを使っていたら閉じます。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>書き込むデータ</h2>
+    <label class="choice">
+      <input type="radio" name="src" value="bundled" checked>
+      <span>同梱版 <span id="bundled-info" class="muted">（読み込み中…）</span></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="src" value="file">
+      <span>ファイルを選ぶ <input type="file" id="file" accept=".bin,application/octet-stream"></span>
+    </label>
+    <p id="image-info" class="muted"></p>
+    <label class="choice"><input type="checkbox" id="verify" checked> <span>書き込み後に読み戻して照合する（おすすめ）</span></label>
+  </section>
+
+  <section>
+    <h2>書き込み</h2>
+    <div class="buttons">
+      <button id="start" type="button">ポートを選んで書き込む</button>
+      <button id="stop" type="button" class="secondary" hidden>中止</button>
+    </div>
+    <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+    <p id="status" role="status">待機中</p>
+    <details>
+      <summary>ログ</summary>
+      <pre id="log"></pre>
+    </details>
+  </section>
+
+  <section class="small">
+    <h2>補足</h2>
+    <ul>
+      <li>書き込みには 1〜2 分ほどかかる見込みです（照合を含む）。途中で止まっても、識別子を最後に書くので本体は英語表示で起動するだけです。もう一度書き込めば直ります。</li>
+      <li>前と同じ内容の部分は本体が書き込みを飛ばすので、2 回目以降は少し速くなります。</li>
+      <li>書き終えても日本語にならないときは、本体の電源を入れ直してください。</li>
+      <li>コマンドラインで書く場合は <a href="https://github.com/dosei/uvk1-japanese/blob/main/tools/ja/upload.py">tools/ja/upload.py</a> が同じことをします。</li>
+    </ul>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

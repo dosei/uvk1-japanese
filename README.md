@@ -30,7 +30,7 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 自分でビルドしなくても、[Releases](https://github.com/dosei/uvk1-japanese/releases) に最新のビルド済みファイルを置いています。
 
 - `f4hwn.rxja.bin`: ファーム本体。UV Studio で書き込みます（下記）
-- `ja_res.bin`: 日本語データ。`tools/ja/upload.py` で転送します（下記）
+- `ja_res.bin`: 日本語データ。[ブラウザの書き込みページ](https://dosei.github.io/uvk1-japanese/)か `tools/ja/upload.py` で転送します（下記）
 
 どちらも実機で動かしていない「未検証版」です。ファームと日本語データは同じリリースのものを組にして使ってください。
 
@@ -57,6 +57,10 @@ cmake --build build/RxJa
 
 > [!CAUTION]
 > 2026-09-27 に試作版（旧 rxja-v0.1.0〜v0.2.1）を公開していましたが、取り下げて v0.1.0 からやり直しました。最初の試作版（2026-09-27 公開の旧 v0.1.0）は日本語データを 0x0C0000 に置いていて、そこは F4HWN のマルチブートの設定バンク 1〜4 でした（`App/driver/mb_flash.h`）。手元に試作版のファイルが残っていたら使わないでください。今の版とはデータの識別子・形式と転送コマンドの番号が違うので、混ぜて使っても転送が拒否されるか英語表示のままになり、0x0C0000 には書き込まれません。
+
+いちばん簡単なのは、パソコン版の Chrome か Edge で [RxJa 日本語データ書き込み](https://dosei.github.io/uvk1-japanese/) を開く方法です。最新リリースの `ja_res.bin` が同梱されていて、ボタンを押してポートを選ぶだけで書き込みと照合をします（Web Serial を使うので Firefox と Safari では動きません）。自分で作った `ja_res.bin` も選べます。ページのソースは `web/` にあり、`.github/workflows/pages.yml` が GitHub Pages に公開します。
+
+コマンドラインで書く場合:
 
 ```bash
 python3 tools/ja/gen_ja_font.py                # tools/ja/ja_res.bin を作る（標準ライブラリのみ。Releases の ja_res.bin を使うなら不要）

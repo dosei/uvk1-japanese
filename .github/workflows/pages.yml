@@ -1,0 +1,67 @@
+# Publishes web/ (the browser uploader for ja_res.bin) to GitHub Pages, with the
+# ja_res.bin of the newest release bundled next to it.
+#
+# Runs on pushes to main that touch web/, and by hand (Actions > Pages > Run
+# workflow, or `gh workflow run pages.yml`) -- run it after publishing a new
+# release so the bundled ja_res.bin follows. It is not triggered by the release
+# event itself because the github-pages environment only accepts deployments
+# from the default branch.
+
+name: Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'web/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Assemble site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p _site dl
+          cp web/* _site/
+          tag=$(gh release list -R "$GITHUB_REPOSITORY" --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')
+          gh release download "$tag" -R "$GITHUB_REPOSITORY" -p ja_res.bin -p SHA256SUMS -D dl
+          (cd dl && sha256sum -c --ignore-missing SHA256SUMS)
+          cp dl/ja_res.bin _site/
+          sum=$(sha256sum _site/ja_res.bin | cut -d' ' -f1)
+          size=$(stat -c %s _site/ja_res.bin)
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag"
+          printf '{"tag":"%s","sha256":"%s","size":%d,"release_url":"%s"}\n' \
+            "$tag" "$sum" "$size" "$url" > _site/ja_res.json
+          cat _site/ja_res.json
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
