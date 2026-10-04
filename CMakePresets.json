@@ -223,7 +223,7 @@
                 "ENABLE_FEAT_F4HWN_BEACON": false,
                 "ENABLE_FEAT_F4HWN_OVERLAY_APPS": false,
                 "EDITION_STRING": "UVK1-RxJa",
-                "RXJA_VERSION_STRING": "v0.1.3",
+                "RXJA_VERSION_STRING": "v1.0.0",
                 "TARGET": "f4hwn.rxja"
             }
         }
