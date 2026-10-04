@@ -12,7 +12,7 @@
 <link href="css/viewer.css?v=13" rel="stylesheet">
 <link href="css/tools.css?v=11" rel="stylesheet">
 <link href="css/studio.css?v=19" rel="stylesheet">
-<link href="css/rxja.css?v=1" rel="stylesheet">
+<link href="css/rxja.css?v=2" rel="stylesheet">
 </head>
 <body data-theme="light">
 
@@ -101,6 +101,10 @@
             <button class="nav-item" data-route="ja-data" data-app="tools" data-tool-view="ja-data" data-name="Japanese data" data-section-i18n="studio_nav_ja_data">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
                 <span class="nav-item-label" data-i18n="studio_nav_ja_data">Japanese data</span>
+            </button>
+            <button class="nav-item" data-route="memory" data-app="tools" data-tool-view="mem" data-name="Memory channels" data-section-i18n="studio_nav_mem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 14h18M9 4v16"/></svg>
+                <span class="nav-item-label" data-i18n="studio_nav_mem">Memory channels</span>
             </button>
             <button class="nav-item" data-route="firmware-slots" data-app="tools" data-tool-view="slots" data-name="Firmware Slots" data-section-i18n="studio_nav_slots">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -349,6 +353,92 @@
                         <div class="progress-label" id="rxjaJaLabel"></div>
                     </div>
                 </section>
+            </div>
+
+            <div class="tool-view" id="mem-content" role="region" hidden>
+                <p class="tab-description" data-i18n="rxja_mem_description">Read, edit and write the radio's memory channels, and exchange them as CHIRP-compatible CSV.</p>
+                <div class="rxja-actions rxja-mem-toolbar">
+                    <button id="rxjaMemRead" type="button" data-i18n="rxja_mem_read">Read from radio</button>
+                    <button id="rxjaMemWrite" type="button" data-i18n="rxja_mem_write" disabled>Write to radio</button>
+                    <button class="btn" id="rxjaMemImport" type="button" data-i18n="rxja_mem_import">Import file</button>
+                    <button class="btn" id="rxjaMemPreset" type="button" data-i18n="rxja_mem_preset">Common Japanese frequencies</button>
+                    <button class="btn" id="rxjaMemExport" type="button" data-i18n="rxja_mem_export" disabled>Export CSV</button>
+                    <button class="btn" id="rxjaMemStop" type="button" data-i18n="rxja_ja_stop" hidden>Stop</button>
+                    <input type="file" id="rxjaMemFile" accept=".csv,.bin,.img,text/csv" hidden />
+                </div>
+                <section class="rxja-panel" id="rxjaMemPanel" data-state="idle" aria-live="polite">
+                    <p class="rxja-status" id="rxjaMemStatus" data-state="idle" data-i18n="rxja_mem_idle">Read the channels from the radio, or import a CSV.</p>
+                    <div class="progress-bar rxja-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="progress-fill" id="rxjaMemFill"></div>
+                        <div class="progress-label" id="rxjaMemLabel"></div>
+                    </div>
+                </section>
+                <p class="rxja-mem-summary" id="rxjaMemSummary"></p>
+                <div class="rxja-mem-bar">
+                    <input type="search" id="rxjaMemFilter" class="rxja-mem-filter" data-i18n-aria-label="rxja_mem_filter" placeholder="Filter" aria-label="Filter" />
+                    <label class="logo-checkbox-label rxja-mem-showempty"><input type="checkbox" id="rxjaMemShowEmpty" /><span data-i18n="rxja_mem_show_empty">Show empty channels</span></label>
+                    <span class="rxja-mem-bar-gap"></span>
+                    <button class="btn" id="rxjaMemAdd" type="button" data-i18n="rxja_mem_add">Add</button>
+                    <button class="btn" id="rxjaMemDelete" type="button" data-i18n="rxja_mem_delete" disabled>Delete</button>
+                    <button class="btn" id="rxjaMemUp" type="button" data-i18n-title="rxja_mem_up" data-i18n-aria-label="rxja_mem_up" title="Move up" aria-label="Move up" disabled>↑</button>
+                    <button class="btn" id="rxjaMemDown" type="button" data-i18n-title="rxja_mem_down" data-i18n-aria-label="rxja_mem_down" title="Move down" aria-label="Move down" disabled>↓</button>
+                    <button class="btn" id="rxjaMemRevert" type="button" data-i18n="rxja_mem_revert" disabled>Undo all edits</button>
+                    <button class="btn" id="rxjaMemClear" type="button" data-i18n="rxja_mem_clear" disabled>Clear all</button>
+                </div>
+                <div class="rxja-mem-tablewrap">
+                    <table class="rxja-mem-table" id="rxjaMemTable">
+                        <thead>
+                            <tr>
+                                <th class="rxja-mem-check"><input type="checkbox" id="rxjaMemAll" data-i18n-aria-label="rxja_mem_select_all" aria-label="Select all" /></th>
+                                <th data-i18n="rxja_mem_col_number">Ch</th>
+                                <th data-i18n="rxja_mem_col_name">Name</th>
+                                <th data-i18n="rxja_mem_col_nameja">Japanese name</th>
+                                <th data-i18n="rxja_mem_col_freq">Frequency (MHz)</th>
+                                <th data-i18n="rxja_mem_col_mode">Mode</th>
+                                <th data-i18n="rxja_mem_col_step">Step</th>
+                                <th data-i18n="rxja_mem_col_scanlist">Scan list</th>
+                                <th data-i18n="rxja_mem_col_tone">RX tone</th>
+                                <th data-i18n="rxja_mem_col_comment">Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rxjaMemBody"></tbody>
+                    </table>
+                </div>
+                <p class="rxja-note" id="rxjaMemLocalNote" data-i18n="rxja_mem_local_note">Japanese names and comments are not stored on the radio yet.</p>
+                <details class="rxja-mem-listbox">
+                    <summary data-i18n="rxja_mem_lists_title">Scan list names</summary>
+                    <div class="rxja-mem-lists" id="rxjaMemLists"></div>
+                </details>
+
+                <dialog class="rxja-dialog" id="rxjaMemImportDialog" aria-labelledby="rxjaMemImportTitle">
+                    <form method="dialog">
+                        <h2 class="modal-title" id="rxjaMemImportTitle" data-i18n="rxja_mem_import_title">Import channels</h2>
+                        <p id="rxjaMemImportText"></p>
+                        <pre class="rxja-dialog-errors" id="rxjaMemImportErrors" hidden></pre>
+                        <ul class="rxja-dialog-choices">
+                            <li><strong data-i18n="rxja_mem_replace">Replace</strong>: <span data-i18n="rxja_mem_replace_desc">the file becomes the whole list; channels not in it are emptied</span></li>
+                            <li><strong data-i18n="rxja_mem_merge">Merge</strong>: <span data-i18n="rxja_mem_merge_desc">only the channel numbers in the file are replaced</span></li>
+                        </ul>
+                        <p class="rxja-note" id="rxjaMemImportMergeHint" data-i18n="rxja_mem_merge_hint" hidden>To merge with what is on the radio, read from the radio first.</p>
+                        <div class="rxja-actions">
+                            <button value="replace" data-i18n="rxja_mem_replace">Replace</button>
+                            <button value="merge" data-i18n="rxja_mem_merge">Merge</button>
+                            <button class="btn" value="cancel" data-i18n="rxja_mem_cancel">Cancel</button>
+                        </div>
+                    </form>
+                </dialog>
+                <dialog class="rxja-dialog" id="rxjaMemWriteDialog" aria-labelledby="rxjaMemWriteTitle">
+                    <form method="dialog">
+                        <h2 class="modal-title" id="rxjaMemWriteTitle" data-i18n="rxja_mem_write_title">Write to the radio</h2>
+                        <p id="rxjaMemWriteText"></p>
+                        <p class="rxja-dialog-warn" id="rxjaMemWriteDelete" hidden></p>
+                        <p class="rxja-note" data-i18n="rxja_mem_write_note">A backup of the radio's current memory (.bin) is downloaded first. The radio restarts when the write is done.</p>
+                        <div class="rxja-actions">
+                            <button value="write" data-i18n="rxja_mem_write_go">Write</button>
+                            <button class="btn" value="cancel" data-i18n="rxja_mem_cancel">Cancel</button>
+                        </div>
+                    </form>
+                </dialog>
             </div>
 
             <div class="tool-view" id="dump-content" role="region" hidden>
@@ -696,18 +786,19 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja4"></script>
-<script src="locales/ja.js?v=rxja5"></script>
+<script src="locales/en.js?v=rxja5"></script>
+<script src="locales/ja.js?v=rxja6"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
 <script src="js/rf-log.js?v=4"></script>
     <script src="js/k5viewer.js?v=31"></script>
 <script src="js/keypad-detach.js?v=1"></script>
-<script src="js/flash.js?v=21"></script>
+<script src="js/flash.js?v=22"></script>
 <script src="js/flash-catalog.js?v=18"></script>
 <script src="js/app-catalog.js?v=1"></script>
-<script src="js/studio.js?v=13"></script>
-<script type="module" src="js/rxja-ja.js?v=2"></script>
+<script src="js/studio.js?v=14"></script>
+<script type="module" src="js/rxja-ja.js?v=3"></script>
+<script type="module" src="js/rxja-mem.js?v=1"></script>
 </body>
 </html>

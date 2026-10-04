@@ -19,6 +19,7 @@ const CHUNK = 128;
 const MAGIC_LEN = 4;
 const RETRIES = 3;
 const REPLY_TIMEOUT_MS = 2000;
+const WRITE_TIMEOUT_MS = 8000;        // 16 sector erases of ~300 ms, with margin
 
 const STATUS = {0: 'ok', 1: '接続手順の不一致（最初からやり直してください）', 2: '範囲外'};
 
@@ -138,8 +139,9 @@ export class Radio {
     }).finally(() => { this.wake = null; });
   }
 
-  // Return the payload of the next reply with ID wantId, or null.
-  async _reply(wantId, timeoutMs = REPLY_TIMEOUT_MS) {
+  // Return the payload of the next reply with ID wantId (and, if given, for
+  // which match(payload) is true), or null.
+  async _reply(wantId, timeoutMs = REPLY_TIMEOUT_MS, match = null) {
     const end = performance.now() + timeoutMs;
     for (;;) {
       while (true) {
@@ -156,7 +158,7 @@ export class Radio {
         const ok = this.buf[4 + size + 2] === 0xDC && this.buf[4 + size + 3] === 0xBA;
         const body = xor(this.buf.slice(4, 4 + size));
         this.buf = this.buf.slice(ok ? 4 + size + 4 : 2);
-        if (ok && size >= 4 && (body[0] | (body[1] << 8)) === wantId)
+        if (ok && size >= 4 && (body[0] | (body[1] << 8)) === wantId && (!match || match(body.slice(4))))
           return body.slice(4);
       }
       if (this.readError) throw new RadioError('シリアルポートの読み込みに失敗しました: ' + this.readError.message);
@@ -166,10 +168,12 @@ export class Radio {
     }
   }
 
-  async call(payload, wantId) {
+  // match: skip replies that belong to another request, e.g. the late reply
+  // of an attempt that timed out and was sent again.
+  async call(payload, wantId, { timeoutMs = REPLY_TIMEOUT_MS, match = null } = {}) {
     for (let n = 0; n < RETRIES; n++) {
       await this.writer.write(frame(payload));
-      const r = await this._reply(wantId);
+      const r = await this._reply(wantId, timeoutMs, match);
       if (r !== null) return r;
     }
     const cmd = payload[0] | (payload[1] << 8);
@@ -211,6 +215,38 @@ export class Radio {
     if (rOff !== offset || status || rLen !== length)
       throw new RadioError(`読み出し ${hex5(offset)}: ${STATUS[status] ?? status}`);
     return r.slice(8, 8 + rLen);
+  }
+
+  // EEPROM-compatible space (16-bit addresses, App/driver/eeprom_compat.c):
+  // channels, names, attributes and settings. Used by the memory editor.
+  //     0x051B read  -> 0x051C  offset u16, size u8 (<= 128), pad, timestamp
+  //     0x051D write -> 0x051E  offset u16, size u8, allow-password, timestamp, bytes
+  async readEeprom(addr, length) {
+    if (length < 1 || length > CHUNK) throw new RangeError(`length ${length}`);
+    const r = await this.call(pack(['H', 0x051B], ['H', 8], ['H', addr], ['B', length], ['B', 0],
+                                   ['I', this.ts]), 0x051C, { match: b => (b[0] | (b[1] << 8)) === addr });
+    const rOff = r[0] | (r[1] << 8), rLen = r[2];
+    if (rOff !== addr || rLen !== length || r.length < 4 + length)
+      throw new RadioError(`読み出し ${hex4(addr)}: 応答が要求と一致しません`);
+    return r.slice(4, 4 + length);
+  }
+
+  // The firmware writes in 8-byte units and drops a shorter tail, so data must
+  // be a multiple of 8. Each 8 bytes that need a 0 bit turned back to 1 erase
+  // and rewrite their 4 KB flash sector (~300 ms worst case per the driver),
+  // so one 128-byte write may take seconds: wait longer than for other replies.
+  async writeEeprom(addr, data) {
+    if (!data.length || data.length % 8 || data.length > CHUNK) throw new RangeError(`length ${data.length}`);
+    const r = await this.call(pack(['H', 0x051D], ['H', 8 + data.length], ['H', addr], ['B', data.length],
+                                   ['B', 1], ['I', this.ts], data), 0x051E,
+                              { timeoutMs: WRITE_TIMEOUT_MS, match: b => (b[0] | (b[1] << 8)) === addr });
+    if ((r[0] | (r[1] << 8)) !== addr)
+      throw new RadioError(`書き込み ${hex4(addr)}: 応答が要求と一致しません`);
+  }
+
+  // 0x05DD: the radio resets at once and sends no reply.
+  async reboot() {
+    await this.writer.write(frame(pack(['H', 0x05DD], ['H', 0])));
   }
 
   // Everything except the magic, then the magic, so an interrupted upload

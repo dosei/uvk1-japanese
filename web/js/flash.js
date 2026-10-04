@@ -2,7 +2,7 @@
 // js/flash.js
 // Modified by the RxJa project: same-origin firmware URLs (bundled RxJa
 // releases), no flash counter, Japanese data upload chained after a flash,
-// info box for the Japanese data view.
+// info box for the Japanese data and memory channel views.
 // UV-K5 Web Flasher core logic (Web Serial + protocol)
 // Adds: 
 // - Auto-load of firmware from URL param ?firmwareURL=... (or ?fw=...)
@@ -288,6 +288,8 @@ function updateInfoBox() {
     infoBoxEl.innerHTML = t('infoBoxApps');
   } else if (tabName === 'ja-data') {
     infoBoxEl.innerHTML = t('infoBoxJa');
+  } else if (tabName === 'mem') {
+    infoBoxEl.innerHTML = t('infoBoxMem');
   } else {
     infoBoxEl.innerHTML = t('infoBoxDump');
   }

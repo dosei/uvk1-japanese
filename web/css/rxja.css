@@ -76,3 +76,168 @@
 #pane-tools .rxja-actions .btn { white-space: normal; text-align: left; }
 
 #pane-tools #ja-data-content .logo-checkbox-label { margin-top: 4px; }
+
+/* ── Memory channel editor ── */
+#pane-tools #mem-content .rxja-mem-toolbar { margin-top: 0; }
+#pane-tools #mem-content .rxja-panel { margin-top: 14px; }
+
+#pane-tools .rxja-mem-summary {
+  margin: 14px 0 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+#pane-tools .rxja-mem-summary:empty { display: none; }
+
+#pane-tools .rxja-mem-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 8px;
+}
+#pane-tools .rxja-mem-bar .btn { padding: 6px 12px; }
+#pane-tools .rxja-mem-bar-gap { flex: 1 1 auto; }
+#pane-tools .rxja-mem-filter {
+  flex: 0 1 260px;
+  min-width: 160px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+#pane-tools .rxja-mem-showempty { margin: 0; font-size: 13px; }
+
+#pane-tools .rxja-mem-tablewrap {
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+#pane-tools .rxja-mem-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+#pane-tools .rxja-mem-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+  box-shadow: inset 0 -1px 0 var(--border);
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+#pane-tools .rxja-mem-table td {
+  padding: 4px 8px;
+  border-top: 1px solid var(--border);
+  white-space: nowrap;
+  height: 30px;
+}
+#pane-tools .rxja-mem-table tr:first-child td { border-top: 0; }
+#pane-tools .rxja-mem-cell { cursor: text; }
+#pane-tools .rxja-mem-cell:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+#pane-tools .rxja-mem-cell:focus { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+#pane-tools .rxja-mem-cell[data-f="freq"],
+#pane-tools .rxja-mem-cell[data-f="step"],
+#pane-tools .rxja-mem-num { font-family: var(--font-mono); }
+#pane-tools .rxja-mem-num { color: var(--text-secondary); text-align: right; }
+#pane-tools .rxja-mem-cell[data-f="comment"] { white-space: normal; min-width: 8em; }
+#pane-tools .rxja-mem-local { color: var(--text-secondary); }
+#pane-tools .rxja-mem-check { width: 28px; text-align: center; }
+#pane-tools .rxja-mem-added td { background: color-mix(in srgb, var(--success) 9%, transparent); }
+#pane-tools .rxja-mem-changed { background: color-mix(in srgb, #f59e0b 18%, transparent); }
+#pane-tools .rxja-mem-selected td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+#pane-tools .rxja-mem-empty td { color: var(--text-muted); height: 26px; }
+#pane-tools .rxja-mem-table .rxja-mem-addhere {
+  display: inline;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: none;
+}
+#pane-tools .rxja-mem-none { text-align: center; color: var(--text-muted); padding: 20px; }
+#pane-tools .rxja-mem-editing { padding: 2px 4px !important; }
+#pane-tools .rxja-mem-input {
+  width: 100%;
+  min-width: 6em;
+  padding: 3px 6px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+#pane-tools .rxja-mem-invalid .rxja-mem-input { border-color: var(--error); }
+#pane-tools .rxja-mem-busy { opacity: 0.6; pointer-events: none; }
+
+#pane-tools .rxja-mem-listbox { margin-top: 12px; font-size: 13px; }
+#pane-tools .rxja-mem-listbox summary { cursor: pointer; color: var(--text-secondary); }
+#pane-tools .rxja-mem-lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+#pane-tools .rxja-mem-list { display: flex; align-items: center; gap: 4px; }
+#pane-tools .rxja-mem-list span { width: 1.6em; text-align: right; color: var(--text-muted); font-family: var(--font-mono); }
+#pane-tools .rxja-mem-list input {
+  width: 4.2em;
+  padding: 3px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+/* Native <dialog> confirmations */
+.rxja-dialog {
+  max-width: 520px;
+  width: calc(100% - 32px);
+  margin: auto;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+.rxja-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+.rxja-dialog p { margin: 10px 0 0; font-size: 14px; line-height: 1.6; }
+.rxja-dialog .rxja-note { font-size: 13px; color: var(--text-secondary); }
+.rxja-dialog .rxja-note[hidden], .rxja-dialog [hidden] { display: none; }
+.rxja-dialog-choices { margin: 10px 0 0 1.2em; font-size: 13px; line-height: 1.7; }
+.rxja-dialog-errors {
+  margin-top: 10px;
+  padding: 8px 10px;
+  max-height: 10em;
+  overflow: auto;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--error);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.rxja-dialog-warn { color: var(--error); font-weight: 600; }
+.rxja-dialog .rxja-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+#pane-tools .rxja-dialog .rxja-actions button:not(.btn) { margin: 0; min-width: 0; padding: 10px 22px; }
+#pane-tools .rxja-mem-toolbar button:not(.btn) { min-width: 0; padding: 10px 20px; }
+
+@media (max-width: 640px) {
+  #pane-tools .rxja-mem-bar-gap { display: none; }
+  #pane-tools .rxja-mem-filter { flex: 1 1 100%; }
+}

@@ -16,5 +16,7 @@ rebranded as UVK1-RxJa Tools; Japanese UI added (and made the default); other
 locales and the flash counter removed; RxJa releases added to the firmware
 catalog, including the Multiboot slot catalog; automatic upload of the
 Japanese data (ja_res.bin) after flashing RxJa; a page for writing the
-Japanese data; the Live Viewer keypad tab labelled "UV-K5 V3"; and LICENSE /
+Japanese data; a memory channel editor (read/write the radio's channels,
+CHIRP-compatible CSV import/export, a bundled list of common Japanese
+frequencies in presets/jp-common.csv); the Live Viewer keypad tab labelled "UV-K5 V3"; and LICENSE /
 NOTICE renamed to .txt so that browsers display them instead of downloading.

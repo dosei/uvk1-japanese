@@ -1,5 +1,6 @@
 /* UV Studio shell: navigation, route persistence, branding, and serial ownership.
-   Modified by the RxJa project: RxJa Tools branding, Japanese data operation. */
+   Modified by the RxJa project: RxJa Tools branding, Japanese data and
+   memory channel operations. */
 (function () {
     const ROUTE_STORAGE_KEY = "uvstudio.activeSection";
     const items = Array.from(document.querySelectorAll(".nav-item[data-route]"));
@@ -31,7 +32,9 @@
         "upload-logo": "studio_operation_upload_logo",
         "dump-logo": "studio_operation_dump_logo",
         "export-rf-log": "studio_operation_export_rf_log",
-        "ja-upload": "studio_operation_ja_upload"
+        "ja-upload": "studio_operation_ja_upload",
+        "mem-read": "studio_operation_mem_read",
+        "mem-write": "studio_operation_mem_write"
     };
 
     function translate(key) {
