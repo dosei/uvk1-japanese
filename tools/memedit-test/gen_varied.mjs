@@ -29,7 +29,7 @@ for (let i = 0; i < 400; i++) {
   const freq = M.MIN_HZ + rnd((M.MAX_HZ - M.MIN_HZ) / 10) * 10;
   const duplex = pick(['', '+', '-']);
   const ch = {
-    number, name: pick(['', 'A', 'TEST 1', 'ABCDEFGHIJ', 'x-y_z!']), nameJa: '', comment: '',
+    number, name: pick(['', 'A', 'TEST 1', 'ABCDEFGHIJ', 'x-y_z!']), comment: '',
     freq, offset: duplex ? (1 + rnd(9999)) * 1000 : 0, duplex,
     txTone: tone(), rxTone: tone(), mode: pick(M.MODES), step, power: rnd(8),
     scanlist: rnd(26), compander: 0,

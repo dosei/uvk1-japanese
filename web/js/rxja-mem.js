@@ -5,13 +5,15 @@
 // radio again, builds the image the table describes on top of it, downloads a
 // backup, writes only the 8-byte blocks that differ (0x051D), reads them back
 // and reboots the radio, which only picks the changes up at start-up.
-// Japanese names and comments are not stored on the radio yet; they travel in
-// the CSV and are remembered in this browser (by frequency + name) so a later
-// read from the radio gets them back.
+// Names are Shift_JIS on the radio (rxja-sjis.js): Japanese shows with RxJa
+// v1.1.0 and its Japanese data, which 0x0748 reports. Comments are not stored
+// on the radio; they travel in the CSV and are remembered in this browser (by
+// frequency + name) so a later read from the radio gets them back.
 
-import { Radio, RadioError } from './rxja.js?v=2';
+import { Radio, RadioError } from './rxja.js?v=3';
 import * as M from './rxja-memmap.js';
 import { decodeText, readTable, writeCsv } from './rxja-csv.js';
+import { encodeName, byteLength, isAscii } from './rxja-sjis.js';
 
 const READ_CHUNK = 128;
 const WRITE_CHUNK = 128;
@@ -19,7 +21,8 @@ const PRESET = {
   url: 'presets/jp-common.csv',
   listNames: ['AIR', 'SEA', 'RAL', 'SAT', 'PUB', 'BC', 'CB', 'TKK', 'HAM'],
 };
-const MEMO_KEY = 'rxja.mem.memo.v1';
+const MEMO_KEY = 'rxja.mem.memo.v2';       // memoKey -> comment
+const MEMO_V1_KEY = 'rxja.mem.memo.v1';    // before v1.1.0: memoKey -> [Japanese name, comment]
 
 const t = (key, ...values) => window.uvStudioI18n ? window.uvStudioI18n.t(key, ...values) : key;
 const $ = id => document.getElementById(id);
@@ -35,6 +38,7 @@ const state = {
   listNames: Array(M.LIST_COUNT).fill(''),
   selected: new Set(),
   source: null,            // { key, arg } or { text } of where the table came from
+  radioInfo: undefined,    // 0x0748 answer of the radio last connected: { flags, version } or null
   showEmpty: false,
   filter: '',
 };
@@ -76,6 +80,7 @@ const el = {
   writeDialog: $('rxjaMemWriteDialog'),
   writeText: $('rxjaMemWriteText'),
   writeDelete: $('rxjaMemWriteDelete'),
+  writeJa: $('rxjaMemWriteJa'),
 };
 
 if (!el.table) throw new Error('memory editor markup missing');
@@ -146,7 +151,17 @@ async function connect(port) {
   serial.setState('connected', { reason: 'mem' });
   const m = version.match(/F4HWN\s+v(\d+)/i);
   if (!m || Number(m[1]) < 5) throw new RadioError(t('rxja_mem_badfw', version || '?'));
-  return version;
+  state.radioInfo = await radio.rxjaInfo();
+  return state.radioInfo && state.radioInfo.version ? `RxJa ${state.radioInfo.version}` : version;
+}
+
+// Why the radio would not show Japanese names, or '' when it would (or none are used)
+function jaNameProblem(channels) {
+  if (![...channels].some(ch => !isAscii(ch.name))) return '';
+  const info = state.radioInfo;
+  if (!info || !(info.flags & 1)) return t('rxja_mem_ja_oldfw');
+  if (!(info.flags & 2)) return t('rxja_mem_ja_nodata');
+  return '';
 }
 
 async function readImage(signal, phaseKey) {
@@ -168,23 +183,24 @@ const isAbort = e => e && e.name === 'AbortError';
 
 const memoKey = ch => `${ch.freq}|${ch.name}`;
 
-function loadMemo() {
-  try { return JSON.parse(localStorage.getItem(MEMO_KEY) || '{}'); } catch (e) { return {}; }
+function loadMemo(key = MEMO_KEY) {
+  try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; }
 }
 
 function rememberExtras(channels) {
   const memo = loadMemo();
   for (const ch of channels) {
-    if (ch.nameJa || ch.comment) memo[memoKey(ch)] = [ch.nameJa || '', ch.comment || ''];
+    if (ch.comment) memo[memoKey(ch)] = ch.comment;
   }
   try { localStorage.setItem(MEMO_KEY, JSON.stringify(memo)); } catch (e) {}
 }
 
 function fillExtras(channels) {
-  const memo = loadMemo();
+  const memo = loadMemo(), old = loadMemo(MEMO_V1_KEY);
   for (const ch of channels) {
-    const m = memo[memoKey(ch)];
-    if (m) [ch.nameJa, ch.comment] = m;
+    const k = memoKey(ch);
+    if (typeof memo[k] === 'string') ch.comment = memo[k];
+    else if (Array.isArray(old[k])) ch.comment = [old[k][0], old[k][1]].filter(Boolean).join(' / ');
   }
 }
 
@@ -200,7 +216,7 @@ function setSnapshot(image, source) {
   // Extras still in the table win over the memo (same frequency and name)
   for (const ch of decoded) {
     const k = keep.get(memoKey(ch));
-    if (k) { ch.nameJa = k.nameJa; ch.comment = k.comment; }
+    if (k) ch.comment = k.comment;
   }
   state.base = new Map(decoded.map(ch => [ch.number, ch]));
   state.baseLists = M.decodeListNames(image);
@@ -248,7 +264,7 @@ function nextFree(after = 0) {
 
 function newChannel(number) {
   return {
-    number, name: '', nameJa: '', comment: '', freq: 145000000, offset: 0, duplex: '',
+    number, name: '', comment: '', freq: 145000000, offset: 0, duplex: '',
     rxTone: { mode: '', value: null, pol: 'N' }, txTone: { mode: '', value: null, pol: 'N' },
     mode: 'NFM', step: 12.5, power: 0, scanlist: 0, compander: 0, rec: null,
   };
@@ -278,7 +294,7 @@ function toneText(tone) {
   return M.toneLabel(tone) || '';
 }
 
-const FIELDS = ['name', 'nameJa', 'freq', 'mode', 'step', 'scanlist', 'rxTone', 'comment'];
+const FIELDS = ['name', 'freq', 'mode', 'step', 'scanlist', 'rxTone', 'comment'];
 
 function fieldText(ch, f) {
   switch (f) {
@@ -305,7 +321,7 @@ function visibleNumbers() {
       continue;
     }
     if (q) {
-      const hay = `${n} ${ch.name} ${ch.nameJa} ${M.formatMHz(ch.freq)} ${ch.comment}`.toLowerCase();
+      const hay = `${n} ${ch.name} ${M.formatMHz(ch.freq)} ${ch.comment}`.toLowerCase();
       if (!hay.includes(q)) continue;
     }
     out.push(n);
@@ -329,7 +345,7 @@ function render() {
     const base = state.base.get(n);
     const cells = FIELDS.map(f => {
       const changed = d === 'changed' && base && !fieldEqual(base, ch, f) ? ' rxja-mem-changed' : '';
-      const extraOnly = f === 'nameJa' || f === 'comment' ? ' rxja-mem-local' : '';
+      const extraOnly = f === 'comment' ? ' rxja-mem-local' : '';
       return `<td class="rxja-mem-cell${changed}${extraOnly}" data-f="${f}" tabindex="0">${esc(fieldText(ch, f))}</td>`;
     }).join('');
     rows.push(`<tr data-n="${n}" class="${d === 'added' ? 'rxja-mem-added' : ''}${sel ? ' rxja-mem-selected' : ''}">`
@@ -415,7 +431,6 @@ function editorFor(ch, f) {
   if (f === 'number') { i.inputMode = 'numeric'; i.value = String(ch ? ch.number : ''); }
   else if (f === 'freq') { i.inputMode = 'decimal'; i.value = M.formatMHz(ch.freq); }
   else { i.value = ch[f] ?? ''; }
-  if (f === 'name') i.maxLength = M.NAME_LEN;
   return i;
 }
 
@@ -436,6 +451,20 @@ function startEdit(td) {
   td.textContent = '';
   td.appendChild(input);
   td.classList.add('rxja-mem-editing');
+  if (f === 'name') {
+    // bytes used of the 10 (Shift_JIS: full-width 2, half-width 1)
+    const meter = document.createElement('span');
+    meter.className = 'rxja-mem-bytes';
+    const update = () => {
+      const used = byteLength(input.value);
+      const bad = encodeName(input.value, 99).bad.length > 0;
+      meter.textContent = `${used}/${M.NAME_LEN}`;
+      meter.dataset.over = String(used > M.NAME_LEN || bad);
+    };
+    input.addEventListener('input', update);
+    update();
+    td.appendChild(meter);
+  }
   editing = { td, n, f, input };
   input.focus();
   if (input.select && input.tagName === 'INPUT') input.select();
@@ -458,9 +487,10 @@ function commitEdit(keepFocus = false) {
       if (!hz || hz < M.MIN_HZ || hz > M.MAX_HZ) error = t('rxja_mem_bad_freq');
       else ch.freq = hz;
     } else if (f === 'name') {
-      const name = M.asciiName(v);
-      if (name !== v.trimEnd()) setStatus('idle', t('rxja_mem_name_ascii'));
-      ch.name = name;
+      const nm = encodeName(v, M.NAME_LEN);
+      if (nm.bad.length) setStatus('idle', t('rxja_mem_name_bad', nm.bad.join(' ')));
+      else if (nm.cut) setStatus('idle', t('rxja_mem_name_cut', nm.text));
+      ch.name = nm.text;
     } else if (f === 'mode') ch.mode = v;
     else if (f === 'step') ch.step = Number(v);
     else if (f === 'scanlist') ch.scanlist = Number(v);
@@ -792,6 +822,9 @@ function askWrite(counts, writes) {
     el.writeText.textContent = t('rxja_mem_write_text', parts.join('・'), writes.length, bytes);
     el.writeDelete.hidden = !counts.deleted;
     el.writeDelete.textContent = counts.deleted ? t('rxja_mem_write_delete', counts.deleted) : '';
+    const problem = jaNameProblem(state.channels.values());
+    el.writeJa.hidden = !problem;
+    el.writeJa.textContent = problem;
     el.writeDialog.returnValue = '';
     el.writeDialog.onclose = () => resolve(el.writeDialog.returnValue === 'write');
     el.writeDialog.showModal();

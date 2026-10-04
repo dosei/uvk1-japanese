@@ -1252,6 +1252,12 @@ static void RXTX_LOG_FormatTitle(const RXTX_LogEntry_t *entry, char *buffer)
     if (entry->channel != RXTX_LOG_CHANNEL_NONE)
         SETTINGS_FetchChannelName(buffer, entry->channel);
 
+#ifdef ENABLE_JAPANESE
+    // 8 px rows: a Shift_JIS name shows as its frequency
+    if (SETTINGS_NameIsJa(buffer))
+        buffer[0] = 0;
+#endif
+
     if (buffer[0] == 0)
         RXTX_LOG_FormatFrequency(entry->frequency, buffer);
 }

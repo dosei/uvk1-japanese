@@ -1426,6 +1426,9 @@ void UI_DisplayMain(void)
         uint8_t           *p_line0    = gFrameBuffer[line + 0];
         uint8_t           *p_line1    = gFrameBuffer[line + 1];
         enum Vfo_txtr_mode mode       = VFO_MODE_NONE;      
+#ifdef ENABLE_JAPANESE
+        uint32_t           jaDualFreq = 0;  // dual NAME_FREQ with a Japanese name: frequency for line + 2
+#endif
 #else
         const unsigned int line0 = 0;  // text screen line
         const unsigned int line1 = 4;
@@ -1884,6 +1887,13 @@ void UI_DisplayMain(void)
                     case MDF_NAME_FREQ: // show the channel name and frequency
 
                         SETTINGS_FetchChannelName(String, gEeprom.ScreenChannel[vfo_num]);
+#ifdef ENABLE_JAPANESE
+                        // A Shift_JIS name is drawn in the 12 px font; without the
+                        // Japanese data's Shift_JIS table it shows as no name.
+                        const bool jaName = SETTINGS_NameIsJa(String) && UI_JaSjisReady();
+                        if (!jaName && SETTINGS_NameIsJa(String))
+                            String[0] = 0;
+#endif
                         if (String[0] == 0)
                         {   // no channel name, show the channel number instead
                             sprintf(String, "CH-%04u", gEeprom.ScreenChannel[vfo_num] + 1);
@@ -1891,6 +1901,11 @@ void UI_DisplayMain(void)
 
                         if (gEeprom.CHANNEL_DISPLAY_MODE == MDF_NAME) {
                             String[10] = 0;
+#ifdef ENABLE_JAPANESE
+                            if (jaName)
+                                UI_JaPrintSjis(String, 33, 0, line * 8 + 2);   // centred in the two 8x16 pages
+                            else
+#endif
                             UI_PrintString(String, 33, 0, line, 8);
                         }
                         else {
@@ -1898,8 +1913,21 @@ void UI_DisplayMain(void)
                             if (isMainOnly())
                             {
                                 String[10] = 0;
+#ifdef ENABLE_JAPANESE
+                                if (jaName)
+                                    UI_JaPrintSjis(String, 33, 0, line * 8 + 2);
+                                else
+#endif
                                 UI_PrintString(String, 33, 0, line, 8);
                             }
+#ifdef ENABLE_JAPANESE
+                            else if (jaName)
+                            {   // 12 px name over pages line and line + 1; the frequency
+                                // goes down to line + 2 in place of the info line
+                                UI_JaPrintSjis(String, 32 + 4, 0, line * 8);
+                                jaDualFreq = frequency;
+                            }
+#endif
                             else
                             {
                                 if(activeTxVFO == vfo_num) {
@@ -1931,6 +1959,12 @@ void UI_DisplayMain(void)
                                     UI_PrintString(String, 32, 0, line + 3, 8);
                                 }
                             }
+#ifdef ENABLE_JAPANESE
+                            else if (jaDualFreq)
+                            {
+                                // drawn at the end of this VFO, see below
+                            }
+#endif
                             else
                             {
                                 sprintf(String, "%03u.%05u", frequency / 100000, frequency % 100000);
@@ -2306,6 +2340,14 @@ void UI_DisplayMain(void)
            } else {
                 GUI_DisplaySmallest(String, 110, line == 0 ? 17 : 49, false, true);
            }
+        }
+#endif
+#if defined(ENABLE_JAPANESE) && defined(ENABLE_FEAT_F4HWN)
+        if (jaDualFreq)
+        {   // the info line (modulation, bandwidth, ...) gives way to the frequency
+            memset(gFrameBuffer[line + 2], 0, LCD_WIDTH);
+            sprintf(String, "%03u.%05u", jaDualFreq / 100000, jaDualFreq % 100000);
+            UI_PrintStringSmallNormal(String, 32 + 4, 0, line + 2);
         }
 #endif
     }

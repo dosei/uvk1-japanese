@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as M from '../../web/js/rxja-memmap.js';
 import * as C from '../../web/js/rxja-csv.js';
+import * as J from '../../web/js/rxja-sjis.js';
 
 let n = 0;
 const test = (name, fn) => { fn(); n++; console.log('ok', name); };
@@ -32,7 +33,7 @@ test('bandOf matches frequencyBandTable', () => {
 test('encode -> decode keeps every field', () => {
   const image = M.newImage();
   const ch = {
-    number: 7, name: 'ITM TWR', nameJa: '', comment: '', freq: 118100000, offset: 600000, duplex: '-',
+    number: 7, name: 'ITM TWR', comment: '', freq: 118100000, offset: 600000, duplex: '-',
     rxTone: { mode: 'DTCS', value: 754, pol: 'R' }, txTone: { mode: 'Tone', value: 88.5, pol: 'N' },
     mode: 'NAM', step: 8.33, power: 6, scanlist: 25, compander: 2, rec: null,
   };
@@ -88,12 +89,54 @@ test('delete marks the slot free like the firmware', () => {
   assert.ok(image.subarray(M.NAME_BASE, M.NAME_BASE + 16).every(b => b === 0));
 });
 
-test('name decoding stops at non-ASCII and trims', () => {
+test('names: Shift_JIS like the firmware reads them', () => {
   const image = M.newImage();
-  image.set([0x41, 0x42, 0x20, 0x20, 0xE3, 0x41], M.NAME_BASE);
   image[M.ATTR_BASE] = 0; image.set([0x10, 0x27, 0, 0], 0);
+  image.set([0x41, 0x42, 0x20, 0x20, 0x1F, 0x41], M.NAME_BASE);     // stops below 0x20, trims spaces
   assert.equal(M.decodeChannel(image, 0).name, 'AB');
-  assert.equal(M.asciiName('伊丹TWR long name'), 'TWR long n');
+  image.fill(0, M.NAME_BASE, M.NAME_BASE + 16);
+  image.set([0x88, 0xC9, 0x92, 0x4F, 0xC0, 0xDC, 0xB0, 0xFF], M.NAME_BASE);   // 伊丹ﾀﾜｰ, 0xFF ends
+  assert.equal(M.decodeChannel(image, 0).name, '伊丹ﾀﾜｰ');
+  image.set([0x88, 0xC9, 0x88], M.NAME_BASE); image[M.NAME_BASE + 3] = 0;    // cut-off lead byte
+  assert.equal(M.decodeChannel(image, 0).name, '伊' + J.GETA);
+});
+
+test('Shift_JIS encoding: bytes, limits, variants, unsupported characters', () => {
+  const b = s => [...J.encodeName(s).bytes];
+  assert.deepEqual(b('伊丹タワー'), [0x88, 0xC9, 0x92, 0x4F, 0x83, 0x5E, 0x83, 0x8F, 0x81, 0x5B]);
+  assert.deepEqual(b('ｲﾀﾐ'), [0xB2, 0xC0, 0xD0]);
+  assert.deepEqual(b('KIX ﾀﾜｰ'), [0x4B, 0x49, 0x58, 0x20, 0xC0, 0xDC, 0xB0]);
+  let r = J.encodeName('関西アプローチ');               // 14 bytes: cut between characters
+  assert.equal(r.text, '関西アプロ'); assert.equal(r.cut, true); assert.equal(r.bytes.length, 10);
+  r = J.encodeName('関西APP1');                         // 4 + 4 = 8
+  assert.equal(r.text, '関西APP1'); assert.equal(r.cut, false);
+  r = J.encodeName('ABCDEFGHI伊');                      // 9 + 2 > 10: the kanji does not fit
+  assert.equal(r.text, 'ABCDEFGHI'); assert.equal(r.cut, true);
+  r = J.encodeName('①髙😀A');
+  assert.deepEqual(r.bad, ['①', '髙', '😀']); assert.equal(r.text, 'A');
+  assert.equal(J.encodeName('〜～').text, '〜〜');         // cp932 FF5E -> JIS 301C
+  assert.deepEqual(b('～'), [0x81, 0x60]);
+  assert.deepEqual(b('＼'), [0x81, 0x5F]);
+  assert.equal(J.encodeName('AB  ').text, 'AB');
+  assert.equal(M.cleanName('伊丹TWR long name'), '伊丹TWR lo');
+  for (const s of ['伊丹タワー', 'ｶﾝｻｲｱﾌﾟﾛｰﾁ', 'MAR CH16', '¢£¬‖−', '漢字かなカナ'])
+    assert.equal(J.decodeName(J.encodeName(s).bytes), J.encodeName(s).text);
+});
+
+test('every table character round-trips and matches what browsers decode', () => {
+  let n = 0;
+  const dec = new TextDecoder('shift_jis');
+  for (let lead of [0x81, 0x82, 0x83, 0x84, ...Array.from({ length: 24 }, (_, i) => 0x88 + i), ...Array.from({ length: 11 }, (_, i) => 0xE0 + i)])
+    for (let t = 0x40; t <= 0xFC; t++) {
+      if (t === 0x7F) continue;
+      const s = J.decodeName(Uint8Array.of(lead, t));
+      if (s === J.GETA && !(lead === 0x81 && t === 0xAC)) continue;   // 0x81AC is 〓 itself
+      n++;
+      assert.deepEqual([...J.encodeName(s).bytes], [lead, t], `${lead.toString(16)}${t.toString(16)}`);
+      const web = dec.decode(Uint8Array.of(lead, t));
+      assert.equal(J.encodeName(web).text, s, `browser ${web} vs ${s}`);
+    }
+  assert.equal(n, 6879);
 });
 
 test('planWrites: only changed 8-byte blocks, <=128 B, no 4 KB crossing, attrs last', () => {
@@ -125,7 +168,7 @@ test('CSV parse: quotes, commas, newlines, CRLF', () => {
 });
 
 test('CSV decode: UTF-8 BOM and Shift_JIS', () => {
-  const utf = new TextEncoder().encode('﻿Location,NameJa\r\n1,伊丹タワー\r\n');
+  const utf = new TextEncoder().encode('﻿Location,Name\r\n1,伊丹タワー\r\n');
   assert.equal(C.decodeText(utf).text.startsWith('Location'), true);
   // "伊丹" in Shift_JIS
   const sjis = new Uint8Array([0x31, 0x2C, 0x88, 0xC9, 0x92, 0x4F]);
@@ -156,14 +199,25 @@ test('CHIRP rows: tones round trip through Tone/TSQL/DTCS/Cross', () => {
   }
 });
 
+test('NameJa column of older RxJa Tools CSVs', () => {
+  let r = M.rowToChannel({ Location: '1', Frequency: '118.1', Name: '', NameJa: '伊丹タワー' });
+  assert.equal(r.ch.name, '伊丹タワー'); assert.equal(r.ch.comment, '');
+  r = M.rowToChannel({ Location: '1', Frequency: '118.1', Name: 'ITM TWR', NameJa: '伊丹タワー', Comment: '航空' });
+  assert.equal(r.ch.name, 'ITM TWR'); assert.equal(r.ch.comment, '伊丹タワー / 航空');
+  r = M.rowToChannel({ Location: '1', Frequency: '118.1', Name: '', NameJa: '関西アプローチ(伊丹)' });
+  assert.equal(r.ch.name, '関西アプロ'); assert.equal(r.ch.comment, '関西アプローチ(伊丹)');
+});
+
 test('rowToChannel rejects what CHIRP would drop', () => {
   assert.equal(M.rowToChannel({ Location: '0', Frequency: '145.0' }).error, 'location');
   assert.equal(M.rowToChannel({ Location: '1', Frequency: '0' }).error, 'frequency');
   assert.equal(M.rowToChannel({ Location: '1', Frequency: '10.0' }).error, 'range');
   assert.equal(M.rowToChannel({ Location: '1', Frequency: '145.0', Mode: 'DMR' }).error, 'mode');
-  const r = M.rowToChannel({ Location: '5', Frequency: '145.0', Name: '伊丹ABC' });
-  assert.equal(r.ch.name, 'ABC');
+  let r = M.rowToChannel({ Location: '5', Frequency: '145.0', Name: '①伊丹ABC' });
+  assert.equal(r.ch.name, '伊丹ABC');
   assert.equal(r.nameChanged, true);
+  r = M.rowToChannel({ Location: '5', Frequency: '145.0', Name: '伊丹ABC' });
+  assert.equal(r.nameChanged, false);
 });
 
 // Optional: a whole CSV through CSV -> image -> CSV
@@ -182,7 +236,7 @@ if (file) test(`round trip ${file}`, () => {
   assert.equal(back.length, chans.length);
   back.forEach((b, i) => {
     const a = chans[i];
-    b.nameJa = a.nameJa; b.comment = a.comment;
+    b.comment = a.comment;
     const ra = M.channelToRow(a), rb = M.channelToRow(b);
     assert.deepEqual(rb, ra, `ch ${a.number}`);
   });

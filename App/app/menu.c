@@ -1931,6 +1931,12 @@ static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
                 return;
 
             SETTINGS_FetchChannelName(edit, gSubMenuSelection);
+#ifdef ENABLE_JAPANESE
+            // The editor works one ASCII byte at a time: a Shift_JIS name
+            // starts over from blank (left as it is unless something is typed)
+            if (SETTINGS_NameIsJa(edit))
+                edit[0] = '\0';
+#endif
 
             // pad the channel name out with ' '
             size_t len = strlen(edit);

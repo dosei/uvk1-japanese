@@ -1,4 +1,5 @@
 // RF Log protocol and CSV helpers shared by the Web Serial UI and tests.
+// Modified by the RxJa project: channel names may be Shift_JIS (RxJa v1.1.0).
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -82,11 +83,20 @@
 
   function parseChannelName(view, offset) {
     let name = '';
+    const bytes = [];
     const nameOffset = offset + 15;
     for (let i = 0; i < CHANNEL_NAME_LENGTH; i++) {
       const code = view.getUint8(nameOffset + i);
       if (code === 0) break;
+      bytes.push(code);
       if (code >= 32 && code <= 126) name += String.fromCharCode(code);
+    }
+    if (bytes.some(b => b >= 0x80 && b !== 0xFF) && typeof TextDecoder !== 'undefined') {
+      try {
+        name = new TextDecoder('shift_jis').decode(Uint8Array.from(bytes.filter(b => b >= 32 && b !== 0x7F && b !== 0xFF)));
+      } catch (error) {
+        // no Shift_JIS decoder: keep the ASCII part
+      }
     }
     return name.trim();
   }

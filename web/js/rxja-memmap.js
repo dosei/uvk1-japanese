@@ -4,12 +4,14 @@
 //
 // Layout (EEPROM-compatible addresses, App/driver/eeprom_compat.c):
 //     0x0000 + n*16  channel record  (freq, offset, tones, mode, power, step)
-//     0x4000 + n*16  channel name    (10 bytes ASCII, rest 0)
+//     0x4000 + n*16  channel name    (10 bytes Shift_JIS, rest 0; RxJa v1.1.0 shows Japanese)
 //     0x8000 + n*2   attributes      (band:3 compander:2 .. exclude:1 | scanlist)
 //     0x880E + n*4   scan list names (24 lists)
 // Field meanings follow the armel CHIRP driver (f4hwn.chirp.v6.0.0.py) so a
 // CSV written here reads the same in CHIRP; bits this editor does not show
 // (TX lock, busy lockout, DTMF, unused) are kept from the existing bytes.
+
+import { encodeName, decodeName as decodeSjisName } from './rxja-sjis.js';
 
 export const CHANNELS = 1024;
 export const LIST_COUNT = 24;
@@ -100,11 +102,11 @@ function encodeTone(tone) {
 // ---------- channel <-> bytes ----------
 
 // Channel object:
-//   { number (1-based), name, nameJa, comment, freq (Hz), offset (Hz), duplex ('' '+' '-'),
+//   { number (1-based), name, comment, freq (Hz), offset (Hz), duplex ('' '+' '-'),
 //     rxTone, txTone, mode, step (kHz), power (0-7), scanlist (0 off, 1-24, 25 all),
 //     compander, rec (16 raw bytes kept for the hidden bits) }
-// nameJa and comment live only in the editor and the CSV until the firmware
-// can show Japanese names.
+// comment lives only in the editor and the CSV. name is Shift_JIS on the
+// radio: up to 10 bytes (5 full-width or 10 half-width characters).
 
 export function emptyAt(image, index) {
   const a = ATTR_BASE + index * 2;
@@ -130,8 +132,7 @@ export function decodeChannel(image, index) {
   const dir = rec[11] & 0x0F;
   return {
     number: index + 1,
-    name: decodeName(image.subarray(NAME_BASE + index * 16, NAME_BASE + index * 16 + NAME_LEN)),
-    nameJa: '',
+    name: decodeSjisName(image.subarray(NAME_BASE + index * 16, NAME_BASE + index * 16 + NAME_LEN)),
     comment: '',
     freq: dv.getUint32(0, true) * 10,
     offset: dv.getUint32(4, true) * 10,
@@ -147,7 +148,7 @@ export function decodeChannel(image, index) {
   };
 }
 
-// Mirrors SETTINGS_FetchChannelName: stop at the first byte outside 0x20-0x7E
+// ASCII up to the first byte outside 0x20-0x7E (scan list names)
 function decodeName(bytes) {
   let s = '';
   for (const b of bytes) {
@@ -201,10 +202,10 @@ export function encodeChannel(image, index, ch) {
   image.set(rec, o);
 
   // Same name as stored (the radio and CHIRP pad with spaces): keep the bytes
-  const name = asciiName(ch.name);
-  if (emptySlot || decodeName(image.subarray(n, n + NAME_LEN)) !== name) {
+  const name = encodeName(ch.name, NAME_LEN);
+  if (emptySlot || decodeSjisName(image.subarray(n, n + NAME_LEN)) !== name.text) {
     image.fill(0x00, n, n + 16);
-    for (let i = 0; i < name.length; i++) image[n + i] = name.charCodeAt(i);
+    image.set(name.bytes, n);
   }
 
   // Keep bits 5-7 (unused/exclude) as they were unless the slot was free
@@ -213,8 +214,9 @@ export function encodeChannel(image, index, ch) {
   image[a + 1] = ch.scanlist;
 }
 
-export function asciiName(s) {
-  return String(s || '').replace(/[^\x20-\x7E]/g, '').slice(0, NAME_LEN).trimEnd();
+// The name as the radio will hold it: characters it cannot show dropped, cut to 10 bytes
+export function cleanName(s) {
+  return encodeName(s, NAME_LEN).text;
 }
 
 export function decodeAll(image) {
@@ -289,7 +291,7 @@ export function planWrites(from, to, maxLen = 128) {
 
 export const CSV_COLUMNS = ['Location', 'Name', 'Frequency', 'Duplex', 'Offset', 'Tone', 'rToneFreq',
   'cToneFreq', 'DtcsCode', 'DtcsPolarity', 'RxDtcsCode', 'CrossMode', 'Mode', 'TStep', 'Skip',
-  'Power', 'Comment', 'URCALL', 'RPT1CALL', 'RPT2CALL', 'DVCODE', 'NameJa', 'ScanList'];
+  'Power', 'Comment', 'URCALL', 'RPT1CALL', 'RPT2CALL', 'DVCODE', 'ScanList'];
 
 // chirp_common.split_tone_decode
 function tonesToChirp(tx, rx) {
@@ -364,7 +366,6 @@ export function channelToRow(ch) {
     Power: powerLabel(ch.power),
     Comment: ch.comment || '',
     URCALL: '', RPT1CALL: '', RPT2CALL: '', DVCODE: '',
-    NameJa: ch.nameJa || '',
     ScanList: scanlistLabel(ch.scanlist),
   };
 }
@@ -410,15 +411,22 @@ export function rowToChannel(row) {
   if (!STEPS.includes(step)) step = STEPS.find(s => Math.abs(s - step) < 0.005) ?? 12.5;
 
   const duplex = ['+', '-'].includes(get('Duplex')) ? get('Duplex') : '';
+
+  // NameJa: column of RxJa Tools before v1.1.0 (Japanese names kept off the
+  // radio). It becomes the name when Name is empty, else goes to the comment.
+  let rawName = get('Name'), comment = get('Comment');
+  const nameJa = get('NameJa');
+  if (nameJa && !rawName) rawName = nameJa;
+  const nm = encodeName(rawName, NAME_LEN);
+  if (nameJa && nameJa !== nm.text) comment = comment ? `${nameJa} / ${comment}` : nameJa;
   const pw = get('Power').match(/^([\d.]+)\s*W$/i);
   const scanlist = parseScanlist(get('ScanList'));
 
   return {
     ch: {
       number,
-      name: asciiName(get('Name')),
-      nameJa: get('NameJa'),
-      comment: get('Comment'),
+      name: nm.text,
+      comment,
       freq,
       offset: duplex ? (parseMHz(get('Offset')) || 0) : 0,
       duplex,
@@ -430,7 +438,7 @@ export function rowToChannel(row) {
       compander: 0,
       rec: null,
     },
-    nameChanged: asciiName(get('Name')) !== get('Name').trimEnd(),
+    nameChanged: nm.bad.length > 0 || nm.cut,
   };
 }
 

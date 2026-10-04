@@ -60,6 +60,14 @@ uint8_t UI_JaWidth(const char *pString);
 // Returns the x coordinate after the last character drawn.
 uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y);
 
+// Shift_JIS strings (channel names): JIS X 0208 double-byte characters,
+// half-width katakana 0xA1..0xDF and ASCII, drawn like UI_JaPrint. Double-
+// byte characters need the image's Shift_JIS table (tools/ja/gen_ja_font.py,
+// after the preset table; RxJa v1.1.0 and later), see UI_JaSjisReady.
+bool    UI_JaSjisReady(void);
+uint8_t UI_JaWidthSjis(const char *pString);
+uint8_t UI_JaPrintSjis(const char *pString, uint8_t Start, uint8_t End, uint8_t y);
+
 // XOR pixel rows [y0, y1) between x Start and End, e.g. to highlight a 12 px line
 void    UI_JaInvert(uint8_t Start, uint8_t End, uint8_t y0, uint8_t y1);
 

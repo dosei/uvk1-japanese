@@ -244,6 +244,18 @@ export class Radio {
       throw new RadioError(`書き込み ${hex4(addr)}: 応答が要求と一致しません`);
   }
 
+  // 0x0748 -> 0x0749 (RxJa v1.1.0+): { flags, version } with flags bit 0 =
+  // Shift_JIS channel names, bit 1 = the Japanese data has their table; null
+  // when the firmware does not answer (older RxJa, F4HWN).
+  async rxjaInfo(timeoutMs = 800) {
+    await this.writer.write(frame(pack(['H', 0x0748], ['H', 0])));
+    const r = await this._reply(0x0749, timeoutMs);
+    if (!r || r.length < 4) return null;
+    const v = r.slice(4, 20);
+    const end = v.indexOf(0);
+    return { flags: r[0], version: new TextDecoder('ascii').decode(end < 0 ? v : v.slice(0, end)) };
+  }
+
   // 0x05DD: the radio resets at once and sends no reply.
   async reboot() {
     await this.writer.write(frame(pack(['H', 0x05DD], ['H', 0])));

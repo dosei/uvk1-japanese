@@ -1621,6 +1621,11 @@ static void ShowChannelName(uint32_t f)
                     if (SETTINGS_FetchChannelFrequency(i) == channelF)
                     {
                         SETTINGS_FetchChannelName(channelName, i);
+#ifdef ENABLE_JAPANESE
+                        // the status line is 8 px: no room for a Shift_JIS name
+                        if (SETTINGS_NameIsJa(channelName))
+                            channelName[0] = 0;
+#endif
                         break;
                     }
                 }

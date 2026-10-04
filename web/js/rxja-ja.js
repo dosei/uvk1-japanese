@@ -13,7 +13,7 @@
 // Serial access goes through UVStudioSerial as the 'rxja' client so the viewer
 // and tools never hold the port at the same time.
 
-import { Radio, RadioError, checkImage, sha256hex } from './rxja.js?v=2';
+import { Radio, RadioError, checkImage, sha256hex } from './rxja.js?v=3';
 
 const PROBE_TIMEOUT_MS = 90000;   // give up waiting for the reboot after this
 const SLOW_HINT_MS = 10000;       // then suggest a manual power cycle

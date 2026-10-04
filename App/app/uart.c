@@ -1222,6 +1222,26 @@ void UART_HandleCommand(uint32_t Port)
             SendReply(Port, &Reply, sizeof(Header_t) + 8 + len);
             break;
         }
+
+        case 0x0748: // RxJa info (RxJa v1.1.0+; older firmware does not answer)
+        {
+            gSerialConfigCountDown_500ms = 12; // keep serial mode alive (6 s)
+            struct __attribute__((packed)) {
+                Header_t Header;
+                uint8_t  Flags;         // bit 0: Shift_JIS channel names, bit 1: Japanese data has their table
+                uint8_t  Padding[3];
+                char     Version[16];   // RXJA_VERSION_STRING, NUL padded
+            } Reply;
+            memset(&Reply, 0, sizeof(Reply));
+            Reply.Header.ID   = 0x0749;
+            Reply.Header.Size = sizeof(Reply) - sizeof(Header_t);
+            Reply.Flags       = 0x01 | (UI_JaSjisReady() ? 0x02 : 0);
+#ifdef RXJA_VERSION_STRING
+            strncpy(Reply.Version, RXJA_VERSION_STRING, sizeof(Reply.Version) - 1);
+#endif
+            SendReply(Port, &Reply, sizeof(Reply));
+            break;
+        }
 #endif
 
 #ifdef ENABLE_UART_RW_BK_REGS

@@ -897,6 +897,25 @@ static void UI_MENU_DrawFixedCapsule(const char *text, uint8_t cap_left,
 }
 #endif
 
+// A channel name in the value area, pages 2-3 ("--" when there is none).
+// Shift_JIS names are drawn in the 12 px font, centred in those 16 rows.
+static void PrintChannelName(const char *name)
+{
+    const unsigned int x1 = 8 * 6 + 2;      // menu_item_x1 / x2 of UI_DisplayMenu
+    const unsigned int x2 = LCD_WIDTH - 1;
+#ifdef ENABLE_JAPANESE
+    if (SETTINGS_NameIsJa(name))
+    {
+        if (UI_JaSjisReady())
+            UI_JaPrintSjis(name, x1, x2, 2 * 8 + 2);
+        else
+            UI_PrintString("--", x1, x2, 2, 8);
+        return;
+    }
+#endif
+    UI_PrintString(name[0] ? name : "--", x1, x2, 2, 8);
+}
+
 void UI_DisplayMenu(void)
 {
     const unsigned int menu_list_width = 6; // max no. of characters on the menu list (left side)
@@ -1272,7 +1291,7 @@ void UI_DisplayMenu(void)
                 }
 
                 SETTINGS_FetchChannelName(String, gSubMenuSelection);
-                UI_PrintString(String[0] ? String : "--", menu_item_x1, menu_item_x2, 2, 8);
+                PrintChannelName(String);
                 already_printed = true;
                 break;
             }
@@ -1295,8 +1314,7 @@ void UI_DisplayMenu(void)
                 if (edit_index < 0)
                 {   // show the channel name
                     SETTINGS_FetchChannelName(String, gSubMenuSelection);
-                    char *pPrintStr = String[0] ? String : "--";
-                    UI_PrintString(pPrintStr, menu_item_x1, menu_item_x2, 2, 8);
+                    PrintChannelName(String);
                 }
                 else
                 {   // show the channel name being edited

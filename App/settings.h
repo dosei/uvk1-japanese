@@ -323,6 +323,10 @@ uint32_t SETTINGS_FetchChannelFrequency(const uint16_t channel);
 bool     SETTINGS_FetchChannelScanInfo(const uint16_t channel, uint32_t *frequency, ModulationMode_t *modulation);
 bool     SETTINGS_FetchChannelScanDisplayInfo(const uint16_t channel, ChannelScanDisplayInfo_t *info);
 void     SETTINGS_FetchChannelName(char *s, const uint16_t channel);
+#ifdef ENABLE_JAPANESE
+// true when a channel name has non-ASCII (Shift_JIS) bytes, drawn with UI_JaPrintSjis
+bool     SETTINGS_NameIsJa(const char *s);
+#endif
 void     SETTINGS_FactoryReset(bool bIsAll);
 #ifdef ENABLE_FMRADIO
     void SETTINGS_SaveFM(void);

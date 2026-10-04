@@ -241,3 +241,15 @@
   #pane-tools .rxja-mem-bar-gap { display: none; }
   #pane-tools .rxja-mem-filter { flex: 1 1 100%; }
 }
+#pane-tools .rxja-mem-editing[data-f="name"] { position: relative; }
+#pane-tools .rxja-mem-bytes {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+#pane-tools .rxja-mem-bytes[data-over="true"] { color: var(--error); font-weight: 600; }

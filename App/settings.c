@@ -165,7 +165,12 @@ void SETTINGS_InitEEPROM(void)
     PY25Q16_ReadBuffer(0x00A008, Data, 8);
     gEeprom.BACKLIGHT_MAX         = (Data[0] & 0xF) <= 10 ? (Data[0] & 0xF) : 10;
     gEeprom.BACKLIGHT_MIN         = (Data[0] >> 4) < gEeprom.BACKLIGHT_MAX ? (Data[0] >> 4) : 0;
+#ifdef ENABLE_JAPANESE
+    // RxJa: name + frequency by default, so channel names show from the start
+    gEeprom.CHANNEL_DISPLAY_MODE  = (Data[1] < 4) ? Data[1] : MDF_NAME_FREQ;
+#else
     gEeprom.CHANNEL_DISPLAY_MODE  = (Data[1] < 4) ? Data[1] : MDF_FREQUENCY;    // 4 instead of 3 - extra display mode
+#endif
     gEeprom.CROSS_BAND_RX_TX      = (Data[2] < 3) ? Data[2] : CROSS_BAND_OFF;
     gEeprom.BATTERY_SAVE          = (Data[3] < 6) ? Data[3] : 4;
     gEeprom.DUAL_WATCH            = (Data[4] < 3) ? Data[4] : DUAL_WATCH_CHAN_A;
@@ -717,7 +722,12 @@ void SETTINGS_FetchChannelName(char *s, const uint16_t channel)
 
     int i;
     for (i = 0; i < 10; i++)
+#ifdef ENABLE_JAPANESE
+        // Shift_JIS names (RxJa): bytes 0x80..0xFE are part of the name
+        if ((uint8_t)s[i] < 32 || (uint8_t)s[i] == 127 || (uint8_t)s[i] == 0xFF)
+#else
         if (s[i] < 32 || s[i] > 127)
+#endif
             break;                // invalid char
 
     s[i--] = 0;                   // null term
@@ -725,6 +735,16 @@ void SETTINGS_FetchChannelName(char *s, const uint16_t channel)
     while (i >= 0 && s[i] == 32)  // trim trailing spaces
         s[i--] = 0;               // null term
 }
+
+#ifdef ENABLE_JAPANESE
+bool SETTINGS_NameIsJa(const char *s)
+{
+    for (; *s; s++)
+        if ((uint8_t)*s >= 0x80)
+            return true;
+    return false;
+}
+#endif
 
 void SETTINGS_FactoryReset(bool bIsAll)
 {

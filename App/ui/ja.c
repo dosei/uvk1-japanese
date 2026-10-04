@@ -22,6 +22,13 @@
 #define CP_HALF_LAST    0xFF9Fu
 
 #define CP_GETA         0x3013u // shown for anything missing from the font
+#define CP_GLYPH        0xFFFFu // NextChar: *pGlyph already holds the glyph index
+
+// Shift_JIS channel names (see ja.h): table after the preset table
+#define SJIS_MAGIC      "SJ01"
+#define SJIS_HDR_SIZE   8u      // magic, u16 entry count, u16 reserved
+#define SJIS_TRAILS     188u    // 0x40..0x7E, 0x80..0xFC
+#define SJIS_LEADS      39u     // 0x81..0x84, 0x88..0x9F, 0xE0..0xEA (JIS X 0208 rows)
 
 static uint16_t gJaCount = 0xFFFF;  // glyphs in the image; 0xFFFF = not read yet
 static uint32_t gJaTextOff;         // UI string table, 0 = none
@@ -31,6 +38,7 @@ static char     gJaText[JA_TEXT_MAX];
 static uint32_t gJaPresetOff;       // preset table, 0 = none
 static uint16_t gJaPresetCount;
 static uint16_t gJaPresetSize;      // record size in the image
+static uint32_t gJaSjisOff;         // Shift_JIS -> glyph table, 0 = none
 #endif
 
 bool UI_JaReady(void)
@@ -50,6 +58,7 @@ bool UI_JaReady(void)
 #ifdef ENABLE_RXJA_PRESET
         gJaPresetOff   = 0;
         gJaPresetCount = 0;
+        gJaSjisOff     = 0;
 #endif
         if (gJaCount)
         {
@@ -75,6 +84,19 @@ bool UI_JaReady(void)
                     }
                 }
             }
+            // The Shift_JIS table follows the preset table, 4-byte aligned.
+            // Images without it (RxJa v1.0.0 and older) end there.
+            if (gJaPresetOff)
+            {
+                const uint32_t off = (gJaPresetOff + 4u + (uint32_t)gJaPresetCount * gJaPresetSize + 3u) & ~3u;
+                uint8_t        h[SJIS_HDR_SIZE];
+                if (off + SJIS_HDR_SIZE + SJIS_LEADS * SJIS_TRAILS * 2u <= JA_FLASH_SIZE)
+                {
+                    PY25Q16_ReadBuffer(JA_FLASH_BASE + off, h, sizeof(h));
+                    if (memcmp(h, SJIS_MAGIC, 4) == 0 && (h[4] | (h[5] << 8)) == SJIS_LEADS * SJIS_TRAILS)
+                        gJaSjisOff = off;
+                }
+            }
 #endif
         }
     }
@@ -84,6 +106,15 @@ bool UI_JaReady(void)
 void UI_JaInvalidate(void)
 {
     gJaCount = 0xFFFF;
+}
+
+bool UI_JaSjisReady(void)
+{
+#ifdef ENABLE_RXJA_PRESET
+    return UI_JaReady() && gJaSjisOff;
+#else
+    return false;
+#endif
 }
 
 // FNV-1a, must match tools/ja/gen_ja_font.py
@@ -168,6 +199,54 @@ static uint16_t NextCodePoint(const char **pp)
     return CP_GETA;
 }
 
+// Decode one Shift_JIS character (JIS X 0208 + half-width katakana) and
+// advance *pp. Double-byte characters come back as CP_GLYPH with the glyph
+// index from the table in *pGlyph (-1 when the font has none).
+static uint16_t NextSjis(const char **pp, int16_t *pGlyph)
+{
+    const uint8_t *s = (const uint8_t *)*pp;
+    const uint8_t  b = s[0];
+
+    *pp += 1;
+    if (b < 0x80)
+        return b;
+    if (b >= 0xA1 && b <= 0xDF)
+        return CP_HALF_FIRST + (b - 0xA1);
+
+    const uint8_t t = s[1];
+    if (!((b >= 0x81 && b <= 0x9F) || (b >= 0xE0 && b <= 0xFC)) ||
+        t < 0x40 || t == 0x7F || t > 0xFC)
+        return CP_GETA;     // stray byte, or a lead byte cut off at the end
+    *pp += 1;
+
+    *pGlyph = -1;
+#ifdef ENABLE_RXJA_PRESET
+    int16_t lead = -1;
+    if (b <= 0x84)
+        lead = b - 0x81;
+    else if (b >= 0x88 && b <= 0x9F)
+        lead = b - 0x88 + 4;
+    else if (b >= 0xE0 && b <= 0xEA)
+        lead = b - 0xE0 + 28;
+    if (lead >= 0 && gJaSjisOff)
+    {
+        const uint16_t trail = t - 0x40 - (t > 0x7F);
+        uint16_t       v;
+        PY25Q16_ReadBuffer(JA_FLASH_BASE + gJaSjisOff + SJIS_HDR_SIZE + (lead * SJIS_TRAILS + trail) * 2u, &v, 2);
+        if (v < gJaCount)
+            *pGlyph = (int16_t)v;
+    }
+#endif
+    return CP_GLYPH;
+}
+
+// one character of a UTF-8 or Shift_JIS string; *pGlyph = -2: look cp up
+static uint16_t NextChar(const char **pp, bool sjis, int16_t *pGlyph)
+{
+    *pGlyph = -2;
+    return sjis ? NextSjis(pp, pGlyph) : NextCodePoint(pp);
+}
+
 static uint8_t CharWidth(uint16_t cp)
 {
     if (cp < 0x80)
@@ -205,22 +284,33 @@ static void DrawColumn(uint8_t x, uint8_t y, uint32_t bits)
         gFrameBuffer[page][x] |= (uint8_t)bits;
 }
 
-uint8_t UI_JaWidth(const char *pString)
+static uint8_t Width(const char *pString, bool sjis)
 {
     unsigned width = 0;
+    int16_t  glyph;
     while (*pString)
-        width += CharWidth(NextCodePoint(&pString));
+        width += CharWidth(NextChar(&pString, sjis, &glyph));
     return (width > 255) ? 255 : (uint8_t)width;
 }
 
-uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
+uint8_t UI_JaWidth(const char *pString)
+{
+    return Width(pString, false);
+}
+
+uint8_t UI_JaWidthSjis(const char *pString)
+{
+    return Width(pString, true);
+}
+
+static uint8_t Print(const char *pString, uint8_t Start, uint8_t End, uint8_t y, bool sjis)
 {
     unsigned x     = Start;
     unsigned limit = LCD_WIDTH;
 
     if (End > Start)
     {
-        const uint8_t width = UI_JaWidth(pString);
+        const uint8_t width = Width(pString, sjis);
         if (width < End - Start)
             x += (End - Start - width) / 2;
         limit = End;
@@ -230,7 +320,8 @@ uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
 
     while (*pString)
     {
-        const uint16_t cp = NextCodePoint(&pString);
+        int16_t        idx;
+        const uint16_t cp = NextChar(&pString, sjis, &idx);
         const uint8_t  w  = CharWidth(cp);
 
         if (x + w > limit)
@@ -247,7 +338,8 @@ uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
         }
         else if (ready)
         {
-            int16_t idx = FindGlyph(cp);
+            if (idx == -2)
+                idx = FindGlyph(cp);
             if (idx < 0)
                 idx = FindGlyph(CP_GETA);
             if (idx >= 0)
@@ -267,6 +359,16 @@ uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
     }
 
     return (uint8_t)x;
+}
+
+uint8_t UI_JaPrint(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
+{
+    return Print(pString, Start, End, y, false);
+}
+
+uint8_t UI_JaPrintSjis(const char *pString, uint8_t Start, uint8_t End, uint8_t y)
+{
+    return Print(pString, Start, End, y, true);
 }
 
 bool UI_JaPrintText(const char *pEnglish, uint8_t Start, uint8_t End, uint8_t y)

@@ -4,6 +4,8 @@
 //   window.mockRadio.image     the radio's memory
 //   window.mockRadio.log       [{cmd, addr, len}] of commands received
 //   window.mockRadio.rebooted  count of 0x05DD
+//   window.mockRadio.info      0x0748 answer { flags, version }, or null for
+//                              firmware before RxJa v1.1.0 (no answer)
 //   window.mockRadio.stale     true: send a stale reply (previous request's
 //                              offset) before each real one, like a late reply
 //                              to a retried request
@@ -16,6 +18,7 @@
     log: [],
     rebooted: 0,
     stale: false,
+    info: { flags: 3, version: 'v1.1.0' },
     last: null,
     ts: null,
   };
@@ -57,6 +60,12 @@
         radio.image.set(p.slice(12 + i * 8, 12 + i * 8 + 8), addr + i * 8);
       if (radio.stale && radio.last) push(radio.last);
       push(radio.last = reply(0x051E, new Uint8Array([addr & 0xFF, addr >> 8])));
+    } else if (id === 0x0748) {
+      if (!radio.info) return;
+      const d = new Uint8Array(20);
+      d[0] = radio.info.flags;
+      d.set(new TextEncoder().encode(radio.info.version), 4);
+      push(reply(0x0749, d));
     } else if (id === 0x05DD) {
       radio.rebooted++;
     }
