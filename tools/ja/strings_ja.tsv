@@ -151,8 +151,11 @@ POWER\nHIGH	高出力
 REMOVE\nOFFSET	オフセット\n解除
 FOX HUNT	フォックス\nハント
 BEACON	ビーコン
-# drawn outside the common value path
+# drawn outside the common value path. UI_GenerateChannelString: "None" is an
+# explicitly cleared channel, "NULL" one whose EEPROM field was never written
+# (a factory radio's PriCh1/PriCh2); both mean "not set" to the reader.
 None	なし
+NULL	なし
 SURE?	実行する?
 WAIT!	処理中
 RxCTCS|SCAN	スキャン中
