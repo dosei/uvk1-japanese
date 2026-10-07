@@ -50,10 +50,10 @@ static void PrintBig(const char *s, unsigned Start, unsigned End, unsigned Line,
     if (End > Start)
         Start += (((End - Start) - (len * Width)) + 1) / 2;
     for (size_t i = 0; i < len; i++)
-        if (s[i] > ' ' && s[i] < 127) {
-            memcpy(gFrameBuffer[Line + 0] + Start + i * Width, &gFontBig[s[i] - ' ' - 1][0], 7);
-            memcpy(gFrameBuffer[Line + 1] + Start + i * Width, &gFontBig[s[i] - ' ' - 1][7], 7);
-        }
+        if (s[i] > ' ' && s[i] < 127)
+            FONT_DrawBigGlyph(s[i] - ' ' - 1,
+                              gFrameBuffer[Line + 0] + Start + i * Width,
+                              gFrameBuffer[Line + 1] + Start + i * Width);
 }
 
 // same as App/ui/helper.c
@@ -63,8 +63,15 @@ static void PrintSmall(const char *s, unsigned Start, unsigned End, unsigned Lin
     if (End > Start)
         Start += (((End - Start) - len * 7) + 1) / 2;
     for (size_t i = 0; i < len; i++)
-        if (s[i] > ' ' && s[i] < 127 && Start + i * 7 + 6 <= LCD_WIDTH)
-            memcpy(gFrameBuffer[Line] + Start + i * 7, &gFontSmall[s[i] - ' ' - 1][0], 6);
+        if (s[i] > ' ' && s[i] < 127 && Start + i * 7 + 6 <= LCD_WIDTH) {
+            // packed 7-bit column stream since F4HWN v6.1.0, see ui/helper.c
+            uint16_t bit = (uint16_t)(s[i] - ' ' - 1) * FONT_SMALL_WIDTH * 7u;
+            for (unsigned c = 0; c < FONT_SMALL_WIDTH; c++, bit += 7u) {
+                const uint16_t b = bit >> 3;
+                gFrameBuffer[Line][Start + i * 7 + c] =
+                    ((gFontSmallPacked[b] | ((uint16_t)gFontSmallPacked[b + 1u] << 8)) >> (bit & 7u)) & 0x7Fu;
+            }
+        }
 }
 
 static void PrintSmallest(const char *s, int x, int y)

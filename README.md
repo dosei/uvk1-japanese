@@ -140,7 +140,7 @@ Anyway, have fun.
 
 # Donations
 
-Special thanks to Jean-Cyrille F6IWW (3 times), Fabrice 14RC123, David F4BPP, Olivier 14RC206, Frédéric F4ESO, Stéphane F5LGW (2 times), Jorge Ornelas (4 times), Laurent F4AXK, Christophe Morel, Clayton W0LED, Pierre Antoine F6FWB, Jean-Claude 14FRS3306, Thierry F4GVO, Eric F1NOU, PricelessToolkit, Ady M6NYJ, Tom McGovern (4 times), Joseph Roth, Pierre-Yves Colin, Frank DJ7FG, Marcel Testaz, Brian Frobisher, Yannick F4JFO, Paolo Bussola, Dirk DL8DF, Levente Szőke (2 times), Bernard-Michel Herrera, Jérôme Saintespes, Paul Davies, RS (3 times), Johan F4WAT, Robert Wörle, Rafael Sundorf, Paul Harker, Peter Fintl, Pascal F4ICR (2 times), Mike DL2MF (3 times), Eric KI1C / F4WFS (3 times), Phil G0ELM, Jérôme Lambert, Eliot Vedel, Alfonso EA7KDF, Jean-François F1EVM, Robert DC1RDB (2 times), Ian KE2CHJ, Daryl VK3AWA, Roberto Brunelli, Robert Boardman, Stephen Oliver, Nicolas F4INE, William Bruno, Daniel OK2VLK, Tayler Chew, Peter DL7RFP, Philippe Kopp, Rune LA6YMA, Jeremy Luna, Steef Wagenaar (2 times), Zhuo BG7SGA, Jamie M0JLB, Antoine LIBERT, Vince K0DKR, Julia DF7JA, Ken 2E0UMK, Victor TI2SYS, Tobi DG9LAY, Deaglan K4DFQ, Catherine PALMER, Brian WA6JFK, Stéphane Hintzy, Roger F1HCN, Marcin Kusaj, Flavio Cottarelli, Bob N1MLZ, Carlos EA1IJ, Brian M7YLF, Giuseppe IT9LLH, 邓 月 and Jon M1JRH for their [donations](https://www.paypal.com/paypalme/F4HWN). That’s so kind of them. Thanks so much 🙏🏻
+Special thanks to Jean-Cyrille F6IWW (3 times), Fabrice 14RC123, David F4BPP (2 times), Olivier 14RC206, Frédéric F4ESO, Stéphane F5LGW (2 times), Jorge Ornelas (4 times), Laurent F4AXK, Christophe Morel, Clayton W0LED, Pierre Antoine F6FWB, Jean-Claude 14FRS3306, Thierry F4GVO, Eric F1NOU, PricelessToolkit, Ady M6NYJ, Tom McGovern (4 times), Joseph Roth, Pierre-Yves Colin, Frank DJ7FG, Marcel Testaz, Brian Frobisher, Yannick F4JFO, Paolo Bussola, Dirk DL8DF, Levente Szőke (2 times), Bernard-Michel Herrera, Jérôme Saintespes, Paul Davies, RS (3 times), Johan F4WAT, Robert Wörle, Rafael Sundorf, Paul Harker, Peter Fintl, Pascal F4ICR (2 times), Mike DL2MF (3 times), Eric KI1C / F4WFS (3 times), Phil G0ELM, Jérôme Lambert, Eliot Vedel, Alfonso EA7KDF, Jean-François F1EVM, Robert DC1RDB (2 times), Ian KE2CHJ, Daryl VK3AWA, Roberto Brunelli, Robert Boardman, Stephen Oliver, Nicolas F4INE, William Bruno, Daniel OK2VLK, Tayler Chew, Peter DL7RFP, Philippe Kopp, Rune LA6YMA, Jeremy Luna, Steef Wagenaar (2 times), Zhuo BG7SGA, Jamie M0JLB, Antoine LIBERT, Vince K0DKR, Julia DF7JA, Ken 2E0UMK, Victor TI2SYS, Tobi DG9LAY, Deaglan K4DFQ, Catherine PALMER, Brian WA6JFK, Stéphane Hintzy, Roger F1HCN, Marcin Kusaj, Flavio Cottarelli, Bob N1MLZ, Carlos EA1IJ, Brian M7YLF, Giuseppe IT9LLH, 邓 月, Jon M1JRH, Antonios Chouchoumis, Cédric Thomas and Justin White for their [donations](https://www.paypal.com/paypalme/F4HWN). That’s so kind of them. Thanks so much 🙏🏻
 
 ## Table of Contents
 
@@ -165,7 +165,9 @@ for everyday use and is the base inherited by the specialized editions. It inclu
 - [UV Studio](https://armel.github.io/uvstudio/) with integrated K5Viewer screen mirroring, screenshots and remote keyboard control,
 - advanced RX audio profiles and Audio Scope,
 - automatic RX/TX activity logging with RF Log,
-- multiboot support.
+- Full Watch across VFO A, VFO B and up to two priority channels,
+- Multiboot with one protected Main backup and four user firmware slots,
+- independent Multiconfig banks, switchable at runtime through `SetCfg`.
 
 Specialized presets extend Fusion for specific uses:
 
@@ -177,6 +179,81 @@ Specialized presets extend Fusion for specific uses:
   not a strict superset of every other edition: features may be exchanged between releases
   to preserve stability and memory headroom.
 - **Custom** remains a manually configured build based directly on the hidden technical default.
+
+### Multiboot and Multiconfig
+
+Multiboot uses the radio's external Flash to keep one automatically maintained
+**Main** firmware backup and four additional firmware slots. Each image is
+validated before it is restored to internal Flash, and the selector displays
+the edition and version stored in every valid slot.
+
+To open the Multiboot selector, power off the radio, hold `MENU`, power it on,
+then release the key when the selector appears. Use `UP` and `DOWN` to choose a
+slot, `MENU` to restore it and `EXIT` to leave without making changes.
+
+> [!CAUTION]
+> Never power off the radio while a firmware slot is being restored.
+
+Multiconfig provides one independent configuration bank for Main and for each
+of the four user slots. A bank contains the memory channels and names, VFO
+settings, scan lists, radio settings and edition-specific settings. By default,
+each firmware slot uses the bank with the same number.
+
+The `SetCfg` menu can select and apply another bank immediately, without
+restarting the radio or changing firmware. The status bar shows the active bank
+as `CFG M` or `CFG 1` to `CFG 4`, so several operating configurations can be
+used with the same firmware and compatible configurations can be shared across
+editions.
+
+### Full Watch
+
+Full Watch extends the normal dual-watch cycle to monitor:
+
+- VFO A,
+- VFO B,
+- priority channel 1,
+- priority channel 2.
+
+The priority channels come from the existing scan-list priority settings.
+Duplicates, invalid entries and channels already loaded in VFO A or B are
+ignored automatically.
+
+The `RxMode` menu provides two Full Watch modes:
+
+- `FULL RX / RESPOND` replies on the channel that opened the squelch,
+- `MAIN TX / FULL RX` always transmits on the selected main VFO.
+
+Animated chevrons show the background watch cycle while the normal VFO display
+remains available for navigation and operation.
+
+### Overlay applications and APRS
+
+Labs can store up to 16 applications from the current collection of 18 in
+external Flash. Each app is loaded into a dedicated 4 KiB RAM overlay only
+while it is running, while larger read-only assets such as text, fonts, bitmaps
+and lookup tables remain in external Flash.
+
+The current app collection includes:
+
+- radio tools: Broadcast FM, Fox Hunt, Beacon, Beam and Spectrum3D,
+- digital and signal apps: APRS RX, APRS TX, SSTV and EPIRB 406,
+- diagnostics: System Info,
+- games and demos: Breakout, Cube3D, Minesweeper, Plasma, Rapid Roll, Snake,
+  Space Impact and Tetris.
+
+APRS RX receives AX.25 UI frames using Bell 202 AFSK at 1200 baud, displays
+common position formats and Mic-E data, and keeps a five-frame history. APRS TX
+provides an on-radio editor for the source callsign and SSID, digipeater path,
+position, symbol and comment before transmitting a position beacon.
+
+> [!IMPORTANT]
+> Overlay apps, including APRS RX and APRS TX, are experimental and intended for
+> Labs. Use the app files supplied with the same firmware release so their ABI
+> and required capabilities match the installed firmware.
+
+> [!CAUTION]
+> Transmitting apps must only be used on frequencies, power levels and modes
+> permitted by your licence and local regulations.
 
 ### Radio and signal handling
 
@@ -209,16 +286,19 @@ Specialized presets extend Fusion for specific uses:
 
 ### Scanning
 
-- Support for up to 24 named scan lists.
+- Support for up to 24 named scan lists + 1 mixed list.
 - Each memory channel can be assigned to:
   - `OFF`,
   - one scan list from `01` to `24`,
   - `ALL`.
 - The `ALL` list scans every channel except those assigned to `OFF`.
+- The `MIX` list combines any selected subset of the 24 named lists into one
+  scan set.
 - Automatic selection of the next valid list when the requested list is empty.
 - Direct scan-list selection while scanning:
   - `00` selects `ALL`,
-  - `01` to `24` select the corresponding list.
+  - `01` to `24` select the corresponding list,
+  - `25` selects `MIX`.
 - Long press on `MENU` while scanning to exclude the current memory channel.
 - Up to 64 frequency exclusions.
 - Very fast scanning mode, reaching approximately 150 frequencies per second.
@@ -231,7 +311,7 @@ Specialized presets extend Fusion for specific uses:
 - Improved VFO screen with:
   - Classic and Tiny S-meter styles,
   - Classic and Tiny frequency-information layouts,
-  - `MAIN ONLY`, `DUAL` and `CROSS` display modes,
+  - `MAIN ONLY`, `DUAL`, `FULL` and `CROSS` display modes,
   - RX activity indication on the active VFO,
   - optional RX LED blinking,
   - squelch, monitor, step and CTCSS/DCS information,
@@ -319,7 +399,39 @@ Specialized presets extend Fusion for specific uses:
 - RF Log monitoring, analytics and CSV export.
 - Firmware flashing, calibration backup and restore, and boot-logo management from the same interface.
 - BEAM transfer of complete channel settings between compatible radios.
-- Improved AirCopy interface and progress reporting.
+
+#### AirCopy (Transfer edition)
+
+AirCopy can transfer one 128-channel bank, the radio settings, or all memory
+banks and settings in one operation. Version 6.1 adds a stop-and-wait protocol
+with acknowledgements in both directions:
+
+- the receiver acknowledges CRC32 comparison frames and every stored data frame,
+- a missing acknowledgement automatically triggers a retry, up to three times,
+- invalid, out-of-sequence or mismatched selections are rejected instead of
+  being applied silently,
+- the progress screen reports retries or receive errors and distinguishes
+  blocks that were already identical from blocks that were copied.
+
+Before sending data, the two radios compare CRC32 values in groups of up to 24
+blocks. The receiver returns a difference bitmap, so only blocks whose contents
+differ are transmitted. Each radio data frame can carry up to three consecutive
+64-byte blocks, approximately doubling over-the-air throughput compared with
+the previous one-block framing.
+
+Transfer also supports direct radio-to-radio cable cloning over UART at 460800
+baud. Press `*` in AirCopy to switch between `AIR COPY` and `CABLE COPY`; use
+`UP` and `DOWN` to select a memory bank, `Settings` or `All (Mem+Set)`, then
+`MENU` on the sender and `EXIT` on the receiver.
+
+Cable mode additionally provides `Flash 2M`, which clones the complete 2 MiB
+external Flash. Sectors are compared by CRC32 and only different sectors are
+written. The device-specific calibration sector is never copied or erased, and
+the receiving radio must be restarted after a successful Flash clone.
+
+> [!IMPORTANT]
+> The new AirCopy wire format is not compatible with earlier versions. Both
+> radios must run the same firmware version.
 
 ### Settings and controls
 
@@ -339,7 +451,8 @@ Specialized presets extend Fusion for specific uses:
   - `SetNFM`: narrow-FM bandwidth,
   - `SetVol`: RX audio volume,
   - `SetScn`: scan mode,
-  - `SetNav`: radio-specific navigation layout.
+  - `SetNav`: radio-specific navigation layout,
+  - `SetCfg`: apply another Multiconfig bank without restarting.
 - Improved `PonMsg`, `BackLt`, `TxTOut`, `ScnRev` and `KeyLck` menus.
 - Full VFO state restoration with a long press on `EXIT`.
 - Squelch changes made with `F + UP` or `F + DOWN` are persisted.

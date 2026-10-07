@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "apps/app_overlay.h"
 #include "driver/py25q16.h"
 #include "driver/st7565.h"
 #include "font.h"
@@ -13,7 +14,7 @@
 #define JA_VERSION      3u
 #define JA_GLYPH_BYTES  18u     // 12 columns x 12 bits packed LSB first, bit 0 = top row
 
-#define ASCII_WIDTH     7u      // gFontSmall 6 px + 1 px gap
+#define ASCII_WIDTH     7u      // small font 6 px + 1 px gap
 #define ASCII_DY        4u      // drop 7 px ASCII onto the 12 px baseline
 #define WIDE_WIDTH      12u     // glyph cell already includes its gap
 #define HALF_WIDTH      6u      // half-width katakana, likewise
@@ -29,6 +30,16 @@
 #define SJIS_HDR_SIZE   8u      // magic, u16 entry count, u16 reserved
 #define SJIS_TRAILS     188u    // 0x40..0x7E, 0x80..0xFC
 #define SJIS_LEADS      39u     // 0x81..0x84, 0x88..0x9F, 0xE0..0xEA (JIS X 0208 rows)
+
+// The resource image sits between the overlay Apps and the factory voice
+// prompts with no slack on either side, so make any upstream growth a build
+// error instead of a silent wipe of the Japanese data in the field.
+_Static_assert(APP_REGION_BASE + APP_SLOT_COUNT * APP_SLOT_STRIDE <= JA_FLASH_BASE,
+               "overlay Apps grew into the Japanese resource region");
+_Static_assert(JA_FLASH_BASE + JA_FLASH_SIZE <= 0x14C000u,
+               "Japanese resource region runs into the voice prompts");
+// The ASCII fallback above unpacks the small font itself, see Print().
+_Static_assert(ASCII_WIDTH == FONT_SMALL_WIDTH + 1u, "small font width changed upstream");
 
 static uint16_t gJaCount = 0xFFFF;  // glyphs in the image; 0xFFFF = not read yet
 static uint32_t gJaTextOff;         // UI string table, 0 = none
@@ -331,9 +342,15 @@ static uint8_t Print(const char *pString, uint8_t Start, uint8_t End, uint8_t y,
         {
             if (cp > ' ' && cp < 127)
             {
-                const uint8_t *glyph = gFontSmall[cp - ' ' - 1];
-                for (uint8_t i = 0; i < ARRAY_SIZE(gFontSmall[0]); i++)
-                    DrawColumn(x + i, y + ASCII_DY, glyph[i]);
+                // The small font is a packed 7-bit column stream since F4HWN
+                // v6.1.0; same unpacking as UI_PrintStringBuffer in ui/helper.c.
+                uint16_t bit = (uint16_t)(cp - ' ' - 1) * FONT_SMALL_WIDTH * 7u;
+                for (uint8_t i = 0; i < FONT_SMALL_WIDTH; i++, bit += 7u)
+                {
+                    const uint16_t byte   = bit >> 3;
+                    const uint16_t packed = gFontSmallPacked[byte] | ((uint16_t)gFontSmallPacked[byte + 1u] << 8);
+                    DrawColumn(x + i, y + ASCII_DY, (packed >> (bit & 7u)) & 0x7Fu);
+                }
             }
         }
         else if (ready)

@@ -2,7 +2,7 @@
  *
  * UTF-8 strings mixing ASCII and full-width characters. Full-width glyphs are
  * 12x12 and come from the resource image in external SPI flash (built by
- * tools/ja/gen_ja_font.py); ASCII uses the built-in gFontSmall. Text is drawn
+ * tools/ja/gen_ja_font.py); ASCII uses the built-in small font. Text is drawn
  * into gFrameBuffer at a pixel row, so a line of text is 12 px tall and does
  * not have to sit on an 8 px page boundary.
  */

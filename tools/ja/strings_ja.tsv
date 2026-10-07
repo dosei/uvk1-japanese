@@ -88,6 +88,8 @@ CHANNEL\nNUMBER	CH番号
 NAME	名称
 NAME\n+\nFREQ	名称+周波数
 ALL	すべて
+# ScList: MIX is the user-picked subset of the 24 scan lists (F4HWN v6.1.0)
+MIX	混合
 SOUND	音のみ
 MESSAGE	メッセージ
 VOLTAGE	電圧
@@ -103,6 +105,10 @@ MAIN\nONLY	メインのみ
 DUAL RX\nRESPOND	2波受信\n追従
 CROSS\nBAND	サブ\nのみ
 MAIN TX\nDUAL RX	2波受信\nメイン固定
+# Full Watch (F4HWN v6.1.0): A, B and the two priority channels. "MAIN TX" has
+# no meaning in an RX-only build, so both are named after what is received.
+FULL RX\nRESPOND	全波受信\n追従
+MAIN TX\nFULL RX	全波受信\nメイン固定
 # SetLck (ACTIONS = the side key functions)
 KEYS	キー
 KEYS\nACTIONS	キー\n+機能
@@ -165,7 +171,7 @@ NO LOG	記録なし
 NO PRESET	プリセットなし
 CLEAR LOG	ログ消去
 
-@width 37	welcome screen, after "F4HWN v6.0.0 " (91 px)
+@width 37	welcome screen, after "F4HWN v6.1.0 " (91 px)
 base	ﾍﾞｰｽ
 
 @width 109	popup (x=9..117)
