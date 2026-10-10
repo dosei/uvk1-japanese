@@ -1,0 +1,1 @@
+UVK1-RxJa v1.2.0（F4HWN Fusion v6.1.0 ベース）・受信専用。技適のない無線機から電波を出すのは電波法違反です。 ｜ [ソースと Releases](https://github.com/dosei/uvk1-japanese) ｜ [不具合の報告](https://github.com/dosei/uvk1-japanese/issues) ｜ [F4HWN Wiki（英語）](https://github.com/armel/uv-k1-k5v3-firmware-custom/wiki)

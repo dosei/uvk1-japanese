@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build the searchable docs site from the GitHub Wiki.
+"""Build the docs site (the user guide) from manual/.
 
-GitHub serves wiki pages with "X-Robots-Tag: none" (only wikis with 500+
-stars and restricted editing are indexed), so the wiki itself never shows up
-in search results. This script converts the wiki's Markdown into static HTML
-so that GitHub Pages can publish an indexable copy, and writes
-<out>/sitemap.xml. The wiki stays the single source of the text.
+The guide used to be the GitHub Wiki, but GitHub serves wiki pages with
+"X-Robots-Tag: none" (only wikis with 500+ stars and restricted editing are
+indexed), so it never showed up in search results. The pages moved to
+manual/ (still in the wiki's Markdown dialect), this script converts them
+into static HTML for GitHub Pages and writes <out>/sitemap.xml, and the wiki
+now only points to the new pages.
 
 Layout: the wiki's Home is the site's top page (<out>/index.html), the other
 pages are <out>/docs/<page>.html, and RxJa Tools lives in <out>/tools/.
@@ -13,15 +14,15 @@ docs/index.html only forwards to the top page (it was the top of the docs
 before the tools moved), and the top page forwards old tool links such as
 /#flash to tools/#flash.
 
-Handles the GitHub Wiki dialect used by the RxJa wiki:
+Handles the GitHub Wiki dialect the pages are written in:
   [[Page]], [[Text|Page]], [[Page#Heading]]   links between pages
   > [!NOTE] / [!TIP] / [!IMPORTANT] / [!WARNING] / [!CAUTION]   alerts
   _Sidebar.md, _Footer.md   navigation and footer on every page
   images/...   copied to docs/images/
 Heading ids follow GitHub's rule, so links like [[はじめに#対応機種]] work.
 
-Usage: build.py WIKI_DIR OUT_DIR
-  WIKI_DIR  a clone of the wiki repository (full history for <lastmod>)
+Usage: build.py SRC_DIR OUT_DIR
+  SRC_DIR   manual/ (in a clone with full history, for <lastmod>)
   OUT_DIR   the Pages site root (index.html, docs/ and sitemap.xml are
             written into it)
 """
@@ -245,7 +246,7 @@ def alerts(body):
 
 
 def rewrite_links(body):
-    """Links into the wiki itself point at the docs copy instead."""
+    """Links into the old wiki point at the new pages instead."""
 
     def repl(m):
         page = (m.group(1) or "").strip("/")
@@ -330,9 +331,9 @@ def main():
             "body": body,
             "footer": footer,
             "forward": "",
-            "wiki_url": html.escape(
-                "https://github.com/dosei/uvk1-japanese/wiki"
-                + ("" if page == HOME else "/" + quote(page)), quote=True),
+            "source_url": html.escape(
+                "https://github.com/dosei/uvk1-japanese/blob/main/manual/"
+                + quote(page) + ".md", quote=True),
         }
         if page == HOME:
             values["forward"] = TOOLS_FORWARD

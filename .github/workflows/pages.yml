@@ -4,16 +4,14 @@
 # listed in tools/firmware/index.json. Release assets are bundled because GitHub serves them
 # without CORS headers, so the page cannot fetch them directly.
 #
-# The wiki is converted to the top page and docs/ (with sitemap.xml) by
-# tools/docs-site/build.py, because GitHub marks wiki pages noindex and they
-# never appear in search results. The wiki stays the source of the text.
-# Old links to the tools at the top (/#flash and so on) are forwarded to
-# tools/ by the top page.
+# The user guide in manual/ is converted to the top page and docs/ (with
+# sitemap.xml) by tools/docs-site/build.py. It used to be the GitHub Wiki,
+# which GitHub marks noindex; the wiki now only points here. Old links to the
+# tools at the top (/#flash and so on) are forwarded to tools/ by the top page.
 #
 # Triggers:
-#   - push to main touching web/, tools/docs-site/ or this file
+#   - push to main touching web/, manual/, tools/docs-site/ or this file
 #   - a release being published, edited or deleted
-#   - a wiki page being created or edited (gollum)
 #   - by hand: Actions > Pages > Run workflow, or
 #     `gh workflow run pages.yml -R dosei/uvk1-japanese`
 #
@@ -31,11 +29,11 @@ on:
     branches: [ main ]
     paths:
       - 'web/**'
+      - 'manual/**'
       - 'tools/docs-site/**'
       - '.github/workflows/pages.yml'
   release:
     types: [ published, edited, deleted ]
-  gollum:
   workflow_dispatch:
 
 permissions:
@@ -68,6 +66,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # History (without file contents) gives each page its <lastmod>.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Copy web/
         run: |
@@ -75,18 +77,12 @@ jobs:
           mkdir -p _site/tools
           cp -r web/. _site/tools/
 
-      - uses: actions/checkout@v7
-        with:
-          repository: ${{ github.repository }}.wiki
-          path: _wiki
-          fetch-depth: 0
-
-      - name: Build docs/ and sitemap.xml from the wiki
+      - name: Build the guide (top page, docs/, sitemap.xml) from manual/
         run: |
           set -euo pipefail
           python3 -m venv _venv
           _venv/bin/pip install -q -r tools/docs-site/requirements.txt
-          _venv/bin/python tools/docs-site/build.py _wiki _site
+          _venv/bin/python tools/docs-site/build.py manual _site
 
       - name: Bundle RxJa releases
         env:

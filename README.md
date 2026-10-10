@@ -8,7 +8,7 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 - **受信専用**: 送信できないようにしてあります（下記）。
 - **日本語表示**: メニュー名・カテゴリ名、メニュー右列の選択肢、起動画面、キーロック・電池切れ・周波数/トーン検索・FM ラジオ・受信ログのメッセージを日本語で表示します（OFF/ON・数字・単位・略語は英語のまま）。チャンネル名にも日本語が使えます（Shift_JIS、全角 5 文字・半角 10 文字まで。v1.1.0 から）。漢字・かな・半角カナのフォントは本体の外付け SPI フラッシュに置くので、本体側の容量はほとんど使いません。
 
-使い方（書き込み方、キー操作、メニュー全項目の説明など）は **[説明書のページ](https://dosei.github.io/uvk1-japanese/)** にまとめています（内容は [Wiki](https://github.com/dosei/uvk1-japanese/wiki) と同じです）。ファームの書き込みはブラウザだけでできる [RxJa Tools](https://dosei.github.io/uvk1-japanese/tools/) が簡単です。
+使い方（書き込み方、キー操作、メニュー全項目の説明など）は **[説明書のページ](https://dosei.github.io/uvk1-japanese/)** にまとめています（原稿は [`manual/`](manual/)。前の Wiki から移しました）。ファームの書き込みはブラウザだけでできる [RxJa Tools](https://dosei.github.io/uvk1-japanese/tools/) が簡単です。
 
 ビルドは `RxJa` プリセットです。ほかのプリセット（Fusion など）は元の F4HWN と同じ動きです。
 
