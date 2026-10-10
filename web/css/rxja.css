@@ -253,3 +253,26 @@
   pointer-events: none;
 }
 #pane-tools .rxja-mem-bytes[data-over="true"] { color: var(--error); font-weight: 600; }
+
+/* Top bar link to the user guide (docs/). Always visible, styled like the
+   other top-bar controls. */
+.topbar-docs {
+  height: 31px;
+  padding: 0 12px;
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Shown only when JavaScript is off: what this page is, for people and crawlers. */
+.rxja-noscript {
+  padding: 16px 18px;
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.rxja-noscript h1 { margin: 0 0 6px; font-size: 18px; }
+.rxja-noscript p { margin: 0 0 6px; }
+.rxja-noscript a { color: var(--accent); }

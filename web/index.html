@@ -5,16 +5,34 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>UVK1-RxJa Tools</title>
-<script src="js/studio-version.js?v=1.5.0-rxja2"></script>
+<title>UVK1-RxJa Tools — UV-K1 受信専用・日本語化ファームの書き込みツール</title>
+<meta name="description" content="UV-K1 / UV-K5 V3 用の受信専用・日本語化ファーム「UVK1-RxJa」を、パソコン版 Chrome / Edge からそのまま書き込めるツールです。日本語データの書き込みやメモリーチャンネルの編集もブラウザだけでできます。">
+<link rel="canonical" href="https://dosei.github.io/uvk1-japanese/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="UVK1-RxJa">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="UVK1-RxJa Tools — UV-K1 受信専用・日本語化ファームの書き込みツール">
+<meta property="og:description" content="UV-K1 / UV-K5 V3 用の受信専用・日本語化ファーム「UVK1-RxJa」を、パソコン版 Chrome / Edge からそのまま書き込めるツールです。日本語データの書き込みやメモリーチャンネルの編集もブラウザだけでできます。">
+<meta property="og:url" content="https://dosei.github.io/uvk1-japanese/">
+<meta name="twitter:card" content="summary">
+<script src="js/studio-version.js?v=1.5.0-rxja3"></script>
 <link rel="icon" type="image/svg+xml" href="assets/uv-studio-radio.svg">
 <link href="css/core.css?v=3" rel="stylesheet">
 <link href="css/viewer.css?v=13" rel="stylesheet">
 <link href="css/tools.css?v=11" rel="stylesheet">
 <link href="css/studio.css?v=19" rel="stylesheet">
-<link href="css/rxja.css?v=3" rel="stylesheet">
+<link href="css/rxja.css?v=4" rel="stylesheet">
 </head>
 <body data-theme="light">
+
+<noscript>
+    <div class="rxja-noscript">
+        <h1>UVK1-RxJa Tools</h1>
+        <p>UV-K1 / UV-K1(8) / UV-K5 V3 / UV-K5(8) V3 用の受信専用・日本語化ファーム「UVK1-RxJa」（F4HWN Fusion がもと）を、本体へ書き込むためのブラウザ用ツールです。ファームの書き込み、日本語データの書き込み、メモリーチャンネルの編集などがインストールなしでできます。</p>
+        <p>このページは JavaScript と Web Serial API を使います。パソコン版の Chrome または Edge で、JavaScript を有効にして開いてください。</p>
+        <p><a href="docs/">使い方（説明書）</a> ・ <a href="https://github.com/dosei/uvk1-japanese">GitHub リポジトリ</a></p>
+    </div>
+</noscript>
 
 <!-- ═══════════ Top bar ═══════════ -->
 <header class="topbar">
@@ -54,6 +72,9 @@
         <span class="section-name" id="sectionName" data-i18n="studio_nav_live">Live Viewer</span>
     </div>
     <div class="topbar-actions">
+        <a class="btn topbar-docs" href="docs/" target="_blank" rel="noopener"
+           data-i18n="studio_docs_link" data-i18n-title="studio_docs_link_title"
+           title="使い方の説明書を別のタブで開きます">使い方（説明書）</a>
         <div class="studio-serial-status" id="studioSerialStatus"
              data-state="disconnected" role="status" aria-live="polite"
              aria-label="Disconnected" title="Disconnected">
@@ -699,6 +720,7 @@
                     UV Studio communicates directly with compatible radios through the Web Serial API. No installation, server or account is required. UV Studio is open-source software licensed under the Apache License 2.0.
                 </p>
                 <nav class="about-links" data-i18n-aria-label="studio_about_documents" aria-label="Project documents">
+                    <a href="docs/" target="_blank" rel="noopener" data-i18n="studio_docs_link">使い方（説明書）</a>
                     <a href="https://github.com/dosei/uvk1-japanese" target="_blank" rel="noopener">UVK1-RxJa (GitHub)</a>
                     <a href="https://armel.github.io/uvstudio/" target="_blank" rel="noopener">UV Studio</a>
                     <a href="LICENSE.txt" target="_blank" rel="noopener">LICENSE</a>
@@ -786,8 +808,8 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja7"></script>
-<script src="locales/ja.js?v=rxja8"></script>
+<script src="locales/en.js?v=rxja8"></script>
+<script src="locales/ja.js?v=rxja9"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
@@ -797,7 +819,7 @@
 <script src="js/flash.js?v=22"></script>
 <script src="js/flash-catalog.js?v=18"></script>
 <script src="js/app-catalog.js?v=1"></script>
-<script src="js/studio.js?v=14"></script>
+<script src="js/studio.js?v=15"></script>
 <script type="module" src="js/rxja-ja.js?v=4"></script>
 <script type="module" src="js/rxja-mem.js?v=2"></script>
 </body>

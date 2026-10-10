@@ -353,6 +353,8 @@ window.UVSTUDIO_LOCALES.en = {
   "studio_about_description": "Talks to the radio directly through the Web Serial API. No installation, server or account is required. UV Studio is open-source software licensed under the Apache License 2.0; RxJa Tools is a modified version of it (see NOTICE). It is not the official UV Studio, so please report problems with this page to the RxJa repository.",
   "studio_about_documents": "Project documents",
   "studio_language": "Language",
+  "studio_docs_link": "User guide",
+  "studio_docs_link_title": "Open the user guide (in Japanese) in a new tab",
   "detach_keyboard_short": "Detach",
   "detach_keyboard": "Detach the keypad into a floating window",
   "reattach_keyboard_short": "Reattach",

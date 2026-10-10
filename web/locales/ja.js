@@ -353,6 +353,8 @@ window.UVSTUDIO_LOCALES.ja = {
   "studio_about_description": "Web Serial API で本体と直接通信します。インストールもサーバもアカウントも要りません。UV Studio は Apache License 2.0 のオープンソースソフトウェアで、RxJa Tools はそれを改変したものです（改変内容は NOTICE を参照）。UV Studio 本家とは別物なので、このツールの不具合は RxJa のリポジトリへ報告してください。",
   "studio_about_documents": "関連文書",
   "studio_language": "言語",
+  "studio_docs_link": "使い方（説明書）",
+  "studio_docs_link_title": "使い方の説明書を別のタブで開きます",
   "detach_keyboard_short": "切り離す",
   "detach_keyboard": "キーパッドを別ウィンドウに切り離す",
   "reattach_keyboard_short": "戻す",

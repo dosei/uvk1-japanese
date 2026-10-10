@@ -4,9 +4,14 @@
 # firmware/index.json. Release assets are bundled because GitHub serves them
 # without CORS headers, so the page cannot fetch them directly.
 #
+# The wiki is also converted to docs/ (with sitemap.xml) by
+# tools/docs-site/build.py, because GitHub marks wiki pages noindex and they
+# never appear in search results. The wiki stays the source of the text.
+#
 # Triggers:
-#   - push to main touching web/ or this file
+#   - push to main touching web/, tools/docs-site/ or this file
 #   - a release being published, edited or deleted
+#   - a wiki page being created or edited (gollum)
 #   - by hand: Actions > Pages > Run workflow, or
 #     `gh workflow run pages.yml -R dosei/uvk1-japanese`
 #
@@ -24,9 +29,11 @@ on:
     branches: [ main ]
     paths:
       - 'web/**'
+      - 'tools/docs-site/**'
       - '.github/workflows/pages.yml'
   release:
     types: [ published, edited, deleted ]
+  gollum:
   workflow_dispatch:
 
 permissions:
@@ -65,6 +72,19 @@ jobs:
           set -euo pipefail
           mkdir -p _site
           cp -r web/. _site/
+
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: _wiki
+          fetch-depth: 0
+
+      - name: Build docs/ and sitemap.xml from the wiki
+        run: |
+          set -euo pipefail
+          python3 -m venv _venv
+          _venv/bin/pip install -q -r tools/docs-site/requirements.txt
+          _venv/bin/python tools/docs-site/build.py _wiki _site
 
       - name: Bundle RxJa releases
         env:

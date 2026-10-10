@@ -71,7 +71,7 @@
     }
 
     function applyBranding() {
-        document.title = "UVK1-RxJa Tools";
+        // RxJa: keep the descriptive static <title> from index.html.
         if (versionLabel) versionLabel.textContent = `v${version}`;
         if (aboutVersion) aboutVersion.textContent = `v${version}`;
     }
