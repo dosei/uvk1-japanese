@@ -4,8 +4,14 @@
 GitHub serves wiki pages with "X-Robots-Tag: none" (only wikis with 500+
 stars and restricted editing are indexed), so the wiki itself never shows up
 in search results. This script converts the wiki's Markdown into static HTML
-under <out>/docs/ so that GitHub Pages can publish an indexable copy, and
-writes <out>/sitemap.xml. The wiki stays the single source of the text.
+so that GitHub Pages can publish an indexable copy, and writes
+<out>/sitemap.xml. The wiki stays the single source of the text.
+
+Layout: the wiki's Home is the site's top page (<out>/index.html), the other
+pages are <out>/docs/<page>.html, and RxJa Tools lives in <out>/tools/.
+docs/index.html only forwards to the top page (it was the top of the docs
+before the tools moved), and the top page forwards old tool links such as
+/#flash to tools/#flash.
 
 Handles the GitHub Wiki dialect used by the RxJa wiki:
   [[Page]], [[Text|Page]], [[Page#Heading]]   links between pages
@@ -16,7 +22,8 @@ Heading ids follow GitHub's rule, so links like [[はじめに#対応機種]] wo
 
 Usage: build.py WIKI_DIR OUT_DIR
   WIKI_DIR  a clone of the wiki repository (full history for <lastmod>)
-  OUT_DIR   the Pages site root (docs/ and sitemap.xml are written into it)
+  OUT_DIR   the Pages site root (index.html, docs/ and sitemap.xml are
+            written into it)
 """
 
 import datetime
@@ -46,20 +53,55 @@ ALERTS = {
 }
 
 
-def page_file(page):
-    """Output file name (relative to docs/) for a wiki page name."""
-    return "index.html" if page == HOME else page + ".html"
-
-
 def page_url(page):
     """Absolute, percent-encoded URL of a page."""
-    return SITE_URL + "docs/" + ("" if page == HOME else quote(page) + ".html")
+    return SITE_URL + ("" if page == HOME else "docs/" + quote(page) + ".html")
 
 
 def page_href(page, anchor=""):
-    """Link from one docs page to another (all pages share docs/)."""
-    href = "./" if page == HOME else quote(page) + ".html"
+    """Link from a page in docs/ to another page."""
+    href = "../" if page == HOME else quote(page) + ".html"
     return href + ("#" + quote(anchor) if anchor else "")
+
+
+def relocate(page_html):
+    """Turn a page written for docs/ into one for the site root."""
+
+    def repl(m):
+        attr, url = m.group(1), m.group(2)
+        if re.match(r"[a-z][a-z0-9+.-]*:|[#/]", url):
+            return m.group(0)
+        if url.startswith("../"):
+            url = url[3:] or "./"
+        else:
+            url = "docs/" + url
+        return f'{attr}="{url}"'
+
+    return re.sub(r'\b(href|src)="([^"]*)"', repl, page_html)
+
+
+# On the top page (at the end of <body>, so the ids exist): a #fragment that
+# names nothing here is an old link to RxJa Tools, which used to be the top
+# page, e.g. /#flash -> tools/#flash.
+TOOLS_FORWARD = """<script>
+(function () {
+  var id = decodeURIComponent(location.hash.slice(1));
+  if (id && !document.getElementById(id)) location.replace("tools/" + location.hash);
+})();
+</script>"""
+
+DOCS_INDEX = """<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>UVK1-RxJa の使い方</title>
+<link rel="canonical" href="{url}">
+<meta http-equiv="refresh" content="0; url=../">
+<script>location.replace("../" + location.hash);</script>
+</head>
+<body><p><a href="../">UVK1-RxJa の使い方</a>へ移りました。</p></body>
+</html>
+"""
 
 
 def github_slug(text, seen):
@@ -207,7 +249,7 @@ def rewrite_links(body):
 
     def repl(m):
         page = (m.group(1) or "").strip("/")
-        return 'href="' + (page + ".html" if page else "./") + (m.group(2) or "") + '"'
+        return 'href="' + (page + ".html" if page else "../") + (m.group(2) or "") + '"'
 
     return re.sub(r'href="https://github\.com/dosei/uvk1-japanese/wiki(/[^"#]*)?(#[^"]*)?"',
                   repl, body)
@@ -272,7 +314,7 @@ def main():
     if os.path.exists(os.path.join(wiki_dir, "_Footer.md")):
         footer, _, _ = wiki.render(wiki.read("_Footer"), "_Footer")
 
-    sitemap = [(SITE_URL, lastmod(wiki_dir, HOME))]
+    sitemap = []
     for page in wiki.pages:
         body, title, description = wiki.render(wiki.read(page), page)
         title = title or page.replace("-", " ")
@@ -287,14 +329,26 @@ def main():
             "nav": mark_current(nav, page),
             "body": body,
             "footer": footer,
+            "forward": "",
             "wiki_url": html.escape(
                 "https://github.com/dosei/uvk1-japanese/wiki"
                 + ("" if page == HOME else "/" + quote(page)), quote=True),
         }
+        if page == HOME:
+            values["forward"] = TOOLS_FORWARD
         out = re.sub(r"\{\{(\w+)\}\}", lambda m: values[m.group(1)], template)
-        with open(os.path.join(docs, page_file(page)), "w", encoding="utf-8") as f:
+        if page == HOME:
+            path = os.path.join(out_dir, "index.html")
+            out = relocate(out)
+        else:
+            path = os.path.join(docs, page + ".html")
+        with open(path, "w", encoding="utf-8") as f:
             f.write(out)
         sitemap.append((page_url(page), lastmod(wiki_dir, page)))
+    sitemap.sort(key=lambda entry: entry[0] != SITE_URL)
+    sitemap.insert(1, (SITE_URL + "tools/", None))
+    with open(os.path.join(docs, "index.html"), "w", encoding="utf-8") as f:
+        f.write(DOCS_INDEX.format(url=html.escape(SITE_URL, quote=True)))
 
     for name in ("style.css",):
         shutil.copy(os.path.join(HERE, name), os.path.join(docs, name))
@@ -306,11 +360,11 @@ def main():
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n'
                 '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for loc, mod in sitemap:
-            f.write(f"  <url><loc>{html.escape(loc)}</loc>"
-                    f"<lastmod>{mod}</lastmod></url>\n")
+            mod = f"<lastmod>{mod}</lastmod>" if mod else ""
+            f.write(f"  <url><loc>{html.escape(loc)}</loc>{mod}</url>\n")
         f.write("</urlset>\n")
 
-    print(f"{len(wiki.pages)} pages -> {docs}, sitemap: {len(sitemap)} URLs")
+    print(f"{len(wiki.pages)} pages -> {out_dir}, sitemap: {len(sitemap)} URLs")
     if wiki.missing:
         for page, link in wiki.missing:
             print(f"error: {page}: [[{link}]] links to no page", file=sys.stderr)

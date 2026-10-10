@@ -1,12 +1,14 @@
-# Publishes web/ (UVK1-RxJa Tools, a fork of UV Studio) to GitHub Pages, with the
-# firmware (f4hwn.rxja.bin) and Japanese data (ja_res.bin) of every published
-# rxja-v* release bundled under firmware/<tag>/ and listed in
-# firmware/index.json. Release assets are bundled because GitHub serves them
+# Publishes web/ (UVK1-RxJa Tools, a fork of UV Studio) to GitHub Pages as
+# tools/, with the firmware (f4hwn.rxja.bin) and Japanese data (ja_res.bin) of
+# every published rxja-v* release bundled under tools/firmware/<tag>/ and
+# listed in tools/firmware/index.json. Release assets are bundled because GitHub serves them
 # without CORS headers, so the page cannot fetch them directly.
 #
-# The wiki is also converted to docs/ (with sitemap.xml) by
+# The wiki is converted to the top page and docs/ (with sitemap.xml) by
 # tools/docs-site/build.py, because GitHub marks wiki pages noindex and they
 # never appear in search results. The wiki stays the source of the text.
+# Old links to the tools at the top (/#flash and so on) are forwarded to
+# tools/ by the top page.
 #
 # Triggers:
 #   - push to main touching web/, tools/docs-site/ or this file
@@ -70,8 +72,8 @@ jobs:
       - name: Copy web/
         run: |
           set -euo pipefail
-          mkdir -p _site
-          cp -r web/. _site/
+          mkdir -p _site/tools
+          cp -r web/. _site/tools/
 
       - uses: actions/checkout@v7
         with:
@@ -89,7 +91,7 @@ jobs:
       - name: Bundle RxJa releases
         env:
           GH_TOKEN: ${{ github.token }}
-          SITE: _site
+          SITE: _site/tools
           WORK: _work
         run: |
           set -euo pipefail
@@ -182,7 +184,7 @@ jobs:
       - name: Check index.json
         run: |
           set -euo pipefail
-          n=$(jq '.releases | length' _site/firmware/index.json)
+          n=$(jq '.releases | length' _site/tools/firmware/index.json)
           echo "releases bundled: $n"
           if [ "$n" -lt 1 ]; then
             echo "::error::firmware/index.json has no releases"

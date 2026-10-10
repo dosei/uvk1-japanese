@@ -8,7 +8,7 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 - **受信専用**: 送信できないようにしてあります（下記）。
 - **日本語表示**: メニュー名・カテゴリ名、メニュー右列の選択肢、起動画面、キーロック・電池切れ・周波数/トーン検索・FM ラジオ・受信ログのメッセージを日本語で表示します（OFF/ON・数字・単位・略語は英語のまま）。チャンネル名にも日本語が使えます（Shift_JIS、全角 5 文字・半角 10 文字まで。v1.1.0 から）。漢字・かな・半角カナのフォントは本体の外付け SPI フラッシュに置くので、本体側の容量はほとんど使いません。
 
-使い方（書き込み方、キー操作、メニュー全項目の説明など）は **[説明書のページ](https://dosei.github.io/uvk1-japanese/docs/)** にまとめています（内容は [Wiki](https://github.com/dosei/uvk1-japanese/wiki) と同じです）。ファームの書き込みはブラウザだけでできる [RxJa Tools](https://dosei.github.io/uvk1-japanese/) が簡単です。
+使い方（書き込み方、キー操作、メニュー全項目の説明など）は **[説明書のページ](https://dosei.github.io/uvk1-japanese/)** にまとめています（内容は [Wiki](https://github.com/dosei/uvk1-japanese/wiki) と同じです）。ファームの書き込みはブラウザだけでできる [RxJa Tools](https://dosei.github.io/uvk1-japanese/tools/) が簡単です。
 
 ビルドは `RxJa` プリセットです。ほかのプリセット（Fusion など）は元の F4HWN と同じ動きです。
 
@@ -38,7 +38,7 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 
 ## ブラウザで書き込む（UVK1-RxJa Tools）
 
-[UVK1-RxJa Tools](https://dosei.github.io/uvk1-japanese/)（以下 RxJa Tools）は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE.txt`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
+[UVK1-RxJa Tools](https://dosei.github.io/uvk1-japanese/tools/)（以下 RxJa Tools）は、F4HWN の作者による [UV Studio](https://armel.github.io/uvstudio/) をもとに RxJa 用に手を入れたページです（ソースは `web/`、変更点は `web/NOTICE.txt`）。パソコン版の Chrome か Edge で開きます（Web Serial を使うので Firefox と Safari、スマートフォンでは動きません）。
 
 - **ファーム書き込み**: 一覧から RxJa の版を選び、無線機を DFU モード（PTT を押したまま電源を入れる）にして書き込みます。書き終わると、同じ版の日本語データを続けて自動で書き込みます。
 - **日本語データ**: ファームはそのままで、日本語データだけを書き直すページです。訳語を直したときや、自分で作った `ja_res.bin` を入れるときに使います。
@@ -71,7 +71,7 @@ cmake --build build/RxJa
 > [!CAUTION]
 > 2026-09-27 に試作版（旧 rxja-v0.1.0〜v0.2.1）を公開していましたが、取り下げて v0.1.0 からやり直しました。最初の試作版（2026-09-27 公開の旧 v0.1.0）は日本語データを 0x0C0000 に置いていて、そこは F4HWN のマルチブートの設定バンク 1〜4 でした（`App/driver/mb_flash.h`）。手元に試作版のファイルが残っていたら使わないでください。今の版とはデータの識別子・形式と転送コマンドの番号が違うので、混ぜて使っても転送が拒否されるか英語表示のままになり、0x0C0000 には書き込まれません。
 
-いちばん簡単なのは [RxJa Tools](https://dosei.github.io/uvk1-japanese/)（上記）です。RxJa のファームを書き込むと日本語データも続けて書き込まれます。日本語データだけを入れ直すときは、RxJa Tools の日本語データのページで、同梱の版か自分で作った `ja_res.bin` を選び、RxJa ファームで起動した状態でポートを選ぶと、書き込みと照合をします。
+いちばん簡単なのは [RxJa Tools](https://dosei.github.io/uvk1-japanese/tools/)（上記）です。RxJa のファームを書き込むと日本語データも続けて書き込まれます。日本語データだけを入れ直すときは、RxJa Tools の日本語データのページで、同梱の版か自分で作った `ja_res.bin` を選び、RxJa ファームで起動した状態でポートを選ぶと、書き込みと照合をします。
 
 コマンドラインで書く場合:
 
