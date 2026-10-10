@@ -459,8 +459,18 @@ window.addEventListener('uvstudio:languagechange', () => {
 });
 
 renderFlashHint();
-// The module may load after studio.js already opened the Japanese data view.
-if (document.getElementById('ja-data-content')?.classList.contains('active')) void initView();
+// The module may load after studio.js already opened the Japanese data view
+// (e.g. arriving at #ja-data). Modules run before DOMContentLoaded, but
+// flash-catalog.js defines RxJaCatalog in its DOMContentLoaded handler, so wait
+// for it (that handler was added first, so it runs before this one).
+function initIfOpen() {
+  if (document.getElementById('ja-data-content')?.classList.contains('active')) void initView();
+}
+if (window.RxJaCatalog) {
+  initIfOpen();
+} else {
+  document.addEventListener('DOMContentLoaded', initIfOpen, { once: true });
+}
 
 window.RxJaData = Object.freeze({
   setPending(entry) { pending = entry && entry.ja ? entry : null; },
