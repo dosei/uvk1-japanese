@@ -279,10 +279,12 @@ def shorten(text, limit=120):
     return cut(text) or cut(plain) or text[:limit].rstrip() + "…"
 
 
-def lastmod(wiki_dir, name):
+def lastmod(wiki_dir, name, pathspec=None):
+    """Time of the last commit touching a page (or any git pathspec)."""
     try:
         out = subprocess.run(
-            ["git", "-C", wiki_dir, "log", "-1", "--format=%cI", "--", name + ".md"],
+            ["git", "-C", wiki_dir, "log", "-1", "--format=%cI", "--",
+             pathspec or name + ".md"],
             capture_output=True, text=True, check=True,
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
@@ -392,7 +394,8 @@ def main():
             f.write(out)
         sitemap.append((page_url(page), lastmod(wiki_dir, page)))
     sitemap.sort(key=lambda entry: entry[0] != SITE_URL)
-    sitemap.insert(1, (SITE_URL + "tools/", None))
+    # RxJa Tools changes when web/ does (":/" is the repository root).
+    sitemap.insert(1, (SITE_URL + "tools/", lastmod(wiki_dir, None, ":/web")))
 
     sitemap_url = SITE_URL + "sitemap.html"
     sitemap_description = "UVK1-RxJa の説明書の全ページと RxJa Tools の一覧（サイトマップ）です。"

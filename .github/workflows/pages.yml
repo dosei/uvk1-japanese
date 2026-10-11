@@ -9,6 +9,11 @@
 # which GitHub marks noindex; the wiki now only points here. Old links to the
 # tools at the top (/#flash and so on) are forwarded to tools/ by the top page.
 #
+# After each deploy, pages whose <lastmod> changed (compared with the sitemap
+# that was live before) are sent to IndexNow, which shares them with Bing and
+# the other participating engines (not Google). The key file is published at
+# the site root as <key>.txt; the key is not a secret.
+#
 # Triggers:
 #   - push to main touching web/, manual/, tools/docs-site/ or this file
 #   - a release being published, edited or deleted
@@ -41,6 +46,10 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  SITE_URL: https://dosei.github.io/uvk1-japanese/
+  INDEXNOW_KEY: 05148231539b4959c767471de91a566c
+
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -64,6 +73,8 @@ jobs:
   build:
     if: github.event_name != 'release'
     runs-on: ubuntu-latest
+    outputs:
+      indexnow_urls: ${{ steps.indexnow.outputs.urls }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -83,6 +94,32 @@ jobs:
           python3 -m venv _venv
           _venv/bin/pip install -q -r tools/docs-site/requirements.txt
           _venv/bin/python tools/docs-site/build.py manual _site
+
+      - name: List pages changed since the live sitemap (for IndexNow)
+        id: indexnow
+        run: |
+          set -euo pipefail
+          echo "$INDEXNOW_KEY" > "_site/$INDEXNOW_KEY.txt"
+          curl -fsS "${SITE_URL}sitemap.xml" -o _live-sitemap.xml || : > _live-sitemap.xml
+          urls=$(python3 - <<'EOF'
+          import json, xml.etree.ElementTree as ET
+
+          NS = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+
+          def entries(path):
+              try:
+                  root = ET.parse(path).getroot()
+              except (ET.ParseError, OSError):
+                  return {}
+              return {u.findtext(NS + "loc"): u.findtext(NS + "lastmod")
+                      for u in root.iter(NS + "url")}
+
+          live, new = entries("_live-sitemap.xml"), entries("_site/sitemap.xml")
+          print(json.dumps([loc for loc, mod in new.items() if live.get(loc, "-") != mod]))
+          EOF
+          )
+          echo "urls=$urls" >> "$GITHUB_OUTPUT"
+          echo "changed: $urls"
 
       - name: Bundle RxJa releases
         env:
@@ -202,3 +239,28 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  indexnow:
+    needs: [ build, deploy ]
+    if: needs.build.outputs.indexnow_urls != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send changed pages to IndexNow
+        env:
+          URLS: ${{ needs.build.outputs.indexnow_urls }}
+        run: |
+          set -euo pipefail
+          host=$(python3 -c 'import os, urllib.parse; print(urllib.parse.urlsplit(os.environ["SITE_URL"]).hostname)')
+          jq -n --arg host "$host" --arg key "$INDEXNOW_KEY" \
+                --arg loc "${SITE_URL}${INDEXNOW_KEY}.txt" --argjson urls "$URLS" \
+                '{host: $host, key: $key, keyLocation: $loc, urlList: $urls}' > body.json
+          cat body.json
+          code=$(curl -sS -o response.txt -w '%{http_code}' \
+                 -H 'Content-Type: application/json; charset=utf-8' \
+                 --data @body.json https://api.indexnow.org/indexnow) || code=000
+          cat response.txt || true
+          # 200 = accepted, 202 = accepted while the key is being checked.
+          case "$code" in
+            200|202) echo "IndexNow: HTTP $code" ;;
+            *) echo "::warning::IndexNow returned HTTP $code (the deploy itself is fine)" ;;
+          esac
