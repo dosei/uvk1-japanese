@@ -85,7 +85,7 @@ a:hover { text-decoration: underline; }
   font-size: 0.9rem;
   line-height: 1.6;
 }
-.sidebar h1 { font-size: 1rem; margin: 0 0 8px; }
+.sidebar-title { font-size: 1rem; font-weight: 700; margin: 0 0 8px; }
 .sidebar h2 {
   font-size: 0.8rem;
   color: var(--muted);

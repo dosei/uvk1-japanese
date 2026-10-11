@@ -353,6 +353,8 @@ def main():
         template = f.read()
 
     nav, _, _ = wiki.render(wiki.read("_Sidebar"), "_Sidebar")
+    # The sidebar's "# title" is not the page's heading: keep one <h1> per page.
+    nav = re.sub(r"<h1[^>]*>(.*?)</h1>", r'<p class="sidebar-title">\1</p>', nav)
     footer = ""
     if os.path.exists(os.path.join(wiki_dir, "_Footer.md")):
         footer, _, _ = wiki.render(wiki.read("_Footer"), "_Footer")
