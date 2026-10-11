@@ -10,6 +10,8 @@ now only points to the new pages.
 
 Layout: the wiki's Home is the site's top page (<out>/index.html), the other
 pages are <out>/docs/<page>.html, and RxJa Tools lives in <out>/tools/.
+<out>/sitemap.html lists every page by the sidebar's sections, with each
+page's description, for people and crawlers alike.
 docs/index.html only forwards to the top page (it was the top of the docs
 before the tools moved), and the top page forwards old tool links such as
 /#flash to tools/#flash.
@@ -294,6 +296,44 @@ def mark_current(nav, page):
     return re.sub(href, r'\g<0> aria-current="page"', nav, count=1)
 
 
+TOOLS_DESCRIPTION = ("ブラウザ（パソコン版の Chrome / Edge）で、RxJa のファームと"
+                     "日本語データの書き込み、メモリーチャンネルの編集などができるツールです。")
+
+
+def sitemap_body(wiki, sidebar, descriptions):
+    """The sitemap.html body: the sidebar's sections, each page with its
+    description. Links are written for docs/ like every other page."""
+    out = ["<h1>サイトマップ</h1>",
+           "<p>UVK1-RxJa の説明書の全ページと、RxJa Tools の一覧です。</p>"]
+    items = []
+
+    def flush():
+        if items:
+            out.append("<dl class=\"sitemap\">\n" + "\n".join(items) + "\n</dl>")
+            items.clear()
+
+    def item(href, label, text):
+        items.append(f'<dt><a href="{html.escape(href, quote=True)}">'
+                     f"{html.escape(label)}</a></dt>\n<dd>{html.escape(text)}</dd>")
+
+    for line in sidebar.splitlines():
+        heading = re.match(r"##\s+(.+)", line)
+        link = re.match(r"\s*[*-]\s+\[\[([^\]]+)\]\]", line)
+        if heading:
+            flush()
+            out.append(f"<h2>{html.escape(heading.group(1).strip())}</h2>")
+        elif link:
+            label, sep, target = link.group(1).partition("|")
+            page, _ = wiki.resolve(target if sep else label)
+            if page is None:
+                continue
+            item(page_href(page), label, descriptions[page])
+            if page == HOME:
+                item("../tools/", "RxJa Tools", TOOLS_DESCRIPTION)
+    flush()
+    return "\n".join(out)
+
+
 def main():
     if len(sys.argv) != 3:
         sys.exit(__doc__)
@@ -315,12 +355,17 @@ def main():
     if os.path.exists(os.path.join(wiki_dir, "_Footer.md")):
         footer, _, _ = wiki.render(wiki.read("_Footer"), "_Footer")
 
+    def fill(values):
+        return re.sub(r"\{\{(\w+)\}\}", lambda m: values[m.group(1)], template)
+
     sitemap = []
+    descriptions = {}
     for page in wiki.pages:
         body, title, description = wiki.render(wiki.read(page), page)
         title = title or page.replace("-", " ")
         full_title = title if page == HOME else f"{title} | {TITLE_SUFFIX}"
         description = shorten(description or title)
+        descriptions[page] = description
         values = {
             "title": html.escape(full_title),
             "description": html.escape(description, quote=True),
@@ -337,7 +382,7 @@ def main():
         }
         if page == HOME:
             values["forward"] = TOOLS_FORWARD
-        out = re.sub(r"\{\{(\w+)\}\}", lambda m: values[m.group(1)], template)
+        out = fill(values)
         if page == HOME:
             path = os.path.join(out_dir, "index.html")
             out = relocate(out)
@@ -348,6 +393,25 @@ def main():
         sitemap.append((page_url(page), lastmod(wiki_dir, page)))
     sitemap.sort(key=lambda entry: entry[0] != SITE_URL)
     sitemap.insert(1, (SITE_URL + "tools/", None))
+
+    sitemap_url = SITE_URL + "sitemap.html"
+    sitemap_description = "UVK1-RxJa の説明書の全ページと RxJa Tools の一覧（サイトマップ）です。"
+    with open(os.path.join(out_dir, "sitemap.html"), "w", encoding="utf-8") as f:
+        f.write(relocate(fill({
+            "title": html.escape(f"サイトマップ | {TITLE_SUFFIX}"),
+            "description": html.escape(sitemap_description, quote=True),
+            "canonical": html.escape(sitemap_url, quote=True),
+            "site_name": SITE_NAME,
+            "og_type": "website",
+            "nav": nav,
+            "body": sitemap_body(wiki, wiki.read("_Sidebar"), descriptions),
+            "footer": footer,
+            "forward": "",
+            "source_url": html.escape(
+                "https://github.com/dosei/uvk1-japanese/blob/main/manual/_Sidebar.md",
+                quote=True),
+        })))
+    sitemap.append((sitemap_url, lastmod(wiki_dir, "_Sidebar")))
     with open(os.path.join(docs, "index.html"), "w", encoding="utf-8") as f:
         f.write(DOCS_INDEX.format(url=html.escape(SITE_URL, quote=True)))
 

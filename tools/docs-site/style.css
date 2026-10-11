@@ -171,6 +171,10 @@ details {
 summary { cursor: pointer; font-weight: 600; }
 details[open] summary { margin-bottom: 8px; }
 
+dl.sitemap { margin: 8px 0 24px; }
+dl.sitemap dt { font-weight: 600; margin-top: 12px; }
+dl.sitemap dd { margin: 2px 0 0 1.2em; color: var(--muted); font-size: 0.93rem; }
+
 .site-footer {
   border-top: 1px solid var(--border);
   color: var(--muted);
