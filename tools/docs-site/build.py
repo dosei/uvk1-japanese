@@ -136,6 +136,7 @@ class Wiki:
         # Gollum matches page names case-insensitively, with spaces as '-'.
         self.lookup = {p.lower(): p for p in self.pages}
         self.missing = []
+        self.bad_autolinks = []
         self.md = MarkdownIt("gfm-like", {"html": True, "linkify": True})
         # Like GitHub, autolink only www. and http(s):// (not "upload.py").
         self.md.linkify.set({"fuzzy_link": False})
@@ -185,6 +186,12 @@ class Wiki:
         title = None
         description = None
         for i, tok in enumerate(tokens):
+            for child in tok.children or []:
+                # A bare URL followed by Japanese text ("…/tools/）の") is
+                # autolinked together with that text; write [text](url).
+                if (child.type == "link_open" and child.markup == "linkify"
+                        and re.search(r"[^\x00-\x7f]", unquote(child.attrGet("href")))):
+                    self.bad_autolinks.append((current, unquote(child.attrGet("href"))))
             if tok.type == "heading_open":
                 inline = tokens[i + 1]
                 plain = inline_text(inline)
@@ -435,9 +442,12 @@ def main():
         f.write("</urlset>\n")
 
     print(f"{len(wiki.pages)} pages -> {out_dir}, sitemap: {len(sitemap)} URLs")
-    if wiki.missing:
-        for page, link in wiki.missing:
-            print(f"error: {page}: [[{link}]] links to no page", file=sys.stderr)
+    for page, link in wiki.missing:
+        print(f"error: {page}: [[{link}]] links to no page", file=sys.stderr)
+    for page, url in wiki.bad_autolinks:
+        print(f"error: {page}: bare URL runs into the text: {url} "
+              "(write it as [text](url))", file=sys.stderr)
+    if wiki.missing or wiki.bad_autolinks:
         sys.exit(1)
 
 
