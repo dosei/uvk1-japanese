@@ -15,7 +15,7 @@
 
 // SPI region between the first 16 overlay-app slots (end 0x122000) and the voice
 // prompts (0x14C000), see the map in driver/mb_flash.h. Since F4HWN v6.3.0 the
-// app region is 48 slots long and covers this region (slots 16..36): safe only
+// app region is 48 slots long and covers this region (zero-based slots 16..36): safe only
 // because RxJa builds no overlay loader, see the #error in ja.c.
 // 0x0C0000..0x100000 is NOT free: it holds the multiboot config banks 1..4.
 #define JA_FLASH_BASE   0x122000u

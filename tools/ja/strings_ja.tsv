@@ -151,6 +151,7 @@ POWER\nHIGH	高出力
 REMOVE\nOFFSET	オフセット\n解除
 FOX HUNT	フォックス\nハント
 BEACON	ビーコン
+TONE CALL	トーン\nコール
 # drawn outside the common value path. UI_GenerateChannelString: "None" is an
 # explicitly cleared channel, "NULL" one whose EEPROM field was never written
 # (a factory radio's PriCh1/PriCh2); both mean "not set" to the reader.
@@ -174,7 +175,7 @@ NO LOG	記録なし
 NO PRESET	プリセットなし
 CLEAR LOG	ログ消去
 
-@width 37	welcome screen, after "F4HWN v6.1.0 " (91 px)
+@width 37	welcome screen, after "F4HWN v6.3.0 " (91 px)
 base	ﾍﾞｰｽ
 
 @width 109	popup (x=9..117)

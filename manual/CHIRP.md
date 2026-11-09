@@ -4,7 +4,7 @@
 
 チャンネルだけを編集するなら、インストールのいらない RxJa Tools の [[メモリーチャンネル]] の画面も使えます。CSV は CHIRP と同じ形式なので、行き来できます。
 
-RxJa は、設定の並び（メモリーマップ）が **F4HWN Fusion v6.1.0 とまったく同じ**です。そのため、**F4HWN v6.1.0 用の CHIRP ドライバー**がそのまま使えます。
+RxJa は、設定の並び（メモリーマップ）が **F4HWN Fusion v6.3.0 とまったく同じ**です（v6.1.0 とも同じです）。そのため、**F4HWN v6.3.0 用の CHIRP ドライバー**がそのまま使えます。
 
 > [!WARNING]
 > - **Quansheng 純正の設定ソフト（CPS）は使わないでください。** F4HWN 独自の設定を上書きしてしまいます。
@@ -16,7 +16,7 @@ RxJa は、設定の並び（メモリーマップ）が **F4HWN Fusion v6.1.0 �
 | もの | 入手先 |
 |---|---|
 | CHIRP（next 版） | [chirpmyradio.com](https://chirpmyradio.com/projects/chirp/wiki/Download) から、自分の OS 用をダウンロード |
-| F4HWN v6.1.0 用ドライバー `f4hwn.chirp.v6.1.0.py` | [F4HWN の v6.1.0 リリース](https://github.com/armel/uv-k1-k5v3-firmware-custom/releases/tag/v6.1.0) の Assets から |
+| F4HWN v6.3.0 用ドライバー `f4hwn.chirp.v6.3.0.py` | [F4HWN の v6.3.0 リリース](https://github.com/armel/uv-k1-k5v3-firmware-custom/releases/tag/v6.3.0) の Assets から |
 | データ通信できる USB-C ケーブル | — |
 
 > [!NOTE]
@@ -28,7 +28,7 @@ CHIRP を起動するたびに、この手順が必要です。
 
 1. CHIRP を開く。
 2. メニューの **ファイル（File）** に **モジュールを読み込む（Load Module...）** が無い場合は、**ヘルプ（Help）→ 開発者モード（Developer Mode）** にチェックを入れて、CHIRP を再起動する。
-3. **ファイル → モジュールを読み込む** で、`f4hwn.chirp.v6.1.0.py` を選ぶ。
+3. **ファイル → モジュールを読み込む** で、`f4hwn.chirp.v6.3.0.py` を選ぶ。
 4. 「実験的なドライバーです」という注意（英語）が出るので、読んで OK を押す。
 
 これで、機種の一覧に **`UV-K1 & UV-K5 V3 (F4HWN)`** が増えます。

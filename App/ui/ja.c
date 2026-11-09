@@ -32,11 +32,11 @@
 #define SJIS_LEADS      39u     // 0x81..0x84, 0x88..0x9F, 0xE0..0xEA (JIS X 0208 rows)
 
 // The resource image sits at 0x122000, inside what F4HWN v6.3.0 calls its overlay
-// app region (0x102000, 48 slots x 8 KiB = up to 0x162000; slots 16..47 cover
-// us), and ends against the factory voice prompts at 0x14C000. Only the overlay
-// loader writes or erases those slots, and RxJa never builds it: keep it so.
-// (A Labs firmware run from a multiboot slot, or UV Studio's Apps page, could
-// still install into slot 17 and above; the manual says so.)
+// app region (0x102000, 48 slots x 8 KiB, up to 0x162000): zero-based slots
+// 16..36 cover us, and 37..47 run on over the factory voice prompts (0x14C000).
+// Only the overlay loader writes or erases those slots, and RxJa never builds
+// it: keep it so. (A Labs firmware run from a multiboot slot could still
+// install into the 17th slot and above; the manual says so.)
 #ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
 #error "RxJa keeps the Japanese data inside the overlay-app flash region: build without ENABLE_FEAT_F4HWN_OVERLAY_APPS"
 #endif
