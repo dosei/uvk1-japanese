@@ -155,8 +155,9 @@ uint8_t MB_SlotWrite(uint8_t slot, uint32_t offset, const uint8_t *data, uint32_
 /*   0x101000  multiboot state B (4 KiB marker)        ] redundant            */
 /*   0x102000  overlay apps + expansion reserve (apps/app_overlay.h)         */
 /*             RxJa: Japanese resource 0x122000-0x14BFFF (168 KiB, ui/ja.h)  */
-/*             sits inside this range. RxJa builds no overlay apps, so it is  */
-/*             never written by the firmware itself (see the #error in ja.c). */
+/*             sits inside this range. RxJa builds no overlay apps, so no     */
+/*             app install touches it (see the #error in ja.c); only its own  */
+/*             UART command 0x0744 writes it, and only inside that window.    */
 /*   0x1DE000  Sonic 4K interoperability reserve through 0x1FFFFF (136 KiB)    */
 /*                                                                            */
 /* Banks are 64 KiB for headroom; the live config footprint is ~44 KiB (max   */

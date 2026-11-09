@@ -35,8 +35,9 @@
 // app region (0x102000, 48 slots x 8 KiB, up to 0x162000): zero-based slots
 // 16..36 cover us, and 37..47 run on over the factory voice prompts (0x14C000).
 // Only the overlay loader writes or erases those slots, and RxJa never builds
-// it: keep it so. (A Labs firmware run from a multiboot slot could still
-// install into the 17th slot and above; the manual says so.)
+// it: keep it so. (Other editions can still overwrite the image: Labs installing
+// into app slots 17..37 (1-based), a Transfer FLASH COPY, a raw flash restore on
+// Labs or Service_; the manual says so.)
 #ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
 #error "RxJa keeps the Japanese data inside the overlay-app flash region: build without ENABLE_FEAT_F4HWN_OVERLAY_APPS"
 #endif
