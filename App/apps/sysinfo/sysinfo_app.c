@@ -136,17 +136,12 @@ static uint64_t divide(uint32_t n, uint32_t d)
     return A->uidivmod(n, d);
 }
 
+/* The resident formatter (API level 3). One local stub keeps every call a
+ * plain bl: the service lies past the ldr immediate range of the table. */
+__attribute__((noinline))
 static char *put_u32(char *out, uint32_t value)
 {
-    char reverse[10];
-    uint8_t count = 0;
-    do {
-        const uint64_t qr = divide(value, 10u);
-        reverse[count++] = (char)('0' + (uint32_t)(qr >> 32));
-        value = (uint32_t)qr;
-    } while (value != 0u);
-    while (count != 0u)
-        *out++ = reverse[--count];
+    out = A->append_u32(out, value);
     *out = '\0';
     return out;
 }
@@ -789,7 +784,7 @@ void app_main(const app_api_t *api)
             previous = key;
             repeat_ms = 0u;
         } else if (key != previous) {
-            const int8_t direction = A->nav_dir(key);
+            const int8_t direction = (key == APP_KEY_DOWN) - (key == APP_KEY_UP);
             A->backlight_on();
             if (key == APP_KEY_EXIT)
                 g.running = false;
@@ -800,7 +795,7 @@ void app_main(const app_api_t *api)
             previous = key;
             repeat_ms = direction != 0 ? NAV_REPEAT_DELAY_MS : 0u;
         } else {
-            const int8_t direction = A->nav_dir(key);
+            const int8_t direction = (key == APP_KEY_DOWN) - (key == APP_KEY_UP);
             if (direction != 0) {
                 if (repeat_ms > INPUT_TICK_MS) {
                     repeat_ms -= INPUT_TICK_MS;

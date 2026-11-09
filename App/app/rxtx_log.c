@@ -33,7 +33,7 @@
 #endif
 #include "ui/ui.h"
 
-#define RXTX_LOG_FLASH_BASE          0x1E0000u
+#define RXTX_LOG_FLASH_BASE          0x018000u
 #define RXTX_LOG_FLASH_SECTOR_SIZE   0x1000u
 #define RXTX_LOG_FLASH_SECTOR_COUNT  8u
 #define RXTX_LOG_FLASH_SIZE          (RXTX_LOG_FLASH_SECTOR_SIZE * RXTX_LOG_FLASH_SECTOR_COUNT)
@@ -85,6 +85,8 @@ typedef struct __attribute__((packed)) {
 
 static_assert(sizeof(RXTX_LogFlashEntry_t) == 32);
 static_assert(offsetof(RXTX_LogFlashEntry_t, sequence) % 4 == 0);
+static_assert((RXTX_LOG_FLASH_BASE % RXTX_LOG_FLASH_SECTOR_SIZE) == 0);
+static_assert(RXTX_LOG_FLASH_END == 0x020000u);
 static_assert(RXTX_LOG_VIEW_ANCHOR_COUNT <= 32);
 
 #define RXTX_LOG_ENTRY_COPY_SIZE offsetof(RXTX_LogFlashEntry_t, pad)

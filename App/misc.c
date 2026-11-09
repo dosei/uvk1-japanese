@@ -219,7 +219,7 @@ volatile uint8_t    gVFOStateResumeCountdown_500ms;
 
 bool              gEnableSpeaker;
 uint8_t           gKeyInputCountdown = 0;
-uint8_t           gKeyLockCountdown;
+uint16_t          gKeyLockCountdown;
 uint8_t           gRTTECountdown_10ms;
 bool              bIsInLockScreen;
 uint8_t           gUpdateStatus;
@@ -639,7 +639,11 @@ void MR_PrintCacheStats(void)
     bool K5VIEWER_IsLocked(void) 
     {
         if (gUART_LockK5Viewer > 0) {
-            gUART_LockK5Viewer--;
+#if defined(ENABLE_USB) && defined(ENABLE_FEAT_F4HWN_OVERLAY_APPS)
+            // Released by the overlay loader when the app returns
+            if (gUART_LockK5Viewer != K5VIEWER_LOCK_HELD)
+#endif
+                gUART_LockK5Viewer--;
             return true;
         }
         

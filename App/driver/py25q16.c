@@ -451,6 +451,21 @@ uint8_t *PY25Q16_OverlayBuffer(void)
 {
     return SectorCache;
 }
+
+/* Erase the sector at Address and program the workspace back as its content:
+ * for the loader, which read that sector into the workspace and patched it
+ * there. One erase, where patching through PY25Q16_WriteBuffer costs one per
+ * call and cannot take its data from the workspace it reloads. */
+void PY25Q16_OverlayWriteSector(uint32_t Address)
+{
+    Address = BankMap(Address);
+    WaitWIP();
+    SectorErase(Address);
+    WaitWIP();
+    SectorProgram(Address, SectorCache, SECTOR_SIZE);
+    WaitWIP();
+    PY25Q16_InvalidateCache();
+}
 #endif
 
 static inline void WriteAddr(uint32_t Addr)

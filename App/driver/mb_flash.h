@@ -141,6 +141,7 @@ uint8_t MB_SlotWrite(uint8_t slot, uint32_t offset, const uint8_t *data, uint32_
 /*   0x000000  bank 0 config  (channels/settings)      ] per-bank             */
 /*   0x010000  calibration (512 B)                     ] shared               */
 /*   0x011000  boot logo (4 KiB)                       ] shared               */
+/*   0x018000  RX/TX log (32 KiB)                      ] shared               */
 /*   0x020000  slot 0 firmware  (BACKUP, 128 KiB)      ] firmware-managed     */
 /*   0x040000  slot 1 firmware  (128 KiB)              ]                      */
 /*   0x060000  slot 2 firmware                         ] user (UV Studio)     */
@@ -152,10 +153,11 @@ uint8_t MB_SlotWrite(uint8_t slot, uint32_t offset, const uint8_t *data, uint32_
 /*   0x0F0000  bank 4 config  (64 KiB)                 ]                      */
 /*   0x100000  multiboot state A (4 KiB marker)        ] shared               */
 /*   0x101000  multiboot state B (4 KiB marker)        ] redundant            */
-/*   0x102000  overlay Apps (16 x 8 KiB, apps/app_overlay.h) ] shared         */
-/*   0x122000  Japanese resource (168 KiB, ui/ja.h, RxJa)    ] shared         */
-/*   0x14C000  voice prompts (factory data, audio.c)         ] shared         */
-/*   0x1E0000  RX/TX log (32 KiB)                      ] shared               */
+/*   0x102000  overlay apps + expansion reserve (apps/app_overlay.h)         */
+/*             RxJa: Japanese resource 0x122000-0x14BFFF (168 KiB, ui/ja.h)  */
+/*             sits inside this range. RxJa builds no overlay apps, so it is  */
+/*             never written by the firmware itself (see the #error in ja.c). */
+/*   0x1DE000  Sonic 4K interoperability reserve through 0x1FFFFF (136 KiB)    */
 /*                                                                            */
 /* Banks are 64 KiB for headroom; the live config footprint is ~44 KiB (max   */
 /* physical config address 0x00A170). Keep the config banks past the last     */

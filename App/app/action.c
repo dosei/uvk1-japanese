@@ -62,6 +62,10 @@
 static void ACTION_Beam(void);
 #endif
 
+#ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+static void ACTION_ToneCall(void);
+#endif
+
 #if defined(ENABLE_FMRADIO_EMBEDDED)
 static void ACTION_Scan_FM(bool bRestart);
 #endif
@@ -139,6 +143,9 @@ void (*const action_opt_table[ACTION_OPT_LEN])(void) = {
 #if defined(ENABLE_FEAT_F4HWN_BEACON) || defined(ENABLE_FEAT_F4HWN_OVERLAY_APPS)
     [ACTION_OPT_BEACON] = &ACTION_Beacon,
 #endif
+#ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+    [ACTION_OPT_TONECALL] = &ACTION_ToneCall,
+#endif
 };
 
 static_assert(ARRAY_SIZE(action_opt_table) == ACTION_OPT_LEN);
@@ -148,6 +155,7 @@ static_assert(ACTION_OPT_POWER_HIGH == 20);
 static_assert(ACTION_OPT_REMOVE_OFFSET == 21);
 static_assert(ACTION_OPT_FOXHUNT == 22);
 static_assert(ACTION_OPT_BEACON == 23);
+static_assert(ACTION_OPT_TONECALL == 24);
 
 bool ACTION_IsAvailable(uint8_t action)
 {
@@ -155,26 +163,26 @@ bool ACTION_IsAvailable(uint8_t action)
         return false;
 
 #ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+    /* An action that opens an overlay app is available once an app holds
+     * its shortcut: the switch picks the shortcut ID. */
+    uint8_t shortcut;
     switch (action) {
 #ifdef ENABLE_FMRADIO
-        case ACTION_OPT_FM:
-            return (APP_OverlayShortcutMask() & APP_SHORTCUT_FM) != 0;
+        case ACTION_OPT_FM:       shortcut = APP_SHORTCUT_FM;       break;
 #endif
 #ifndef ENABLE_FEAT_F4HWN_FOXHUNT
-        case ACTION_OPT_FOXHUNT:
-            return (APP_OverlayShortcutMask() & APP_SHORTCUT_FOXHUNT) != 0;
+        case ACTION_OPT_FOXHUNT:  shortcut = APP_SHORTCUT_FOXHUNT;  break;
 #endif
 #ifndef ENABLE_FEAT_F4HWN_BEACON
-        case ACTION_OPT_BEACON:
-            return (APP_OverlayShortcutMask() & APP_SHORTCUT_BEACON) != 0;
+        case ACTION_OPT_BEACON:   shortcut = APP_SHORTCUT_BEACON;   break;
 #endif
 #ifndef ENABLE_FEAT_F4HWN_BEAM
-        case ACTION_OPT_BEAM:
-            return (APP_OverlayShortcutMask() & APP_SHORTCUT_BEAM) != 0;
+        case ACTION_OPT_BEAM:     shortcut = APP_SHORTCUT_BEAM;     break;
 #endif
-        default:
-            break;
+        case ACTION_OPT_TONECALL: shortcut = APP_SHORTCUT_TONECALL; break;
+        default:                  return true;
     }
+    return APP_OverlayShortcutInstalled(shortcut);
 #endif
 
     return true;
@@ -517,11 +525,27 @@ void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
     ACTION_Execute(func);
 }
 
+#ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+/* Open the overlay app holding a shortcut; double beep when none is installed. */
+static void ACTION_LaunchApp(uint8_t shortcut)
+{
+    const uint8_t rc = APP_LaunchOverlayShortcut(shortcut);
+    if (rc != APP_OK && rc != APP_CHAIN_ABORTED)
+        gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
+}
+#endif
+
 #if defined(ENABLE_FEAT_F4HWN_OVERLAY_APPS) && !defined(ENABLE_FEAT_F4HWN_BEAM)
 static void ACTION_Beam(void)
 {
-    if (APP_LaunchOverlayShortcut(APP_SHORTCUT_BEAM) != APP_OK)
-        gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
+    ACTION_LaunchApp(APP_SHORTCUT_BEAM);
+}
+#endif
+
+#ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+static void ACTION_ToneCall(void)
+{
+    ACTION_LaunchApp(APP_SHORTCUT_TONECALL);
 }
 #endif
 
@@ -532,8 +556,7 @@ void ACTION_FoxHunt(void)
     APP_RunFoxHunt();
     GUI_SelectNextDisplay(DISPLAY_MAIN);
 #else
-    if (APP_LaunchOverlayShortcut(APP_SHORTCUT_FOXHUNT) != APP_OK)
-        gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
+    ACTION_LaunchApp(APP_SHORTCUT_FOXHUNT);
 #endif
 }
 #endif
@@ -545,8 +568,7 @@ void ACTION_Beacon(void)
     APP_RunBeacon();
     GUI_SelectNextDisplay(DISPLAY_MAIN);
 #else
-    if (APP_LaunchOverlayShortcut(APP_SHORTCUT_BEACON) != APP_OK)
-        gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
+    ACTION_LaunchApp(APP_SHORTCUT_BEACON);
 #endif
 }
 #endif
@@ -556,8 +578,7 @@ void ACTION_Beacon(void)
 void ACTION_FM(void)
 {
 #ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
-    if (APP_LaunchOverlayShortcut(APP_SHORTCUT_FM) != APP_OK)
-        gBeepToPlay = BEEP_500HZ_60MS_DOUBLE_BEEP_OPTIONAL;
+    ACTION_LaunchApp(APP_SHORTCUT_FM);
     return;
 #else
     if (gCurrentFunction != FUNCTION_TRANSMIT && gCurrentFunction != FUNCTION_MONITOR)

@@ -31,11 +31,17 @@
 #define SJIS_TRAILS     188u    // 0x40..0x7E, 0x80..0xFC
 #define SJIS_LEADS      39u     // 0x81..0x84, 0x88..0x9F, 0xE0..0xEA (JIS X 0208 rows)
 
-// The resource image sits between the overlay Apps and the factory voice
-// prompts with no slack on either side, so make any upstream growth a build
-// error instead of a silent wipe of the Japanese data in the field.
-_Static_assert(APP_REGION_BASE + APP_SLOT_COUNT * APP_SLOT_STRIDE <= JA_FLASH_BASE,
-               "overlay Apps grew into the Japanese resource region");
+// The resource image sits at 0x122000, inside what F4HWN v6.3.0 calls its overlay
+// app region (0x102000, 48 slots x 8 KiB = up to 0x162000; slots 16..47 cover
+// us), and ends against the factory voice prompts at 0x14C000. Only the overlay
+// loader writes or erases those slots, and RxJa never builds it: keep it so.
+// (A Labs firmware run from a multiboot slot, or UV Studio's Apps page, could
+// still install into slot 17 and above; the manual says so.)
+#ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
+#error "RxJa keeps the Japanese data inside the overlay-app flash region: build without ENABLE_FEAT_F4HWN_OVERLAY_APPS"
+#endif
+_Static_assert(APP_REGION_BASE < JA_FLASH_BASE && APP_SLOT_BASE(16) == JA_FLASH_BASE,
+               "overlay app region geometry changed upstream: recheck where the Japanese data may live");
 _Static_assert(JA_FLASH_BASE + JA_FLASH_SIZE <= 0x14C000u,
                "Japanese resource region runs into the voice prompts");
 // The ASCII fallback above unpacks the small font itself, see Print().
