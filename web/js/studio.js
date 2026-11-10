@@ -34,7 +34,9 @@
         "export-rf-log": "studio_operation_export_rf_log",
         "ja-upload": "studio_operation_ja_upload",
         "mem-read": "studio_operation_mem_read",
-        "mem-write": "studio_operation_mem_write"
+        "mem-write": "studio_operation_mem_write",
+        "fm-read": "studio_operation_fm_read",
+        "fm-write": "studio_operation_fm_write"
     };
 
     function translate(key) {

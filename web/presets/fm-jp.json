@@ -1,0 +1,125 @@
+{
+ "format": "rxja-fm-presets",
+ "version": 1,
+ "note": "FM broadcast station presets for RxJa Tools (FM局 tab). Frequencies in MHz with 0.1 MHz steps. Names are station names as broadcast (Shift_JIS, <= 20 bytes).",
+ "sources": [
+  "総務省ホームページ「全国民放FM局・ワイドFM局一覧」（令和7年4月1日現在）https://www.soumu.go.jp/menu_seisaku/ictseisaku/housou_suishin/fm-list.html",
+  "NHK らじる★らじる「周波数」https://www.nhk.or.jp/radio/info/frequency.html?ch=fm（取得 2026-11-10）",
+  "radiotuner.jp 大阪府（更新 2026-10-09）と freq.a-nkmr.com 大阪府 を照合に使用（放送中の局の確認のみ）"
+ ],
+ "prefectures": {
+  "JP27": {
+   "name": "大阪府",
+   "stations": [
+    {
+     "name": "FM COCOLO",
+     "mhz": 76.5,
+     "kind": "FM",
+     "area": "大阪"
+    },
+    {
+     "name": "エフエム大阪",
+     "mhz": 77.4,
+     "kind": "FM",
+     "area": "中能勢"
+    },
+    {
+     "name": "YES-fm",
+     "mhz": 78.1,
+     "kind": "コミュニティ",
+     "area": "大阪市"
+    },
+    {
+     "name": "FM802",
+     "mhz": 78.3,
+     "kind": "FM",
+     "area": "中能勢"
+    },
+    {
+     "name": "Be Happy! 789",
+     "mhz": 78.9,
+     "kind": "コミュニティ",
+     "area": "大阪市北区"
+    },
+    {
+     "name": "やおFM",
+     "mhz": 79.2,
+     "kind": "コミュニティ",
+     "area": "八尾"
+    },
+    {
+     "name": "ラヂオきしわだ",
+     "mhz": 79.7,
+     "kind": "コミュニティ",
+     "area": "岸和田"
+    },
+    {
+     "name": "FM802",
+     "mhz": 80.2,
+     "kind": "FM",
+     "area": "大阪"
+    },
+    {
+     "name": "奥河内ラジオ",
+     "mhz": 80.7,
+     "kind": "コミュニティ",
+     "area": "河内長野"
+    },
+    {
+     "name": "TACKEY816",
+     "mhz": 81.6,
+     "kind": "コミュニティ",
+     "area": "箕面"
+    },
+    {
+     "name": "NHK-FM大阪",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "中能勢"
+    },
+    {
+     "name": "FM千里",
+     "mhz": 83.7,
+     "kind": "コミュニティ",
+     "area": "吹田"
+    },
+    {
+     "name": "エフエム大阪",
+     "mhz": 85.1,
+     "kind": "FM",
+     "area": "大阪"
+    },
+    {
+     "name": "FMいずみおおつ",
+     "mhz": 85.5,
+     "kind": "コミュニティ",
+     "area": "泉大津"
+    },
+    {
+     "name": "NHK-FM大阪",
+     "mhz": 88.1,
+     "kind": "NHK-FM",
+     "area": "大阪"
+    },
+    {
+     "name": "MBSラジオ",
+     "mhz": 90.6,
+     "kind": "ワイドFM",
+     "area": "大阪"
+    },
+    {
+     "name": "ラジオ大阪",
+     "mhz": 91.9,
+     "kind": "ワイドFM",
+     "area": "大阪"
+    },
+    {
+     "name": "朝日放送ラジオ",
+     "mhz": 93.3,
+     "kind": "ワイドFM",
+     "area": "大阪"
+    }
+   ]
+  }
+ }
+}

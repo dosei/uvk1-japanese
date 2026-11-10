@@ -290,6 +290,8 @@ function updateInfoBox() {
     infoBoxEl.innerHTML = t('infoBoxJa');
   } else if (tabName === 'mem') {
     infoBoxEl.innerHTML = t('infoBoxMem');
+  } else if (tabName === 'fm') {
+    infoBoxEl.innerHTML = t('infoBoxFm');
   } else {
     infoBoxEl.innerHTML = t('infoBoxDump');
   }
