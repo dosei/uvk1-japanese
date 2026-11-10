@@ -545,7 +545,7 @@ window.UVSTUDIO_LOCALES.en = {
   "rxja_fm_col_number": "No.",
   "rxja_fm_col_freq": "Frequency (MHz)",
   "rxja_fm_col_name": "Station name",
-  "rxja_fm_note": "Names: up to 20 bytes (10 full-width characters). Frequencies: 64.0 to 108.0 MHz in 0.1 MHz steps; the radio plays the ones inside the FM range it is set to. Presets: Ministry of Internal Affairs and Communications (MIC), NHK and others, see the manual.",
+  "rxja_fm_note": "Names: up to 20 bytes (10 full-width characters). Frequencies: 64.0 to 108.0 MHz in 0.1 MHz steps; the radio plays the ones inside the FM range it is set to. Presets are meant for one prefecture at a time (adding another prefecture skips stations that share a frequency). Community FM outside Kanto, and some small relay stations, are not included. Sources and coverage are in the manual (MIC, NHK).",
   "rxja_fm_pref": "Prefecture",
   "rxja_fm_pref_choose": "Choose a prefecture",
   "rxja_fm_preset": "Add stations of the prefecture",

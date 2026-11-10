@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as F from '../../web/js/rxja-fmmap.js';
+import * as J from '../../web/js/rxja-sjis.js';
 
 let n = 0;
 const test = (name, fn) => { fn(); n++; console.log('ok', name); };
@@ -130,8 +131,10 @@ test('CSV rows', () => {
   assert.equal(F.rowToStation({ No: '', Frequency: '80.0' }, 7).station.number, 7);
 });
 
+const presetDoc = () => JSON.parse(readFileSync(new URL('../../web/presets/fm-jp.json', import.meta.url), 'utf8'));
+
 test('preset: Osaka from web/presets/fm-jp.json', () => {
-  const doc = JSON.parse(readFileSync(new URL('../../web/presets/fm-jp.json', import.meta.url), 'utf8'));
+  const doc = presetDoc();
   assert.equal(doc.format, 'rxja-fm-presets');
   const p = F.presetStations(doc, 'JP27');
   assert.equal(p.length, 18);
@@ -139,6 +142,46 @@ test('preset: Osaka from web/presets/fm-jp.json', () => {
   assert.equal(new Set(p.map(s => s.freq)).size, p.length);
   assert.ok(p.some(s => s.freq === 881 && s.name === 'NHK-FM大阪'));
   assert.deepEqual(F.presetStations(doc, 'JP99'), []);
+});
+
+test('preset: all 47 prefectures are well formed', () => {
+  const doc = presetDoc();
+  const codes = Object.keys(doc.prefectures);
+  assert.equal(codes.length, 47);
+  assert.deepEqual(codes, Array.from({ length: 47 }, (_, i) => 'JP' + String(i + 1).padStart(2, '0')));
+  for (const code of codes) {
+    const pref = doc.prefectures[code];
+    assert.ok(pref.name && pref.stations.length > 0, code);
+    const list = F.presetStations(doc, code);
+    // loading must not lose stations to the duplicate-frequency rule: the file has none
+    assert.equal(list.length, pref.stations.length, `${pref.name}: repeated frequency in the file`);
+    assert.ok(list.length <= F.COUNT, `${pref.name}: more than ${F.COUNT} stations`);
+    for (const st of pref.stations) {
+      const x10 = Math.round(st.mhz * 10);
+      assert.ok(F.validFreq(x10) && Math.abs(st.mhz * 10 - x10) < 1e-6, `${pref.name} ${st.mhz}: not on the 0.1 MHz grid`);
+      // the name must survive the radio's encoder unchanged (no characters the radio cannot show, <= 20 bytes)
+      const e = J.encodeName(st.name, F.NAME_LEN);
+      assert.equal(e.text, st.name, `${pref.name} ${st.mhz}: "${st.name}" would be cut or lose characters`);
+      assert.ok(!e.bad.length && !e.cut);
+    }
+  }
+});
+
+test('preset: every prefecture has NHK-FM, and the file says what it leaves out', () => {
+  const doc = presetDoc();
+  for (const [code, pref] of Object.entries(doc.prefectures))
+    assert.ok(pref.stations.some(s => s.kind === 'NHK-FM'), `${pref.name}: no NHK-FM`);
+  assert.ok(doc.coverage && doc.coverage.excluded && doc.sources.length >= 3);
+});
+
+test('preset: loading several prefectures never exceeds 100 or repeats a number or frequency', () => {
+  const doc = presetDoc();
+  let st = [];
+  for (const code of Object.keys(doc.prefectures)) st = F.mergePreset(st, F.presetStations(doc, code)).stations;
+  assert.equal(st.length, F.COUNT);
+  assert.equal(new Set(st.map(s => s.number)).size, F.COUNT);
+  assert.equal(new Set(st.map(s => s.freq)).size, F.COUNT);
+  assert.ok(st.every(s => s.number >= 0 && s.number < F.COUNT));
 });
 
 test('mergePreset keeps stored stations, fills free numbers, skips known frequencies', () => {

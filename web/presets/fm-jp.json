@@ -1,13 +1,3120 @@
 {
  "format": "rxja-fm-presets",
- "version": 1,
- "note": "FM broadcast station presets for RxJa Tools (FM局 tab). Frequencies in MHz with 0.1 MHz steps. Names are station names as broadcast (Shift_JIS, <= 20 bytes).",
+ "version": 2,
+ "note": "RxJa Tools「FM局」タブ用の都道府県別プリセット。周波数は MHz（0.1 MHz 刻み）、名前は 20 バイト以内（Shift_JIS で表示できる文字のみ）。",
  "sources": [
-  "総務省ホームページ「全国民放FM局・ワイドFM局一覧」（令和7年4月1日現在）https://www.soumu.go.jp/menu_seisaku/ictseisaku/housou_suishin/fm-list.html",
-  "NHK らじる★らじる「周波数」https://www.nhk.or.jp/radio/info/frequency.html?ch=fm（取得 2026-11-10）",
-  "radiotuner.jp 大阪府（更新 2026-10-09）と freq.a-nkmr.com 大阪府 を照合に使用（放送中の局の確認のみ）"
+  "総務省ホームページ「全国民放FM局・ワイドFM局一覧」（令和7年4月1日現在）https://www.soumu.go.jp/menu_seisaku/ictseisaku/housou_suishin/fm-list.html を加工して作成",
+  "NHK らじる★らじる「周波数」（FM）https://www.nhk.or.jp/radio/info/frequency.html?ch=fm（取得 2026-11-10）を加工して作成",
+  "総務省 関東総合通信局「ラジオ放送事業者一覧」（コミュニティ放送）https://www.soumu.go.jp/soutsu/kanto/bc/radio/list/index.html を加工して作成",
+  "県の割り当ての確認: 総務省 東海総合通信局「FM置局マップ」（令和6年3月現在）、沖縄総合通信事務所「ラジオ放送局チャンネル一覧」、総務省「全国地方公共団体コード」",
+  "大阪府のコミュニティFM 8 局は、公式資料ではなく radiotuner.jp と freq.a-nkmr.com の突き合わせで確かめたもの（公式資料との照合は未了）"
  ],
+ "coverage": {
+  "included": "NHK-FM（全国）、民放FM・ワイドFM（都道府県を公的資料で確定できたもの）、コミュニティFM（関東のみ。大阪府は上の注記のとおり）",
+  "excluded": "都道府県を公的資料で確定できなかった中継局 34 件、資料どうしで周波数が食い違う 1 件（静岡放送 高草山 93.6 / 93.9）、関東以外のコミュニティFM（大阪府を除く）",
+  "note": "各県の主要局はほぼ入っていますが、小さな中継局には抜けがあります。"
+ },
  "prefectures": {
+  "JP01": {
+   "name": "北海道",
+   "stations": [
+    {
+     "name": "エフエム北海道",
+     "mhz": 76.4,
+     "kind": "FM",
+     "area": "旭川"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 77.2,
+     "kind": "FM",
+     "area": "札幌大通"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 78.5,
+     "kind": "FM",
+     "area": "帯広"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 78.9,
+     "kind": "NHK-FM",
+     "area": "ニセコ"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "札幌大通"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 79.4,
+     "kind": "FM",
+     "area": "函館"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 79.5,
+     "kind": "FM",
+     "area": "小樽"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 79.8,
+     "kind": "FM",
+     "area": "旭川"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "札幌"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "釧路"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 81.6,
+     "kind": "NHK-FM",
+     "area": "札幌大通"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 81.9,
+     "kind": "FM",
+     "area": "小樽"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "帯広"
+    },
+    {
+     "name": "NORTH WAVE",
+     "mhz": 82.5,
+     "kind": "FM",
+     "area": "札幌"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "南羊蹄"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "新得"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "日浦"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "芦別"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "夕張"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "深川"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "日高"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "岩内"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "歌志内"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "陸別"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "小樽"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "黒松内"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "札前"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "留萌"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "登別"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "紋別"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "札幌"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "厚岸"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "根室"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "島牧"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "旭川"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "夕張清水沢"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "北檜山"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 86.1,
+     "kind": "NHK-FM",
+     "area": "浦河"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 86.4,
+     "kind": "FM",
+     "area": "釧路"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 86.5,
+     "kind": "FM",
+     "area": "洞爺"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 87.0,
+     "kind": "NHK-FM",
+     "area": "函館"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 87.5,
+     "kind": "NHK-FM",
+     "area": "帯広"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 87.8,
+     "kind": "FM",
+     "area": "北見"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 88.0,
+     "kind": "NHK-FM",
+     "area": "室蘭"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 88.2,
+     "kind": "NHK-FM",
+     "area": "名寄"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 88.5,
+     "kind": "NHK-FM",
+     "area": "釧路"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 88.8,
+     "kind": "NHK-FM",
+     "area": "羅臼"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 89.1,
+     "kind": "NHK-FM",
+     "area": "知駒"
+    },
+    {
+     "name": "エフエム北海道",
+     "mhz": 89.4,
+     "kind": "FM",
+     "area": "室蘭"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 89.5,
+     "kind": "NHK-FM",
+     "area": "弟子屈"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 89.7,
+     "kind": "NHK-FM",
+     "area": "江差"
+    },
+    {
+     "name": "NHK-FM北海道",
+     "mhz": 89.9,
+     "kind": "NHK-FM",
+     "area": "枝幸"
+    },
+    {
+     "name": "STVラジオ",
+     "mhz": 90.4,
+     "kind": "ワイドFM",
+     "area": "手稲"
+    },
+    {
+     "name": "北海道放送",
+     "mhz": 91.5,
+     "kind": "ワイドFM",
+     "area": "札幌"
+    }
+   ]
+  },
+  "JP02": {
+   "name": "青森県",
+   "stations": [
+    {
+     "name": "エフエム青森",
+     "mhz": 78.2,
+     "kind": "FM",
+     "area": "深浦"
+    },
+    {
+     "name": "エフエム青森",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "八戸"
+    },
+    {
+     "name": "エフエム青森",
+     "mhz": 80.0,
+     "kind": "FM",
+     "area": "青森"
+    },
+    {
+     "name": "エフエム青森",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "むつ"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 81.8,
+     "kind": "NHK-FM",
+     "area": "八戸"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 82.7,
+     "kind": "NHK-FM",
+     "area": "むつ"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "上北烏帽子"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "深浦"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "南鰺ケ沢"
+    },
+    {
+     "name": "NHK-FM青森",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "青森"
+    },
+    {
+     "name": "青森放送",
+     "mhz": 91.7,
+     "kind": "ワイドFM",
+     "area": "青森"
+    },
+    {
+     "name": "青森放送",
+     "mhz": 92.7,
+     "kind": "ワイドFM",
+     "area": "八戸"
+    }
+   ]
+  },
+  "JP03": {
+   "name": "岩手県",
+   "stations": [
+    {
+     "name": "エフエム岩手",
+     "mhz": 76.1,
+     "kind": "FM",
+     "area": "盛岡"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 76.7,
+     "kind": "ワイドFM",
+     "area": "山田"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 77.0,
+     "kind": "FM",
+     "area": "野田"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 78.3,
+     "kind": "FM",
+     "area": "岩泉"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "大槌"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "釜石"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 79.7,
+     "kind": "FM",
+     "area": "大船渡"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 80.3,
+     "kind": "FM",
+     "area": "一関"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 80.5,
+     "kind": "ワイドFM",
+     "area": "二戸"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "遠野"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 81.4,
+     "kind": "NHK-FM",
+     "area": "釜石鈴子"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 81.5,
+     "kind": "ワイドFM",
+     "area": "田野畑"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 81.6,
+     "kind": "NHK-FM",
+     "area": "室根"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 82.0,
+     "kind": "FM",
+     "area": "山田"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 82.2,
+     "kind": "FM",
+     "area": "二戸"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "盛岡"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "宮古"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "大槌"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "一関"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "山田"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "大船渡"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "遠野"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "岩手川崎"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "二戸"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "釜石"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "野田"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 85.9,
+     "kind": "FM",
+     "area": "陸前高田"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 86.4,
+     "kind": "ワイドFM",
+     "area": "室根"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 86.5,
+     "kind": "NHK-FM",
+     "area": "普代田野畑"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 87.2,
+     "kind": "ワイドFM",
+     "area": "宮古"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 87.6,
+     "kind": "NHK-FM",
+     "area": "西根松尾"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 87.8,
+     "kind": "ワイドFM",
+     "area": "遠野"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 88.3,
+     "kind": "NHK-FM",
+     "area": "陸中川井"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 88.5,
+     "kind": "ワイドFM",
+     "area": "釜石"
+    },
+    {
+     "name": "エフエム岩手",
+     "mhz": 89.3,
+     "kind": "FM",
+     "area": "宮古"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 89.5,
+     "kind": "NHK-FM",
+     "area": "安代田山"
+    },
+    {
+     "name": "NHK-FM岩手",
+     "mhz": 89.9,
+     "kind": "NHK-FM",
+     "area": "葛巻"
+    },
+    {
+     "name": "アイビーシー岩手放送",
+     "mhz": 90.6,
+     "kind": "ワイドFM",
+     "area": "盛岡"
+    }
+   ]
+  },
+  "JP04": {
+   "name": "宮城県",
+   "stations": [
+    {
+     "name": "エフエム仙台",
+     "mhz": 77.1,
+     "kind": "FM",
+     "area": "仙台"
+    },
+    {
+     "name": "エフエム仙台",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "気仙沼"
+    },
+    {
+     "name": "エフエム仙台",
+     "mhz": 81.4,
+     "kind": "FM",
+     "area": "白石"
+    },
+    {
+     "name": "NHK-FM宮城",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "仙台"
+    },
+    {
+     "name": "エフエム仙台",
+     "mhz": 84.1,
+     "kind": "FM",
+     "area": "志津川"
+    },
+    {
+     "name": "NHK-FM宮城",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "白石"
+    },
+    {
+     "name": "NHK-FM宮城",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "気仙沼"
+    },
+    {
+     "name": "NHK-FM宮城",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "鳴子"
+    },
+    {
+     "name": "東北放送",
+     "mhz": 93.5,
+     "kind": "ワイドFM",
+     "area": "仙台"
+    }
+   ]
+  },
+  "JP05": {
+   "name": "秋田県",
+   "stations": [
+    {
+     "name": "エフエム秋田",
+     "mhz": 77.1,
+     "kind": "FM",
+     "area": "花輪"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 77.7,
+     "kind": "FM",
+     "area": "本荘"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 78.0,
+     "kind": "FM",
+     "area": "湯沢"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 78.9,
+     "kind": "FM",
+     "area": "角館"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "二ツ井"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 82.8,
+     "kind": "FM",
+     "area": "秋田"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "能代"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "花輪"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "本荘"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "阿仁"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "湯沢"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "矢島"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "東由利"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "花矢"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "角館"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 86.7,
+     "kind": "NHK-FM",
+     "area": "秋田"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 88.3,
+     "kind": "NHK-FM",
+     "area": "大館"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 89.0,
+     "kind": "FM",
+     "area": "羽後"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 89.2,
+     "kind": "FM",
+     "area": "大館"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 89.4,
+     "kind": "FM",
+     "area": "東成瀬"
+    },
+    {
+     "name": "エフエム秋田",
+     "mhz": 89.7,
+     "kind": "FM",
+     "area": "能代"
+    },
+    {
+     "name": "NHK-FM秋田",
+     "mhz": 89.9,
+     "kind": "NHK-FM",
+     "area": "田沢湖"
+    },
+    {
+     "name": "秋田放送",
+     "mhz": 90.1,
+     "kind": "ワイドFM",
+     "area": "秋田"
+    }
+   ]
+  },
+  "JP06": {
+   "name": "山形県",
+   "stations": [
+    {
+     "name": "エフエム山形",
+     "mhz": 76.9,
+     "kind": "FM",
+     "area": "鶴岡"
+    },
+    {
+     "name": "エフエム山形",
+     "mhz": 77.3,
+     "kind": "FM",
+     "area": "米沢"
+    },
+    {
+     "name": "エフエム山形",
+     "mhz": 78.2,
+     "kind": "FM",
+     "area": "新庄"
+    },
+    {
+     "name": "エフエム山形",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "山形"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 82.1,
+     "kind": "NHK-FM",
+     "area": "山形"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "朝日"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "白鷹"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "米沢"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "長井"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "温海"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "鶴岡"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 88.3,
+     "kind": "NHK-FM",
+     "area": "新庄"
+    },
+    {
+     "name": "NHK-FM山形",
+     "mhz": 89.8,
+     "kind": "NHK-FM",
+     "area": "小国"
+    },
+    {
+     "name": "山形放送",
+     "mhz": 92.4,
+     "kind": "ワイドFM",
+     "area": "山形"
+    }
+   ]
+  },
+  "JP07": {
+   "name": "福島県",
+   "stations": [
+    {
+     "name": "ラジオ福島",
+     "mhz": 77.8,
+     "kind": "ワイドFM",
+     "area": "東金山"
+    },
+    {
+     "name": "エフエム福島",
+     "mhz": 78.6,
+     "kind": "FM",
+     "area": "いわき"
+    },
+    {
+     "name": "ラジオ福島",
+     "mhz": 79.3,
+     "kind": "ワイドFM",
+     "area": "西金山"
+    },
+    {
+     "name": "エフエム福島",
+     "mhz": 79.8,
+     "kind": "FM",
+     "area": "白河"
+    },
+    {
+     "name": "エフエム福島",
+     "mhz": 81.8,
+     "kind": "FM",
+     "area": "福島"
+    },
+    {
+     "name": "エフエム福島",
+     "mhz": 82.8,
+     "kind": "FM",
+     "area": "会津若松"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "原町"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "勿来"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "東只見"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "塙"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "小野"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "東金山"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "白河"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "南郷"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "月館"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "只見"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "柳津三島"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "田島"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "福島"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "会津若松"
+    },
+    {
+     "name": "NHK-FM福島",
+     "mhz": 86.1,
+     "kind": "NHK-FM",
+     "area": "いわき"
+    },
+    {
+     "name": "ラジオ福島",
+     "mhz": 90.2,
+     "kind": "ワイドFM",
+     "area": "いわき"
+    },
+    {
+     "name": "ラジオ福島",
+     "mhz": 90.8,
+     "kind": "ワイドFM",
+     "area": "福島"
+    }
+   ]
+  },
+  "JP08": {
+   "name": "茨城県",
+   "stations": [
+    {
+     "name": "FMぱるるん",
+     "mhz": 76.2,
+     "kind": "コミュニティ",
+     "area": "水戸市"
+    },
+    {
+     "name": "FMかしま",
+     "mhz": 76.7,
+     "kind": "コミュニティ",
+     "area": "鹿嶋市"
+    },
+    {
+     "name": "FMだいご",
+     "mhz": 77.5,
+     "kind": "コミュニティ",
+     "area": "久慈郡大子町"
+    },
+    {
+     "name": "FMひたち",
+     "mhz": 82.2,
+     "kind": "コミュニティ",
+     "area": "日立市"
+    },
+    {
+     "name": "NHK-FM茨城",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "北茨城"
+    },
+    {
+     "name": "NHK-FM茨城",
+     "mhz": 83.2,
+     "kind": "NHK-FM",
+     "area": "水戸"
+    },
+    {
+     "name": "NHK-FM茨城",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "日立"
+    },
+    {
+     "name": "NHK-FM茨城",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "大子"
+    },
+    {
+     "name": "",
+     "mhz": 85.4,
+     "kind": "コミュニティ",
+     "area": "牛久市"
+    }
+   ]
+  },
+  "JP09": {
+   "name": "栃木県",
+   "stations": [
+    {
+     "name": "エフエム栃木",
+     "mhz": 76.4,
+     "kind": "FM",
+     "area": "宇都宮"
+    },
+    {
+     "name": "ミヤラジ",
+     "mhz": 77.3,
+     "kind": "コミュニティ",
+     "area": "宇都宮市"
+    },
+    {
+     "name": "おーラジ",
+     "mhz": 77.5,
+     "kind": "コミュニティ",
+     "area": "小山市"
+    },
+    {
+     "name": "エフエム栃木",
+     "mhz": 78.3,
+     "kind": "FM",
+     "area": "足利"
+    },
+    {
+     "name": "エフエム栃木",
+     "mhz": 78.5,
+     "kind": "FM",
+     "area": "塩原"
+    },
+    {
+     "name": "エフエム栃木",
+     "mhz": 79.1,
+     "kind": "FM",
+     "area": "今市"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 80.3,
+     "kind": "NHK-FM",
+     "area": "宇都宮"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "葛生"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "足利"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "今市"
+    },
+    {
+     "name": "エフエム栃木",
+     "mhz": 84.4,
+     "kind": "FM",
+     "area": "葛生"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "塩原"
+    },
+    {
+     "name": "FMくらら857",
+     "mhz": 85.7,
+     "kind": "コミュニティ",
+     "area": "栃木市"
+    },
+    {
+     "name": "NHK-FM栃木",
+     "mhz": 86.5,
+     "kind": "NHK-FM",
+     "area": "足尾"
+    },
+    {
+     "name": "FMもおか",
+     "mhz": 87.4,
+     "kind": "コミュニティ",
+     "area": "真岡市"
+    },
+    {
+     "name": "FMゆうがお",
+     "mhz": 87.9,
+     "kind": "コミュニティ",
+     "area": "下野市"
+    },
+    {
+     "name": "FM DAMONO",
+     "mhz": 88.3,
+     "kind": "コミュニティ",
+     "area": "足利市"
+    },
+    {
+     "name": "栃木放送",
+     "mhz": 91.1,
+     "kind": "ワイドFM",
+     "area": "足利"
+    },
+    {
+     "name": "栃木放送",
+     "mhz": 93.4,
+     "kind": "ワイドFM",
+     "area": "葛生"
+    },
+    {
+     "name": "栃木放送",
+     "mhz": 94.1,
+     "kind": "ワイドFM",
+     "area": "宇都宮"
+    }
+   ]
+  },
+  "JP10": {
+   "name": "群馬県",
+   "stations": [
+    {
+     "name": "ラジオ高崎",
+     "mhz": 76.2,
+     "kind": "コミュニティ",
+     "area": "高崎市"
+    },
+    {
+     "name": "FM OZE",
+     "mhz": 76.5,
+     "kind": "コミュニティ",
+     "area": "沼田市"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 76.7,
+     "kind": "FM",
+     "area": "草津"
+    },
+    {
+     "name": "いせさきFM",
+     "mhz": 76.9,
+     "kind": "コミュニティ",
+     "area": "伊勢崎市"
+    },
+    {
+     "name": "ラヂオななみ",
+     "mhz": 77.3,
+     "kind": "コミュニティ",
+     "area": "佐波郡玉村町"
+    },
+    {
+     "name": "エフエムきりゅう",
+     "mhz": 77.7,
+     "kind": "コミュニティ",
+     "area": "桐生市"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 77.8,
+     "kind": "FM",
+     "area": "沼田"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 79.4,
+     "kind": "FM",
+     "area": "利根"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 80.5,
+     "kind": "NHK-FM",
+     "area": "榛名"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 81.6,
+     "kind": "NHK-FM",
+     "area": "前橋"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 82.0,
+     "kind": "FM",
+     "area": "長野原"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 82.2,
+     "kind": "FM",
+     "area": "榛名"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "長野原"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "沼田"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "利根"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "草津"
+    },
+    {
+     "name": "M-wave",
+     "mhz": 84.5,
+     "kind": "コミュニティ",
+     "area": "前橋市"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "万場"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 86.3,
+     "kind": "FM",
+     "area": "前橋"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 87.1,
+     "kind": "FM",
+     "area": "三波川"
+    },
+    {
+     "name": "エフエム群馬",
+     "mhz": 88.0,
+     "kind": "FM",
+     "area": "万場"
+    },
+    {
+     "name": "NHK-FM群馬",
+     "mhz": 89.0,
+     "kind": "NHK-FM",
+     "area": "三波川"
+    }
+   ]
+  },
+  "JP11": {
+   "name": "埼玉県",
+   "stations": [
+    {
+     "name": "FMわたらせ",
+     "mhz": 76.1,
+     "kind": "コミュニティ",
+     "area": "加須市"
+    },
+    {
+     "name": "フラワーラジオ",
+     "mhz": 76.7,
+     "kind": "コミュニティ",
+     "area": "鴻巣市"
+    },
+    {
+     "name": "NACK5",
+     "mhz": 77.5,
+     "kind": "FM",
+     "area": "秩父"
+    },
+    {
+     "name": "FMチャッピー",
+     "mhz": 77.7,
+     "kind": "コミュニティ",
+     "area": "入間市"
+    },
+    {
+     "name": "ちちぶエフエム",
+     "mhz": 79.0,
+     "kind": "コミュニティ",
+     "area": "秩父市"
+    },
+    {
+     "name": "NACK5",
+     "mhz": 79.5,
+     "kind": "FM",
+     "area": "さいたま"
+    },
+    {
+     "name": "NHK-FM埼玉",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "秩父"
+    },
+    {
+     "name": "発するFM",
+     "mhz": 84.0,
+     "kind": "コミュニティ",
+     "area": "入間郡三芳町"
+    },
+    {
+     "name": "NHK-FM埼玉",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "さいたま"
+    },
+    {
+     "name": "FM Kawaguchi",
+     "mhz": 85.6,
+     "kind": "コミュニティ",
+     "area": "川口市"
+    },
+    {
+     "name": "",
+     "mhz": 86.8,
+     "kind": "コミュニティ",
+     "area": "越谷市"
+    },
+    {
+     "name": "REDS WAVE",
+     "mhz": 87.3,
+     "kind": "コミュニティ",
+     "area": "さいたま市浦和区"
+    },
+    {
+     "name": "FMクマガヤ",
+     "mhz": 87.6,
+     "kind": "コミュニティ",
+     "area": "熊谷市"
+    },
+    {
+     "name": "FMふっかちゃん",
+     "mhz": 88.5,
+     "kind": "コミュニティ",
+     "area": "深谷市"
+    },
+    {
+     "name": "ラジオ川越",
+     "mhz": 88.7,
+     "kind": "コミュニティ",
+     "area": "川越市"
+    },
+    {
+     "name": "あいラジ",
+     "mhz": 89.1,
+     "kind": "コミュニティ",
+     "area": "上尾市"
+    }
+   ]
+  },
+  "JP12": {
+   "name": "千葉県",
+   "stations": [
+    {
+     "name": "いちはらFM",
+     "mhz": 76.7,
+     "kind": "コミュニティ",
+     "area": "市原市"
+    },
+    {
+     "name": "ベイエフエム",
+     "mhz": 77.7,
+     "kind": "FM",
+     "area": "館山"
+    },
+    {
+     "name": "ベイエフエム",
+     "mhz": 78.0,
+     "kind": "FM",
+     "area": "千葉"
+    },
+    {
+     "name": "NHK-FM千葉",
+     "mhz": 79.0,
+     "kind": "NHK-FM",
+     "area": "館山"
+    },
+    {
+     "name": "ベイエフエム",
+     "mhz": 79.3,
+     "kind": "FM",
+     "area": "銚子"
+    },
+    {
+     "name": "ベイエフエム",
+     "mhz": 79.7,
+     "kind": "FM",
+     "area": "白浜"
+    },
+    {
+     "name": "NHK-FM千葉",
+     "mhz": 80.7,
+     "kind": "NHK-FM",
+     "area": "千葉"
+    },
+    {
+     "name": "NHK-FM千葉",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "白浜"
+    },
+    {
+     "name": "市川うららFM",
+     "mhz": 83.0,
+     "kind": "コミュニティ",
+     "area": "浦安市"
+    },
+    {
+     "name": "かずさエフエム",
+     "mhz": 83.4,
+     "kind": "コミュニティ",
+     "area": "木更津市"
+    },
+    {
+     "name": "NHK-FM千葉",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "勝浦"
+    },
+    {
+     "name": "NHK-FM千葉",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "銚子"
+    },
+    {
+     "name": "FMふくろう",
+     "mhz": 85.8,
+     "kind": "コミュニティ",
+     "area": "八千代市"
+    },
+    {
+     "name": "ベイエフエム",
+     "mhz": 87.4,
+     "kind": "FM",
+     "area": "勝浦"
+    },
+    {
+     "name": "",
+     "mhz": 89.2,
+     "kind": "コミュニティ",
+     "area": "千葉市中央区"
+    }
+   ]
+  },
+  "JP13": {
+   "name": "東京都",
+   "stations": [
+    {
+     "name": "エフエム東京",
+     "mhz": 76.7,
+     "kind": "FM",
+     "area": "新島"
+    },
+    {
+     "name": "NHK-FM東京",
+     "mhz": 77.5,
+     "kind": "NHK-FM",
+     "area": "新島"
+    },
+    {
+     "name": "むさしのFM",
+     "mhz": 78.2,
+     "kind": "コミュニティ",
+     "area": "武蔵野市"
+    },
+    {
+     "name": "かつしかFM",
+     "mhz": 78.9,
+     "kind": "コミュニティ",
+     "area": "葛飾区"
+    },
+    {
+     "name": "多摩レイクサイドFM",
+     "mhz": 79.0,
+     "kind": "コミュニティ",
+     "area": "東村山市"
+    },
+    {
+     "name": "NHK-FM東京",
+     "mhz": 79.6,
+     "kind": "NHK-FM",
+     "area": "父島"
+    },
+    {
+     "name": "エフエム東京",
+     "mhz": 80.0,
+     "kind": "FM",
+     "area": "東京"
+    },
+    {
+     "name": "エフエム東京",
+     "mhz": 80.5,
+     "kind": "FM",
+     "area": "八王子"
+    },
+    {
+     "name": "J-WAVE",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "東京"
+    },
+    {
+     "name": "NHK-FM東京",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "東京"
+    },
+    {
+     "name": "NHK-FM東京",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "八丈"
+    },
+    {
+     "name": "エフエム世田谷",
+     "mhz": 83.4,
+     "kind": "コミュニティ",
+     "area": "世田谷区"
+    },
+    {
+     "name": "エフエム東京",
+     "mhz": 83.6,
+     "kind": "FM",
+     "area": "青梅"
+    },
+    {
+     "name": "調布FM",
+     "mhz": 83.8,
+     "kind": "コミュニティ",
+     "area": "調布市"
+    },
+    {
+     "name": "",
+     "mhz": 84.0,
+     "kind": "コミュニティ",
+     "area": "中央区"
+    },
+    {
+     "name": "エフエム西東京",
+     "mhz": 84.2,
+     "kind": "コミュニティ",
+     "area": "西東京市"
+    },
+    {
+     "name": "エフエム東京",
+     "mhz": 84.3,
+     "kind": "FM",
+     "area": "八丈"
+    },
+    {
+     "name": "エフエムたちかわ",
+     "mhz": 84.4,
+     "kind": "コミュニティ",
+     "area": "立川市"
+    },
+    {
+     "name": "TOKYO854くるめラ",
+     "mhz": 85.4,
+     "kind": "コミュニティ",
+     "area": "東久留米市"
+    },
+    {
+     "name": "コマラジ",
+     "mhz": 85.7,
+     "kind": "コミュニティ",
+     "area": "狛江市"
+    },
+    {
+     "name": "エフエム東京",
+     "mhz": 86.6,
+     "kind": "FM",
+     "area": "檜原"
+    },
+    {
+     "name": "ラジオフチューズ",
+     "mhz": 87.4,
+     "kind": "コミュニティ",
+     "area": "府中市"
+    },
+    {
+     "name": "渋谷のラジオ",
+     "mhz": 87.6,
+     "kind": "コミュニティ",
+     "area": "渋谷区"
+    },
+    {
+     "name": "J-WAVE",
+     "mhz": 88.3,
+     "kind": "FM",
+     "area": "港"
+    },
+    {
+     "name": "大江戸放送局",
+     "mhz": 88.5,
+     "kind": "コミュニティ",
+     "area": "江東区"
+    },
+    {
+     "name": "FMしながわ",
+     "mhz": 88.9,
+     "kind": "コミュニティ",
+     "area": "品川区"
+    },
+    {
+     "name": "",
+     "mhz": 89.2,
+     "kind": "コミュニティ",
+     "area": "福生市"
+    },
+    {
+     "name": "InterFM897",
+     "mhz": 89.7,
+     "kind": "FM",
+     "area": "東京"
+    },
+    {
+     "name": "TBSラジオ",
+     "mhz": 90.5,
+     "kind": "ワイドFM",
+     "area": "墨田"
+    },
+    {
+     "name": "文化放送",
+     "mhz": 91.6,
+     "kind": "ワイドFM",
+     "area": "墨田"
+    },
+    {
+     "name": "ニッポン放送",
+     "mhz": 93.0,
+     "kind": "ワイドFM",
+     "area": "墨田"
+    }
+   ]
+  },
+  "JP14": {
+   "name": "神奈川県",
+   "stations": [
+    {
+     "name": "InterFM897",
+     "mhz": 76.5,
+     "kind": "FM",
+     "area": "横浜"
+    },
+    {
+     "name": "",
+     "mhz": 77.7,
+     "kind": "コミュニティ",
+     "area": "大和市"
+    },
+    {
+     "name": "FM湘南ナパサ",
+     "mhz": 78.3,
+     "kind": "コミュニティ",
+     "area": "平塚市"
+    },
+    {
+     "name": "FM・ブルー湘南",
+     "mhz": 78.5,
+     "kind": "コミュニティ",
+     "area": "横須賀市"
+    },
+    {
+     "name": "湘南ビーチFM",
+     "mhz": 78.9,
+     "kind": "コミュニティ",
+     "area": "逗子市"
+    },
+    {
+     "name": "かわさきFM",
+     "mhz": 79.1,
+     "kind": "コミュニティ",
+     "area": "川崎市中原区"
+    },
+    {
+     "name": "横浜エフエム放送",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "小田原"
+    },
+    {
+     "name": "NHK-FM神奈川",
+     "mhz": 81.9,
+     "kind": "NHK-FM",
+     "area": "横浜"
+    },
+    {
+     "name": "鎌倉エフエム",
+     "mhz": 82.8,
+     "kind": "コミュニティ",
+     "area": "鎌倉市"
+    },
+    {
+     "name": "レディオ湘南",
+     "mhz": 83.1,
+     "kind": "コミュニティ",
+     "area": "藤沢市"
+    },
+    {
+     "name": "NHK-FM神奈川",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "小田原"
+    },
+    {
+     "name": "",
+     "mhz": 83.6,
+     "kind": "コミュニティ",
+     "area": "愛甲郡清川村"
+    },
+    {
+     "name": "エフエム戸塚",
+     "mhz": 83.7,
+     "kind": "コミュニティ",
+     "area": "横浜市戸塚区"
+    },
+    {
+     "name": "FM HOT 839",
+     "mhz": 83.9,
+     "kind": "コミュニティ",
+     "area": "相模原市中央区"
+    },
+    {
+     "name": "FMサルース",
+     "mhz": 84.1,
+     "kind": "コミュニティ",
+     "area": "横浜市青葉区"
+    },
+    {
+     "name": "FMカオン",
+     "mhz": 84.2,
+     "kind": "コミュニティ",
+     "area": "海老名市"
+    },
+    {
+     "name": "横浜エフエム放送",
+     "mhz": 84.7,
+     "kind": "FM",
+     "area": "横浜"
+    },
+    {
+     "name": "金沢シーサイドFM",
+     "mhz": 85.5,
+     "kind": "コミュニティ",
+     "area": "横浜市金沢区"
+    },
+    {
+     "name": "",
+     "mhz": 85.6,
+     "kind": "コミュニティ",
+     "area": "中郡大磯町"
+    },
+    {
+     "name": "マリンFM",
+     "mhz": 86.1,
+     "kind": "コミュニティ",
+     "area": "横浜市中区"
+    },
+    {
+     "name": "横浜エフエム放送",
+     "mhz": 87.0,
+     "kind": "FM",
+     "area": "磯子"
+    },
+    {
+     "name": "FMおだわら",
+     "mhz": 87.9,
+     "kind": "コミュニティ",
+     "area": "小田原市"
+    },
+    {
+     "name": "",
+     "mhz": 89.2,
+     "kind": "コミュニティ",
+     "area": "茅ヶ崎市"
+    },
+    {
+     "name": "ラジオ日本",
+     "mhz": 92.4,
+     "kind": "ワイドFM",
+     "area": "横浜"
+    },
+    {
+     "name": "FM大師",
+     "mhz": 94.9,
+     "kind": "コミュニティ",
+     "area": "川崎市川崎区"
+    }
+   ]
+  },
+  "JP15": {
+   "name": "新潟県",
+   "stations": [
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 77.5,
+     "kind": "FM",
+     "area": "新潟"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "糸魚川"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 80.2,
+     "kind": "FM",
+     "area": "津川"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "安塚"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 81.7,
+     "kind": "FM",
+     "area": "越後湯沢"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 82.3,
+     "kind": "NHK-FM",
+     "area": "新潟"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "大和"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "松代"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 84.7,
+     "kind": "FM",
+     "area": "高田"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "糸魚川"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "安塚"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "越後湯沢"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "能生"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "府屋"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "高田"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 86.1,
+     "kind": "NHK-FM",
+     "area": "高千"
+    },
+    {
+     "name": "エフエムラジオ新潟",
+     "mhz": 86.5,
+     "kind": "FM",
+     "area": "大和"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 86.9,
+     "kind": "NHK-FM",
+     "area": "両津"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 87.0,
+     "kind": "NHK-FM",
+     "area": "津南"
+    },
+    {
+     "name": "NHK-FM新潟",
+     "mhz": 87.5,
+     "kind": "NHK-FM",
+     "area": "相川"
+    },
+    {
+     "name": "新潟放送",
+     "mhz": 92.7,
+     "kind": "ワイドFM",
+     "area": "新潟"
+    },
+    {
+     "name": "新潟放送",
+     "mhz": 94.8,
+     "kind": "ワイドFM",
+     "area": "高田"
+    }
+   ]
+  },
+  "JP16": {
+   "name": "富山県",
+   "stations": [
+    {
+     "name": "NHK-FM富山",
+     "mhz": 81.5,
+     "kind": "NHK-FM",
+     "area": "富山"
+    },
+    {
+     "name": "富山エフエム放送",
+     "mhz": 82.7,
+     "kind": "FM",
+     "area": "富山"
+    },
+    {
+     "name": "NHK-FM富山",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "宇奈月"
+    },
+    {
+     "name": "富山エフエム放送",
+     "mhz": 85.8,
+     "kind": "FM",
+     "area": "宇奈月"
+    },
+    {
+     "name": "北日本放送",
+     "mhz": 90.2,
+     "kind": "ワイドFM",
+     "area": "富山"
+    }
+   ]
+  },
+  "JP17": {
+   "name": "石川県",
+   "stations": [
+    {
+     "name": "北陸放送",
+     "mhz": 76.7,
+     "kind": "ワイドFM",
+     "area": "珠洲"
+    },
+    {
+     "name": "北陸放送",
+     "mhz": 77.1,
+     "kind": "ワイドFM",
+     "area": "輪島"
+    },
+    {
+     "name": "エフエム石川",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "七尾"
+    },
+    {
+     "name": "エフエム石川",
+     "mhz": 80.5,
+     "kind": "FM",
+     "area": "金沢"
+    },
+    {
+     "name": "エフエム石川",
+     "mhz": 81.9,
+     "kind": "FM",
+     "area": "珠洲"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 82.2,
+     "kind": "NHK-FM",
+     "area": "金沢"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "羽咋"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 83.2,
+     "kind": "NHK-FM",
+     "area": "珠洲"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "輪島町野"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "輪島"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "山中"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "七尾"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "東門前"
+    },
+    {
+     "name": "NHK-FM石川",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "富来"
+    },
+    {
+     "name": "エフエム石川",
+     "mhz": 85.5,
+     "kind": "FM",
+     "area": "羽咋"
+    },
+    {
+     "name": "北陸放送",
+     "mhz": 88.6,
+     "kind": "ワイドFM",
+     "area": "七尾"
+    },
+    {
+     "name": "エフエム石川",
+     "mhz": 89.9,
+     "kind": "FM",
+     "area": "輪島"
+    },
+    {
+     "name": "北陸放送",
+     "mhz": 93.1,
+     "kind": "ワイドFM",
+     "area": "羽咋"
+    },
+    {
+     "name": "北陸放送",
+     "mhz": 94.0,
+     "kind": "ワイドFM",
+     "area": "金沢"
+    }
+   ]
+  },
+  "JP18": {
+   "name": "福井県",
+   "stations": [
+    {
+     "name": "福井エフエム放送",
+     "mhz": 76.1,
+     "kind": "FM",
+     "area": "福井"
+    },
+    {
+     "name": "福井エフエム放送",
+     "mhz": 80.3,
+     "kind": "FM",
+     "area": "美浜"
+    },
+    {
+     "name": "福井エフエム放送",
+     "mhz": 82.0,
+     "kind": "FM",
+     "area": "高浜"
+    },
+    {
+     "name": "福井エフエム放送",
+     "mhz": 82.5,
+     "kind": "FM",
+     "area": "小浜"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "福井"
+    },
+    {
+     "name": "福井エフエム放送",
+     "mhz": 84.7,
+     "kind": "FM",
+     "area": "大野"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "敦賀"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "越前"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "美浜"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "大野"
+    },
+    {
+     "name": "福井エフエム放送",
+     "mhz": 86.4,
+     "kind": "FM",
+     "area": "敦賀"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 87.8,
+     "kind": "NHK-FM",
+     "area": "小浜"
+    },
+    {
+     "name": "NHK-FM福井",
+     "mhz": 88.8,
+     "kind": "NHK-FM",
+     "area": "高浜"
+    },
+    {
+     "name": "福井放送",
+     "mhz": 93.6,
+     "kind": "ワイドFM",
+     "area": "小浜"
+    },
+    {
+     "name": "福井放送",
+     "mhz": 94.6,
+     "kind": "ワイドFM",
+     "area": "大野"
+    }
+   ]
+  },
+  "JP19": {
+   "name": "山梨県",
+   "stations": [
+    {
+     "name": "エフエム甲府",
+     "mhz": 76.3,
+     "kind": "コミュニティ",
+     "area": "甲府市"
+    },
+    {
+     "name": "エフエムふじごこ",
+     "mhz": 76.8,
+     "kind": "コミュニティ",
+     "area": "富士吉田市"
+    },
+    {
+     "name": "FMふじやま",
+     "mhz": 77.6,
+     "kind": "コミュニティ",
+     "area": "南都留郡富士河口湖町"
+    },
+    {
+     "name": "エフエム富士",
+     "mhz": 80.5,
+     "kind": "FM",
+     "area": "身延"
+    },
+    {
+     "name": "エフエム八ヶ岳",
+     "mhz": 82.2,
+     "kind": "コミュニティ",
+     "area": "北杜市"
+    },
+    {
+     "name": "エフエム富士",
+     "mhz": 83.0,
+     "kind": "FM",
+     "area": "甲府"
+    },
+    {
+     "name": "NHK-FM山梨",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "身延"
+    },
+    {
+     "name": "NHK-FM山梨",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "甲府"
+    },
+    {
+     "name": "NHK-FM山梨",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "三ツ峠"
+    },
+    {
+     "name": "山梨放送",
+     "mhz": 90.9,
+     "kind": "ワイドFM",
+     "area": "甲府"
+    }
+   ]
+  },
+  "JP20": {
+   "name": "長野県",
+   "stations": [
+    {
+     "name": "NHK-FM長野",
+     "mhz": 77.4,
+     "kind": "NHK-FM",
+     "area": "飯田"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 78.1,
+     "kind": "FM",
+     "area": "聖"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 79.7,
+     "kind": "FM",
+     "area": "長野"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 80.3,
+     "kind": "FM",
+     "area": "小海"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 81.5,
+     "kind": "FM",
+     "area": "木曽福島"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 81.8,
+     "kind": "FM",
+     "area": "岡谷諏訪"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 82.0,
+     "kind": "NHK-FM",
+     "area": "南木曽"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "飯山"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "木曽福島"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "聖"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 83.2,
+     "kind": "NHK-FM",
+     "area": "木祖楢川"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "白馬"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "長野"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "小谷"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "松本"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "小海"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "高遠"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "遠山"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "岡谷諏訪"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.4,
+     "kind": "NHK-FM",
+     "area": "牟礼"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "倉本"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "善光寺平"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "天龍平岡"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 86.4,
+     "kind": "FM",
+     "area": "松本"
+    },
+    {
+     "name": "長野エフエム放送",
+     "mhz": 88.3,
+     "kind": "FM",
+     "area": "飯田"
+    },
+    {
+     "name": "NHK-FM長野",
+     "mhz": 89.8,
+     "kind": "NHK-FM",
+     "area": "戸倉上山田"
+    },
+    {
+     "name": "信越放送",
+     "mhz": 91.2,
+     "kind": "ワイドFM",
+     "area": "善光寺平"
+    },
+    {
+     "name": "信越放送",
+     "mhz": 92.2,
+     "kind": "ワイドFM",
+     "area": "長野"
+    },
+    {
+     "name": "信越放送",
+     "mhz": 94.2,
+     "kind": "ワイドFM",
+     "area": "飯田"
+    }
+   ]
+  },
+  "JP21": {
+   "name": "岐阜県",
+   "stations": [
+    {
+     "name": "エフエム岐阜",
+     "mhz": 78.3,
+     "kind": "FM",
+     "area": "中津川"
+    },
+    {
+     "name": "エフエム岐阜",
+     "mhz": 79.3,
+     "kind": "FM",
+     "area": "郡上八幡"
+    },
+    {
+     "name": "エフエム岐阜",
+     "mhz": 80.0,
+     "kind": "FM",
+     "area": "岐阜"
+    },
+    {
+     "name": "エフエム岐阜",
+     "mhz": 81.5,
+     "kind": "FM",
+     "area": "土岐南"
+    },
+    {
+     "name": "エフエム岐阜",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "下呂"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "飛騨金山"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "岐阜"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "宮"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "下呂"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "土岐南"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "神岡"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "郡上八幡"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "中津川"
+    },
+    {
+     "name": "NHK-FM岐阜",
+     "mhz": 86.1,
+     "kind": "NHK-FM",
+     "area": "高山"
+    },
+    {
+     "name": "岐阜放送",
+     "mhz": 90.4,
+     "kind": "ワイドFM",
+     "area": "上加納山"
+    }
+   ]
+  },
+  "JP22": {
+   "name": "静岡県",
+   "stations": [
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "浜松"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 78.6,
+     "kind": "FM",
+     "area": "東伊豆"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "静岡"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 80.3,
+     "kind": "FM",
+     "area": "掛川"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 80.5,
+     "kind": "FM",
+     "area": "下田"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 81.6,
+     "kind": "FM",
+     "area": "御殿場"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 82.1,
+     "kind": "NHK-FM",
+     "area": "浜松"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 82.2,
+     "kind": "NHK-FM",
+     "area": "河津"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "島田"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "東伊豆"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "中川根"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "御殿場"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "下田"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "熱海"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "春野"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "佐久間"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "芝川"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "伊豆長岡"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 85.8,
+     "kind": "FM",
+     "area": "富士"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 85.9,
+     "kind": "FM",
+     "area": "島田"
+    },
+    {
+     "name": "静岡エフエム放送",
+     "mhz": 86.6,
+     "kind": "FM",
+     "area": "伊豆長岡"
+    },
+    {
+     "name": "NHK-FM静岡",
+     "mhz": 88.8,
+     "kind": "NHK-FM",
+     "area": "静岡"
+    },
+    {
+     "name": "静岡放送",
+     "mhz": 90.1,
+     "kind": "ワイドFM",
+     "area": "下田"
+    },
+    {
+     "name": "静岡放送",
+     "mhz": 92.1,
+     "kind": "ワイドFM",
+     "area": "御殿場"
+    },
+    {
+     "name": "静岡放送",
+     "mhz": 94.7,
+     "kind": "ワイドFM",
+     "area": "浜松"
+    }
+   ]
+  },
+  "JP23": {
+   "name": "愛知県",
+   "stations": [
+    {
+     "name": "ZIP-FM",
+     "mhz": 77.1,
+     "kind": "FM",
+     "area": "豊橋"
+    },
+    {
+     "name": "ZIP-FM",
+     "mhz": 77.8,
+     "kind": "FM",
+     "area": "名古屋"
+    },
+    {
+     "name": "FM AICHI",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "名古屋"
+    },
+    {
+     "name": "NHK-FM愛知",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "名古屋"
+    },
+    {
+     "name": "NHK-FM愛知",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "設楽"
+    },
+    {
+     "name": "NHK-FM愛知",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "豊橋"
+    },
+    {
+     "name": "東海ラジオ",
+     "mhz": 91.0,
+     "kind": "ワイドFM",
+     "area": "豊橋"
+    },
+    {
+     "name": "CBCラジオ",
+     "mhz": 91.8,
+     "kind": "ワイドFM",
+     "area": "豊橋"
+    },
+    {
+     "name": "東海ラジオ",
+     "mhz": 92.9,
+     "kind": "ワイドFM",
+     "area": "三国山"
+    },
+    {
+     "name": "CBCラジオ",
+     "mhz": 93.7,
+     "kind": "ワイドFM",
+     "area": "三国山"
+    }
+   ]
+  },
+  "JP24": {
+   "name": "三重県",
+   "stations": [
+    {
+     "name": "三重エフエム放送",
+     "mhz": 76.8,
+     "kind": "FM",
+     "area": "輪内"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 78.1,
+     "kind": "FM",
+     "area": "磯部"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 78.9,
+     "kind": "FM",
+     "area": "津"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "尾鷲"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 81.4,
+     "kind": "NHK-FM",
+     "area": "宮川"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 81.8,
+     "kind": "NHK-FM",
+     "area": "津"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "磯部"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 83.2,
+     "kind": "FM",
+     "area": "鳥羽"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "大宮"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "名張"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "尾鷲"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "鳥羽"
+    },
+    {
+     "name": "NHK-FM三重",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "熊野"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 85.5,
+     "kind": "FM",
+     "area": "名張"
+    },
+    {
+     "name": "三重エフエム放送",
+     "mhz": 85.7,
+     "kind": "FM",
+     "area": "熊野"
+    }
+   ]
+  },
+  "JP25": {
+   "name": "滋賀県",
+   "stations": [
+    {
+     "name": "エフエム滋賀",
+     "mhz": 77.0,
+     "kind": "FM",
+     "area": "大津"
+    },
+    {
+     "name": "エフエム滋賀",
+     "mhz": 82.2,
+     "kind": "FM",
+     "area": "長浜"
+    },
+    {
+     "name": "NHK-FM滋賀",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "山東"
+    },
+    {
+     "name": "NHK-FM滋賀",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "大津"
+    },
+    {
+     "name": "NHK-FM滋賀",
+     "mhz": 88.9,
+     "kind": "NHK-FM",
+     "area": "信楽"
+    }
+   ]
+  },
+  "JP26": {
+   "name": "京都府",
+   "stations": [
+    {
+     "name": "エフエム京都",
+     "mhz": 79.8,
+     "kind": "FM",
+     "area": "宮津"
+    },
+    {
+     "name": "エフエム京都",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "福知山"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 81.9,
+     "kind": "NHK-FM",
+     "area": "綾部八津合"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "京都"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "峰山"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "丹波美山"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "舞鶴"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "福知山"
+    },
+    {
+     "name": "エフエム京都",
+     "mhz": 85.4,
+     "kind": "FM",
+     "area": "峰山"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 86.1,
+     "kind": "NHK-FM",
+     "area": "宮津"
+    },
+    {
+     "name": "エフエム京都",
+     "mhz": 87.2,
+     "kind": "FM",
+     "area": "舞鶴"
+    },
+    {
+     "name": "NHK-FM京都",
+     "mhz": 87.9,
+     "kind": "NHK-FM",
+     "area": "京北"
+    },
+    {
+     "name": "エフエム京都",
+     "mhz": 89.4,
+     "kind": "FM",
+     "area": "京都"
+    },
+    {
+     "name": "京都放送",
+     "mhz": 94.9,
+     "kind": "ワイドFM",
+     "area": "京都"
+    }
+   ]
+  },
   "JP27": {
    "name": "大阪府",
    "stations": [
@@ -118,6 +3225,2452 @@
      "mhz": 93.3,
      "kind": "ワイドFM",
      "area": "大阪"
+    }
+   ]
+  },
+  "JP28": {
+   "name": "兵庫県",
+   "stations": [
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 77.6,
+     "kind": "FM",
+     "area": "姫路"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 78.3,
+     "kind": "FM",
+     "area": "氷上"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "香住"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 79.9,
+     "kind": "FM",
+     "area": "淡路三原"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 82.0,
+     "kind": "NHK-FM",
+     "area": "温泉"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 82.4,
+     "kind": "NHK-FM",
+     "area": "八鹿"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 82.7,
+     "kind": "NHK-FM",
+     "area": "波賀"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "相生"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "淡路三原"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "山崎"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "川西北"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.2,
+     "kind": "NHK-FM",
+     "area": "香住"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "上郡"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "篠山"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "城崎"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "姫路"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "村岡"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "和田山"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "佐用"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "生野"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 86.5,
+     "kind": "NHK-FM",
+     "area": "神戸"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 87.1,
+     "kind": "FM",
+     "area": "北阪神"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 87.9,
+     "kind": "FM",
+     "area": "城崎"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 88.4,
+     "kind": "NHK-FM",
+     "area": "一宮安積"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 88.6,
+     "kind": "NHK-FM",
+     "area": "氷上"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 88.8,
+     "kind": "NHK-FM",
+     "area": "大屋"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 89.2,
+     "kind": "NHK-FM",
+     "area": "西脇"
+    },
+    {
+     "name": "NHK-FM兵庫",
+     "mhz": 89.8,
+     "kind": "NHK-FM",
+     "area": "一宮三方"
+    },
+    {
+     "name": "兵庫エフエム放送",
+     "mhz": 89.9,
+     "kind": "FM",
+     "area": "神戸"
+    },
+    {
+     "name": "ラジオ関西",
+     "mhz": 91.1,
+     "kind": "ワイドFM",
+     "area": "神戸"
+    }
+   ]
+  },
+  "JP29": {
+   "name": "奈良県",
+   "stations": [
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 82.3,
+     "kind": "NHK-FM",
+     "area": "山添"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "川上東川"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "東生駒"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "栃原"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "十津川小原"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "御杖土屋原"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 87.4,
+     "kind": "NHK-FM",
+     "area": "奈良"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 88.5,
+     "kind": "NHK-FM",
+     "area": "宇陀"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 89.0,
+     "kind": "NHK-FM",
+     "area": "西吉野"
+    },
+    {
+     "name": "NHK-FM奈良",
+     "mhz": 89.6,
+     "kind": "NHK-FM",
+     "area": "天川川合"
+    }
+   ]
+  },
+  "JP30": {
+   "name": "和歌山県",
+   "stations": [
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 81.8,
+     "kind": "NHK-FM",
+     "area": "田辺"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 82.7,
+     "kind": "NHK-FM",
+     "area": "紀伊清水西"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 83.2,
+     "kind": "NHK-FM",
+     "area": "九度山"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "新宮"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "御坊"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "本宮"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "和歌山"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "すさみ"
+    },
+    {
+     "name": "NHK-FM和歌山",
+     "mhz": 85.4,
+     "kind": "NHK-FM",
+     "area": "串本"
+    },
+    {
+     "name": "和歌山放送",
+     "mhz": 91.6,
+     "kind": "ワイドFM",
+     "area": "田辺"
+    },
+    {
+     "name": "和歌山放送",
+     "mhz": 92.4,
+     "kind": "ワイドFM",
+     "area": "御坊"
+    },
+    {
+     "name": "和歌山放送",
+     "mhz": 94.2,
+     "kind": "ワイドFM",
+     "area": "和歌山"
+    }
+   ]
+  },
+  "JP31": {
+   "name": "鳥取県",
+   "stations": [
+    {
+     "name": "エフエム山陰",
+     "mhz": 77.2,
+     "kind": "FM",
+     "area": "用瀬"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 78.8,
+     "kind": "FM",
+     "area": "鳥取"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 81.7,
+     "kind": "NHK-FM",
+     "area": "智頭山形"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 83.4,
+     "kind": "FM",
+     "area": "智頭"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "若桜"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "岩美"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "日野"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "智頭"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "用瀬"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "米子日南"
+    },
+    {
+     "name": "NHK-FM鳥取",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "鳥取"
+    },
+    {
+     "name": "山陰放送",
+     "mhz": 92.2,
+     "kind": "ワイドFM",
+     "area": "鳥取"
+    }
+   ]
+  },
+  "JP32": {
+   "name": "島根県",
+   "stations": [
+    {
+     "name": "エフエム山陰",
+     "mhz": 77.4,
+     "kind": "FM",
+     "area": "松江"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 78.9,
+     "kind": "NHK-FM",
+     "area": "邑智萩原山"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 80.4,
+     "kind": "NHK-FM",
+     "area": "西ノ島"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "邑智"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 81.5,
+     "kind": "NHK-FM",
+     "area": "西郷"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "大田"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "横田"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "羽須美"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "松江"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "日原"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "邑智"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "石見"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 85.4,
+     "kind": "NHK-FM",
+     "area": "大田"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "大東"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "浜田"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 86.6,
+     "kind": "FM",
+     "area": "浜田"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 86.9,
+     "kind": "FM",
+     "area": "石見大和"
+    },
+    {
+     "name": "山陰放送",
+     "mhz": 87.1,
+     "kind": "ワイドFM",
+     "area": "松江"
+    },
+    {
+     "name": "エフエム山陰",
+     "mhz": 87.3,
+     "kind": "FM",
+     "area": "羽須美"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 87.8,
+     "kind": "NHK-FM",
+     "area": "石見大和"
+    },
+    {
+     "name": "NHK-FM島根",
+     "mhz": 89.8,
+     "kind": "NHK-FM",
+     "area": "津和野"
+    }
+   ]
+  },
+  "JP33": {
+   "name": "岡山県",
+   "stations": [
+    {
+     "name": "岡山エフエム放送",
+     "mhz": 76.8,
+     "kind": "FM",
+     "area": "岡山"
+    },
+    {
+     "name": "岡山エフエム放送",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "津山"
+    },
+    {
+     "name": "岡山エフエム放送",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "高梁"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 82.0,
+     "kind": "NHK-FM",
+     "area": "和気"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "有漢"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 82.6,
+     "kind": "NHK-FM",
+     "area": "備前"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "井原"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "日生"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "笠岡"
+    },
+    {
+     "name": "岡山エフエム放送",
+     "mhz": 83.8,
+     "kind": "FM",
+     "area": "備前"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "久世"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "哲西"
+    },
+    {
+     "name": "岡山エフエム放送",
+     "mhz": 84.3,
+     "kind": "FM",
+     "area": "井原"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "三石"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "北房"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "柵原"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "大原"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "津山"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "児島"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "新見"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 86.3,
+     "kind": "NHK-FM",
+     "area": "美作加茂"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 87.9,
+     "kind": "NHK-FM",
+     "area": "高梁"
+    },
+    {
+     "name": "NHK-FM岡山",
+     "mhz": 88.7,
+     "kind": "NHK-FM",
+     "area": "岡山"
+    },
+    {
+     "name": "山陽放送",
+     "mhz": 91.4,
+     "kind": "ワイドFM",
+     "area": "岡山"
+    }
+   ]
+  },
+  "JP34": {
+   "name": "広島県",
+   "stations": [
+    {
+     "name": "広島エフエム放送",
+     "mhz": 76.4,
+     "kind": "FM",
+     "area": "大崎"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 77.1,
+     "kind": "FM",
+     "area": "尾道"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 77.8,
+     "kind": "FM",
+     "area": "西条"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 78.2,
+     "kind": "FM",
+     "area": "広島"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 80.1,
+     "kind": "NHK-FM",
+     "area": "五日市"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "可部"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "五日市"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 81.4,
+     "kind": "FM",
+     "area": "世羅甲山"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 81.7,
+     "kind": "FM",
+     "area": "呉"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 81.9,
+     "kind": "NHK-FM",
+     "area": "豊栄"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 82.0,
+     "kind": "NHK-FM",
+     "area": "南加計"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "福山"
+    },
+    {
+     "name": "広島エフエム放送",
+     "mhz": 82.3,
+     "kind": "FM",
+     "area": "佐東"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 82.4,
+     "kind": "NHK-FM",
+     "area": "世羅甲山"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 82.6,
+     "kind": "NHK-FM",
+     "area": "油木"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "黒瀬"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "安芸千代田"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "三原"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "西条"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "可部"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "因島"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "呉"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "府中"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "大崎"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "佐東"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "三次"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "尾道"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "西城"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "吉田"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "福山南"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 88.3,
+     "kind": "NHK-FM",
+     "area": "広島"
+    },
+    {
+     "name": "NHK-FM広島",
+     "mhz": 88.9,
+     "kind": "NHK-FM",
+     "area": "安芸佐伯"
+    },
+    {
+     "name": "中国放送",
+     "mhz": 94.6,
+     "kind": "ワイドFM",
+     "area": "広島"
+    }
+   ]
+  },
+  "JP35": {
+   "name": "山口県",
+   "stations": [
+    {
+     "name": "エフエム山口",
+     "mhz": 77.7,
+     "kind": "FM",
+     "area": "下関"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 77.9,
+     "kind": "FM",
+     "area": "柳井"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 78.6,
+     "kind": "FM",
+     "area": "萩"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "山口"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 81.3,
+     "kind": "NHK-FM",
+     "area": "山口豊浦"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 81.5,
+     "kind": "FM",
+     "area": "美祢"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 81.9,
+     "kind": "NHK-FM",
+     "area": "豊北"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "山口鴻ノ峯"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 82.4,
+     "kind": "NHK-FM",
+     "area": "萩"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "東和"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "須佐田万川"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "山口錦"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "宇部"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "長門"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "山口豊田"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "柳井"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "阿東"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "美祢"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "岩国"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 85.3,
+     "kind": "NHK-FM",
+     "area": "山口"
+    },
+    {
+     "name": "NHK-FM山口",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "山口鴻ノ峯"
+    },
+    {
+     "name": "山口放送",
+     "mhz": 86.4,
+     "kind": "ワイドFM",
+     "area": "美祢"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 88.6,
+     "kind": "FM",
+     "area": "宇部"
+    },
+    {
+     "name": "エフエム山口",
+     "mhz": 89.4,
+     "kind": "FM",
+     "area": "長門"
+    },
+    {
+     "name": "山口放送",
+     "mhz": 92.3,
+     "kind": "ワイドFM",
+     "area": "山口"
+    }
+   ]
+  },
+  "JP36": {
+   "name": "徳島県",
+   "stations": [
+    {
+     "name": "エフエム徳島",
+     "mhz": 77.7,
+     "kind": "FM",
+     "area": "日和佐"
+    },
+    {
+     "name": "エフエム徳島",
+     "mhz": 78.4,
+     "kind": "FM",
+     "area": "阿南"
+    },
+    {
+     "name": "エフエム徳島",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "徳島"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 81.3,
+     "kind": "NHK-FM",
+     "area": "阿南"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 82.0,
+     "kind": "NHK-FM",
+     "area": "鷲敷"
+    },
+    {
+     "name": "エフエム徳島",
+     "mhz": 82.3,
+     "kind": "FM",
+     "area": "池田"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 82.4,
+     "kind": "NHK-FM",
+     "area": "上勝"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "一宇"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "上那賀"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "徳島"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "一宇東"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "東祖谷山"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "阿波"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "神山"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "池田"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "美馬"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "日和佐"
+    },
+    {
+     "name": "NHK-FM徳島",
+     "mhz": 89.9,
+     "kind": "NHK-FM",
+     "area": "宍喰"
+    },
+    {
+     "name": "四国放送",
+     "mhz": 93.0,
+     "kind": "ワイドFM",
+     "area": "徳島"
+    },
+    {
+     "name": "四国放送",
+     "mhz": 93.9,
+     "kind": "ワイドFM",
+     "area": "阿南"
+    }
+   ]
+  },
+  "JP37": {
+   "name": "香川県",
+   "stations": [
+    {
+     "name": "エフエム香川",
+     "mhz": 78.6,
+     "kind": "FM",
+     "area": "高松"
+    },
+    {
+     "name": "NHK-FM香川",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "高松"
+    },
+    {
+     "name": "西日本放送",
+     "mhz": 90.3,
+     "kind": "ワイドFM",
+     "area": "高松"
+    }
+   ]
+  },
+  "JP38": {
+   "name": "愛媛県",
+   "stations": [
+    {
+     "name": "エフエム愛媛",
+     "mhz": 77.6,
+     "kind": "FM",
+     "area": "八幡浜"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 78.8,
+     "kind": "FM",
+     "area": "大洲"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 79.7,
+     "kind": "FM",
+     "area": "松山"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 80.0,
+     "kind": "FM",
+     "area": "川之江"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 80.2,
+     "kind": "FM",
+     "area": "城川"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 80.6,
+     "kind": "FM",
+     "area": "今治"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "宇和島"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 82.2,
+     "kind": "NHK-FM",
+     "area": "菊間"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "南宇和"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "城川"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "大三島"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "川之江"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "宇和島"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 85.1,
+     "kind": "NHK-FM",
+     "area": "中山"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 85.4,
+     "kind": "NHK-FM",
+     "area": "城辺"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 85.5,
+     "kind": "NHK-FM",
+     "area": "美川"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "野村"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "大洲"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 86.5,
+     "kind": "NHK-FM",
+     "area": "八幡浜"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 86.8,
+     "kind": "NHK-FM",
+     "area": "久万"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 87.0,
+     "kind": "NHK-FM",
+     "area": "新居浜"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 87.7,
+     "kind": "NHK-FM",
+     "area": "松山"
+    },
+    {
+     "name": "NHK-FM愛媛",
+     "mhz": 88.7,
+     "kind": "NHK-FM",
+     "area": "小田"
+    },
+    {
+     "name": "エフエム愛媛",
+     "mhz": 89.2,
+     "kind": "FM",
+     "area": "新居浜"
+    },
+    {
+     "name": "南海放送",
+     "mhz": 91.2,
+     "kind": "ワイドFM",
+     "area": "川之江"
+    },
+    {
+     "name": "南海放送",
+     "mhz": 91.7,
+     "kind": "ワイドFM",
+     "area": "松山"
+    }
+   ]
+  },
+  "JP39": {
+   "name": "高知県",
+   "stations": [
+    {
+     "name": "エフエム高知",
+     "mhz": 78.5,
+     "kind": "FM",
+     "area": "中村"
+    },
+    {
+     "name": "エフエム高知",
+     "mhz": 79.9,
+     "kind": "FM",
+     "area": "安芸"
+    },
+    {
+     "name": "エフエム高知",
+     "mhz": 80.6,
+     "kind": "FM",
+     "area": "窪川"
+    },
+    {
+     "name": "エフエム高知",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "宿毛"
+    },
+    {
+     "name": "エフエム高知",
+     "mhz": 81.6,
+     "kind": "FM",
+     "area": "高知"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "宿毛"
+    },
+    {
+     "name": "エフエム高知",
+     "mhz": 82.7,
+     "kind": "FM",
+     "area": "須崎"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "土佐町"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "窪川"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "安芸"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "佐川"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "中土佐"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "中村"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "吾川村"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "須崎"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "豊永"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "十和"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "大豊"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "仁淀"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "土佐大月"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 86.8,
+     "kind": "NHK-FM",
+     "area": "室戸岬"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 87.5,
+     "kind": "NHK-FM",
+     "area": "高知"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 87.8,
+     "kind": "NHK-FM",
+     "area": "東洋野根"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 89.1,
+     "kind": "NHK-FM",
+     "area": "室戸"
+    },
+    {
+     "name": "NHK-FM高知",
+     "mhz": 89.9,
+     "kind": "NHK-FM",
+     "area": "物部"
+    },
+    {
+     "name": "高知放送",
+     "mhz": 90.8,
+     "kind": "ワイドFM",
+     "area": "高知"
+    }
+   ]
+  },
+  "JP40": {
+   "name": "福岡県",
+   "stations": [
+    {
+     "name": "LOVE FM",
+     "mhz": 76.1,
+     "kind": "FM",
+     "area": "福岡"
+    },
+    {
+     "name": "CROSS FM",
+     "mhz": 77.0,
+     "kind": "FM",
+     "area": "北九州"
+    },
+    {
+     "name": "CROSS FM",
+     "mhz": 78.7,
+     "kind": "FM",
+     "area": "福岡"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 80.0,
+     "kind": "FM",
+     "area": "北九州"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "福岡"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "糸島"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 81.8,
+     "kind": "FM",
+     "area": "行橋"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 82.1,
+     "kind": "FM",
+     "area": "久留米"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 82.2,
+     "kind": "NHK-FM",
+     "area": "門司"
+    },
+    {
+     "name": "LOVE FM",
+     "mhz": 82.7,
+     "kind": "FM",
+     "area": "北九州"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "筑前山田"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 83.4,
+     "kind": "NHK-FM",
+     "area": "久留米"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 83.6,
+     "kind": "NHK-FM",
+     "area": "行橋"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 84.1,
+     "kind": "FM",
+     "area": "宗像"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "福岡"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 85.7,
+     "kind": "NHK-FM",
+     "area": "北九州"
+    },
+    {
+     "name": "NHK-FM福岡",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "大牟田"
+    },
+    {
+     "name": "CROSS FM",
+     "mhz": 86.5,
+     "kind": "FM",
+     "area": "久留米"
+    },
+    {
+     "name": "エフエム福岡",
+     "mhz": 87.0,
+     "kind": "FM",
+     "area": "大牟田"
+    },
+    {
+     "name": "CROSS FM",
+     "mhz": 87.2,
+     "kind": "FM",
+     "area": "行橋"
+    },
+    {
+     "name": "CROSS FM",
+     "mhz": 87.8,
+     "kind": "FM",
+     "area": "大牟田"
+    },
+    {
+     "name": "九州朝日放送",
+     "mhz": 90.2,
+     "kind": "ワイドFM",
+     "area": "福岡"
+    },
+    {
+     "name": "RKB毎日放送",
+     "mhz": 91.0,
+     "kind": "ワイドFM",
+     "area": "福岡"
+    },
+    {
+     "name": "RKB毎日放送",
+     "mhz": 91.5,
+     "kind": "ワイドFM",
+     "area": "北九州"
+    },
+    {
+     "name": "九州朝日放送",
+     "mhz": 92.7,
+     "kind": "ワイドFM",
+     "area": "行橋"
+    },
+    {
+     "name": "九州朝日放送",
+     "mhz": 93.0,
+     "kind": "ワイドFM",
+     "area": "糸島"
+    },
+    {
+     "name": "九州朝日放送",
+     "mhz": 94.0,
+     "kind": "ワイドFM",
+     "area": "北九州"
+    },
+    {
+     "name": "RKB毎日放送",
+     "mhz": 94.6,
+     "kind": "ワイドFM",
+     "area": "糸島"
+    },
+    {
+     "name": "RKB毎日放送",
+     "mhz": 94.8,
+     "kind": "ワイドFM",
+     "area": "行橋"
+    }
+   ]
+  },
+  "JP41": {
+   "name": "佐賀県",
+   "stations": [
+    {
+     "name": "エフエム佐賀",
+     "mhz": 77.9,
+     "kind": "FM",
+     "area": "佐賀"
+    },
+    {
+     "name": "エフエム佐賀",
+     "mhz": 79.7,
+     "kind": "FM",
+     "area": "鳥栖"
+    },
+    {
+     "name": "エフエム佐賀",
+     "mhz": 79.9,
+     "kind": "FM",
+     "area": "有田"
+    },
+    {
+     "name": "NHK-FM佐賀",
+     "mhz": 81.6,
+     "kind": "NHK-FM",
+     "area": "佐賀"
+    },
+    {
+     "name": "NHK-FM佐賀",
+     "mhz": 88.9,
+     "kind": "NHK-FM",
+     "area": "肥前有田"
+    },
+    {
+     "name": "長崎放送",
+     "mhz": 92.1,
+     "kind": "ワイドFM",
+     "area": "鳥栖"
+    },
+    {
+     "name": "長崎放送",
+     "mhz": 93.5,
+     "kind": "ワイドFM",
+     "area": "佐賀"
+    }
+   ]
+  },
+  "JP42": {
+   "name": "長崎県",
+   "stations": [
+    {
+     "name": "エフエム長崎",
+     "mhz": 77.8,
+     "kind": "FM",
+     "area": "南有馬"
+    },
+    {
+     "name": "エフエム長崎",
+     "mhz": 78.9,
+     "kind": "FM",
+     "area": "諫早"
+    },
+    {
+     "name": "エフエム長崎",
+     "mhz": 79.2,
+     "kind": "FM",
+     "area": "平戸"
+    },
+    {
+     "name": "エフエム長崎",
+     "mhz": 79.5,
+     "kind": "FM",
+     "area": "長崎"
+    },
+    {
+     "name": "エフエム長崎",
+     "mhz": 80.3,
+     "kind": "FM",
+     "area": "佐世保"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 81.7,
+     "kind": "NHK-FM",
+     "area": "南有馬"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 82.6,
+     "kind": "NHK-FM",
+     "area": "厳原"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 82.7,
+     "kind": "NHK-FM",
+     "area": "有川"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "大瀬戸"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 83.0,
+     "kind": "NHK-FM",
+     "area": "諫早"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "郷ノ浦"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "福江"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "東長崎"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "平戸"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "松浦"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "長崎"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "佐世保"
+    },
+    {
+     "name": "NHK-FM長崎",
+     "mhz": 88.0,
+     "kind": "NHK-FM",
+     "area": "宇久"
+    },
+    {
+     "name": "エフエム長崎",
+     "mhz": 89.3,
+     "kind": "FM",
+     "area": "島原"
+    },
+    {
+     "name": "長崎放送",
+     "mhz": 90.6,
+     "kind": "ワイドFM",
+     "area": "佐世保"
+    },
+    {
+     "name": "長崎放送",
+     "mhz": 91.8,
+     "kind": "ワイドFM",
+     "area": "諫早"
+    },
+    {
+     "name": "長崎放送",
+     "mhz": 92.6,
+     "kind": "ワイドFM",
+     "area": "長崎"
+    }
+   ]
+  },
+  "JP43": {
+   "name": "熊本県",
+   "stations": [
+    {
+     "name": "エフエム熊本",
+     "mhz": 76.8,
+     "kind": "FM",
+     "area": "南阿蘇"
+    },
+    {
+     "name": "エフエム熊本",
+     "mhz": 76.9,
+     "kind": "FM",
+     "area": "牛深"
+    },
+    {
+     "name": "エフエム熊本",
+     "mhz": 77.4,
+     "kind": "FM",
+     "area": "熊本"
+    },
+    {
+     "name": "熊本放送",
+     "mhz": 80.0,
+     "kind": "ワイドFM",
+     "area": "水上"
+    },
+    {
+     "name": "エフエム熊本",
+     "mhz": 80.4,
+     "kind": "FM",
+     "area": "小国"
+    },
+    {
+     "name": "エフエム熊本",
+     "mhz": 81.3,
+     "kind": "FM",
+     "area": "阿蘇"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 81.5,
+     "kind": "NHK-FM",
+     "area": "芦北"
+    },
+    {
+     "name": "エフエム熊本",
+     "mhz": 82.0,
+     "kind": "FM",
+     "area": "人吉"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 82.5,
+     "kind": "NHK-FM",
+     "area": "水俣"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 82.8,
+     "kind": "NHK-FM",
+     "area": "人吉"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 82.9,
+     "kind": "NHK-FM",
+     "area": "天草"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 83.1,
+     "kind": "NHK-FM",
+     "area": "坂本"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 83.3,
+     "kind": "NHK-FM",
+     "area": "牛深"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "南阿蘇"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 83.9,
+     "kind": "NHK-FM",
+     "area": "肥後小国"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "五木"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "河浦"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 85.4,
+     "kind": "NHK-FM",
+     "area": "熊本"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 86.3,
+     "kind": "NHK-FM",
+     "area": "阿蘇"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 86.8,
+     "kind": "NHK-FM",
+     "area": "蘇陽"
+    },
+    {
+     "name": "NHK-FM熊本",
+     "mhz": 89.8,
+     "kind": "NHK-FM",
+     "area": "矢部"
+    },
+    {
+     "name": "熊本放送",
+     "mhz": 91.4,
+     "kind": "ワイドFM",
+     "area": "熊本"
+    },
+    {
+     "name": "熊本放送",
+     "mhz": 92.3,
+     "kind": "ワイドFM",
+     "area": "人吉"
+    },
+    {
+     "name": "熊本放送",
+     "mhz": 94.2,
+     "kind": "ワイドFM",
+     "area": "水俣"
+    }
+   ]
+  },
+  "JP44": {
+   "name": "大分県",
+   "stations": [
+    {
+     "name": "NHK-FM大分",
+     "mhz": 80.4,
+     "kind": "NHK-FM",
+     "area": "東蒲江"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "津久見"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 81.8,
+     "kind": "FM",
+     "area": "佐伯"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 82.3,
+     "kind": "NHK-FM",
+     "area": "玖珠"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 82.6,
+     "kind": "NHK-FM",
+     "area": "山国"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 83.5,
+     "kind": "NHK-FM",
+     "area": "国東"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 83.8,
+     "kind": "NHK-FM",
+     "area": "津久見"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "日田"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "蒲江"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 84.6,
+     "kind": "NHK-FM",
+     "area": "佐伯"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 84.9,
+     "kind": "FM",
+     "area": "中津"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "三重"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 85.1,
+     "kind": "FM",
+     "area": "日田"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 86.0,
+     "kind": "NHK-FM",
+     "area": "竹田"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 86.2,
+     "kind": "NHK-FM",
+     "area": "中津"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 86.8,
+     "kind": "NHK-FM",
+     "area": "本耶馬渓"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 88.0,
+     "kind": "FM",
+     "area": "大分"
+    },
+    {
+     "name": "NHK-FM大分",
+     "mhz": 88.9,
+     "kind": "NHK-FM",
+     "area": "大分"
+    },
+    {
+     "name": "エフエム大分",
+     "mhz": 89.3,
+     "kind": "FM",
+     "area": "玖珠"
+    },
+    {
+     "name": "大分放送",
+     "mhz": 93.3,
+     "kind": "ワイドFM",
+     "area": "大分"
+    }
+   ]
+  },
+  "JP45": {
+   "name": "宮崎県",
+   "stations": [
+    {
+     "name": "エフエム宮崎",
+     "mhz": 80.7,
+     "kind": "FM",
+     "area": "串間"
+    },
+    {
+     "name": "エフエム宮崎",
+     "mhz": 83.2,
+     "kind": "FM",
+     "area": "宮崎"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "東郷"
+    },
+    {
+     "name": "エフエム宮崎",
+     "mhz": 84.9,
+     "kind": "FM",
+     "area": "高千穂"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 85.2,
+     "kind": "NHK-FM",
+     "area": "串間"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "日向西郷"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 86.2,
+     "kind": "NHK-FM",
+     "area": "宮崎"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 87.0,
+     "kind": "NHK-FM",
+     "area": "延岡"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 88.1,
+     "kind": "NHK-FM",
+     "area": "高千穂"
+    },
+    {
+     "name": "NHK-FM宮崎",
+     "mhz": 88.2,
+     "kind": "NHK-FM",
+     "area": "椎葉"
+    },
+    {
+     "name": "エフエム宮崎",
+     "mhz": 89.5,
+     "kind": "FM",
+     "area": "延岡"
+    },
+    {
+     "name": "宮崎放送",
+     "mhz": 90.4,
+     "kind": "ワイドFM",
+     "area": "宮崎"
+    },
+    {
+     "name": "宮崎放送",
+     "mhz": 94.7,
+     "kind": "ワイドFM",
+     "area": "延岡"
+    }
+   ]
+  },
+  "JP46": {
+   "name": "鹿児島県",
+   "stations": [
+    {
+     "name": "エフエム鹿児島",
+     "mhz": 76.6,
+     "kind": "FM",
+     "area": "枕崎"
+    },
+    {
+     "name": "エフエム鹿児島",
+     "mhz": 79.0,
+     "kind": "FM",
+     "area": "鹿屋"
+    },
+    {
+     "name": "エフエム鹿児島",
+     "mhz": 79.8,
+     "kind": "FM",
+     "area": "鹿児島"
+    },
+    {
+     "name": "エフエム鹿児島",
+     "mhz": 80.5,
+     "kind": "FM",
+     "area": "阿久根"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 81.6,
+     "kind": "NHK-FM",
+     "area": "徳之島"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 82.2,
+     "kind": "NHK-FM",
+     "area": "名瀬"
+    },
+    {
+     "name": "南日本放送",
+     "mhz": 82.3,
+     "kind": "ワイドFM",
+     "area": "種子島"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 83.7,
+     "kind": "NHK-FM",
+     "area": "阿久根"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.0,
+     "kind": "NHK-FM",
+     "area": "知名"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.1,
+     "kind": "NHK-FM",
+     "area": "鹿屋"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.3,
+     "kind": "NHK-FM",
+     "area": "東市来"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.4,
+     "kind": "NHK-FM",
+     "area": "種子島"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.5,
+     "kind": "NHK-FM",
+     "area": "瀬戸内"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.7,
+     "kind": "NHK-FM",
+     "area": "枕崎"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 84.9,
+     "kind": "NHK-FM",
+     "area": "末吉"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 85.6,
+     "kind": "NHK-FM",
+     "area": "鹿児島"
+    },
+    {
+     "name": "NHK-FM鹿児島",
+     "mhz": 85.9,
+     "kind": "NHK-FM",
+     "area": "栗野"
+    },
+    {
+     "name": "南日本放送",
+     "mhz": 92.8,
+     "kind": "ワイドFM",
+     "area": "鹿児島"
+    },
+    {
+     "name": "南日本放送",
+     "mhz": 93.7,
+     "kind": "ワイドFM",
+     "area": "阿久根"
+    },
+    {
+     "name": "南日本放送",
+     "mhz": 94.2,
+     "kind": "ワイドFM",
+     "area": "鹿屋"
+    },
+    {
+     "name": "南日本放送",
+     "mhz": 94.8,
+     "kind": "ワイドFM",
+     "area": "枕崎"
+    }
+   ]
+  },
+  "JP47": {
+   "name": "沖縄県",
+   "stations": [
+    {
+     "name": "エフエム沖縄",
+     "mhz": 77.4,
+     "kind": "FM",
+     "area": "伊良部"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 77.7,
+     "kind": "NHK-FM",
+     "area": "川平"
+    },
+    {
+     "name": "エフエム沖縄",
+     "mhz": 83.7,
+     "kind": "FM",
+     "area": "今帰仁"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 84.2,
+     "kind": "NHK-FM",
+     "area": "久米島"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 84.8,
+     "kind": "NHK-FM",
+     "area": "今帰仁"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 85.0,
+     "kind": "NHK-FM",
+     "area": "平良"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 85.8,
+     "kind": "NHK-FM",
+     "area": "与那国"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 86.2,
+     "kind": "NHK-FM",
+     "area": "多良間"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 87.0,
+     "kind": "NHK-FM",
+     "area": "石垣"
+    },
+    {
+     "name": "エフエム沖縄",
+     "mhz": 87.3,
+     "kind": "FM",
+     "area": "沖縄"
+    },
+    {
+     "name": "NHK-FM沖縄",
+     "mhz": 88.1,
+     "kind": "NHK-FM",
+     "area": "沖縄"
+    },
+    {
+     "name": "琉球放送",
+     "mhz": 92.1,
+     "kind": "ワイドFM",
+     "area": "那覇"
+    },
+    {
+     "name": "ラジオ沖縄",
+     "mhz": 93.1,
+     "kind": "ワイドFM",
+     "area": "那覇"
     }
    ]
   }
