@@ -183,11 +183,12 @@
 #pane-tools .rxja-mem-invalid .rxja-mem-input { border-color: var(--error); }
 #pane-tools .rxja-mem-busy { opacity: 0.6; pointer-events: none; }
 
-/* FM stations: the prefecture presets are an example, folded away until asked for */
+/* FM stations: the prefecture presets are an example. The title always shows; the explanation folds */
 #pane-tools .rxja-fm-example { margin: 12px 0 0; font-size: 13px; }
-#pane-tools .rxja-fm-example summary { cursor: pointer; color: var(--text-secondary); }
-#pane-tools .rxja-fm-example[open] summary { color: var(--text); }
-#pane-tools .rxja-fm-example .rxja-note { margin: 8px 0; }
+#pane-tools .rxja-fm-example-title { margin: 0 0 6px; font-weight: 600; color: var(--text); }
+#pane-tools .rxja-fm-example-more { margin: 0 0 8px; }
+#pane-tools .rxja-fm-example-more summary { cursor: pointer; color: var(--text-secondary); }
+#pane-tools .rxja-fm-example .rxja-note { margin: 6px 0; }
 #pane-tools .rxja-fm-example-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 #pane-tools .rxja-fm-example-row .btn { padding: 6px 14px; }
 #pane-tools .rxja-fm-pref { min-width: 12em; }

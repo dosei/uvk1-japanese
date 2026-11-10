@@ -529,7 +529,7 @@ window.UVSTUDIO_LOCALES.en = {
   "studio_nav_fm": "FM stations",
   "studio_operation_fm_read": "Reading FM stations…",
   "studio_operation_fm_write": "Writing FM stations…",
-  "infoBoxFm": "<strong>Note:</strong> the radio must be <strong>started normally</strong> (power on without PTT) and run <strong>RxJa v2.0.0 or later</strong>. To show station names on the radio, the Japanese data of the same release is needed too. The radio restarts by itself after writing.",
+  "infoBoxFm": "<strong>Note:</strong> the radio must be <strong>started normally</strong> (power on without PTT) and run <strong>RxJa v2.0.0 or later</strong>. To show station names on the radio, the Japanese data of the same release is needed too. The radio restarts by itself after writing.<br>The limit is <strong>100 stations</strong> (FM00-FM99). The author set it assuming nobody registers anywhere near 100 FM stations. If you need more, tell us the limit you would like in an <a href=\"https://github.com/dosei/uvk1-japanese/issues\" target=\"_blank\" rel=\"noopener\">issue</a> and we will check whether it can be set (no promise).",
   "rxja_fm_description": "Read, edit and write the radio's FM broadcast stations (FM00-FM99) with their names. Type them in, import a CSV, or add the stations of a prefecture (example).",
   "rxja_fm_idle": "Read the stations from the radio, or import a CSV.",
   "rxja_fm_connecting": "Connecting to the radio…",
@@ -545,7 +545,7 @@ window.UVSTUDIO_LOCALES.en = {
   "rxja_fm_col_number": "No.",
   "rxja_fm_col_freq": "Frequency (MHz)",
   "rxja_fm_col_name": "Station name",
-  "rxja_fm_note": "Names: up to 20 bytes (10 full-width characters). Frequencies: 64.0 to 108.0 MHz in 0.1 MHz steps; the radio plays the ones inside the FM range it is set to. The prefecture stations are only an example (folded box above); adding another prefecture skips stations that share a frequency. Community FM outside Kanto, and some small relay stations, are not included. Sources and coverage are in the manual (MIC, NHK).",
+  "rxja_fm_note": "Names: up to 20 bytes (10 full-width characters). Frequencies: 64.0 to 108.0 MHz in 0.1 MHz steps; the radio plays the ones inside the FM range it is set to. The prefecture stations are only an example (box above); adding another prefecture skips stations that share a frequency. Community FM outside Kanto, and some small relay stations, are not included. Sources and coverage are in the manual (MIC, NHK).",
   "rxja_fm_pref": "Prefecture",
   "rxja_fm_pref_choose": "Choose a prefecture (example)",
   "rxja_fm_preset": "Add",
@@ -575,5 +575,6 @@ window.UVSTUDIO_LOCALES.en = {
   "rxja_fm_radio_changed": "The FM stations on the radio changed after you read them (saved or deleted on the radio, or an auto-scan). Your edits will be written on top of what the radio has now. Continue?",
   "rxja_fm_ja_nodata": "To show Japanese station names the radio needs the Japanese data of the same release. It does not seem to have it yet (write it in the \"Japanese data\" view).",
   "rxja_fm_example_title": "Example: add the stations of a prefecture (optional)",
-  "rxja_fm_example_note": "Not required: you can also type stations in by hand or import a CSV. Prefectures are added one at a time, in the order you add them, into the free numbers (the first one added gets the lower numbers). Stations with a frequency already in the table are skipped. To use two or more prefectures, choose the next prefecture and press Add again, or register the stations by hand."
+  "rxja_fm_example_more": "More",
+  "rxja_fm_example_note": "Not required: you can also type stations in by hand or import a CSV. Prefectures are added one at a time, in the order you add them, into the free numbers (the first one added gets the lower numbers). Stations with a frequency already in the table are skipped. To use two or more prefectures, choose the next prefecture and press Add again, or turn on \"Show empty numbers\" and register the stations by hand in the free numbers."
 };

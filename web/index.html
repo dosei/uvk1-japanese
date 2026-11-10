@@ -21,7 +21,7 @@
 <link href="css/viewer.css?v=13" rel="stylesheet">
 <link href="css/tools.css?v=11" rel="stylesheet">
 <link href="css/studio.css?v=19" rel="stylesheet">
-<link href="css/rxja.css?v=5" rel="stylesheet">
+<link href="css/rxja.css?v=6" rel="stylesheet">
 </head>
 <body data-theme="light">
 
@@ -483,14 +483,17 @@
                         <div class="progress-label" id="rxjaFmLabel"></div>
                     </div>
                 </section>
-                <details class="rxja-fm-example" id="rxjaFmExample">
-                    <summary data-i18n="rxja_fm_example_title">Example: add the stations of a prefecture (optional)</summary>
-                    <p class="rxja-note" data-i18n="rxja_fm_example_note">Not required: you can also type stations in by hand or import a CSV. Prefectures are added one at a time, in the order you add them, into the free numbers (the first one added gets the lower numbers). Stations with a frequency already in the table are skipped.</p>
+                <div class="rxja-fm-example" id="rxjaFmExample">
+                    <p class="rxja-fm-example-title" data-i18n="rxja_fm_example_title">Example: add the stations of a prefecture (optional)</p>
+                    <details class="rxja-fm-example-more">
+                        <summary data-i18n="rxja_fm_example_more">How it works</summary>
+                        <p class="rxja-note" data-i18n="rxja_fm_example_note">Not required: you can also type stations in by hand or import a CSV. Prefectures are added one at a time, in the order you add them, into the free numbers (the first one added gets the lower numbers). Stations with a frequency already in the table are skipped.</p>
+                    </details>
                     <div class="rxja-fm-example-row">
                         <select id="rxjaFmPref" class="rxja-fm-pref" data-i18n-aria-label="rxja_fm_pref" aria-label="Prefecture"></select>
                         <button class="btn" id="rxjaFmPreset" type="button" data-i18n="rxja_fm_preset" disabled>Add</button>
                     </div>
-                </details>
+                </div>
                 <p class="rxja-mem-summary" id="rxjaFmSummary"></p>
                 <div class="rxja-mem-bar">
                     <label class="logo-checkbox-label rxja-mem-showempty"><input type="checkbox" id="rxjaFmShowEmpty" /><span data-i18n="rxja_fm_show_empty">Show empty numbers</span></label>
@@ -875,8 +878,8 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja15"></script>
-<script src="locales/ja.js?v=rxja16"></script>
+<script src="locales/en.js?v=rxja19"></script>
+<script src="locales/ja.js?v=rxja20"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
@@ -889,6 +892,6 @@
 <script src="js/studio.js?v=16"></script>
 <script type="module" src="js/rxja-ja.js?v=5"></script>
 <script type="module" src="js/rxja-mem.js?v=2"></script>
-<script type="module" src="js/rxja-fm.js?v=6"></script>
+<script type="module" src="js/rxja-fm.js?v=7"></script>
 </body>
 </html>
