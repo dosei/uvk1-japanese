@@ -40,6 +40,7 @@ volatile uint16_t gFmPlayCountdown_10ms;
 volatile int8_t   gFM_ScanState;
 bool              gFM_AutoScan;
 uint8_t           gFM_ChannelPosition;
+uint8_t           gFM_ScanFirstAdded;
 bool              gFM_FoundFrequency;
 uint16_t          gFM_RestoreCountdown_10ms;
 
@@ -55,6 +56,75 @@ const uint8_t BUTTON_EVENT_LONG =  BUTTON_STATE_HELD;
 
 static void Key_FUNC(KEY_Code_t Key, uint8_t state);
 #endif
+
+// Old table (v1.3.0 and earlier, and what CHIRP still writes): 48 x uint16 at 0x00A028.
+#define FM_LEGACY_ADDR   0x00A028u
+#define FM_LEGACY_COUNT  48u
+#define FM_STORE_MAGIC   0x314D4652u    // "RFM1"
+
+typedef struct {
+    uint32_t magic;
+    uint16_t count;     // number of entries written
+    uint16_t flags;     // bit 0 = 0: the name sector has been cleared (older layouts left data there)
+} __attribute__((packed)) FM_StoreHeader_t;
+
+#define FM_FLAGS_NAMES_OK 0xFFFEu
+
+void FM_LoadChannels(void)
+{
+    FM_StoreHeader_t hdr;
+
+    memset(gFM_Channels, 0xFF, sizeof(gFM_Channels));
+    PY25Q16_ReadBuffer(FM_STORE_ADDR, &hdr, sizeof(hdr));
+
+    if (hdr.magic == FM_STORE_MAGIC) {
+        const uint16_t n = hdr.count < FM_CHANNELS_MAX ? hdr.count : FM_CHANNELS_MAX;
+        PY25Q16_ReadBuffer(FM_STORE_ADDR + sizeof(hdr), gFM_Channels, n * sizeof(gFM_Channels[0]));
+        if (hdr.flags & 1u) {
+            // Table from a build without names: whatever is in the name sector is not ours
+            PY25Q16_SectorErase(FM_NAME_ADDR);
+            FM_SaveChannels();
+        }
+        return;
+    }
+
+    // No valid header: start from the old table, then write the new sector. The old
+    // table is left untouched so that going back to an older firmware keeps the stations.
+    PY25Q16_ReadBuffer(FM_LEGACY_ADDR, gFM_Channels, FM_LEGACY_COUNT * sizeof(gFM_Channels[0]));
+    PY25Q16_SectorErase(FM_STORE_ADDR);     // drop whatever an older layout left here
+    PY25Q16_SectorErase(FM_NAME_ADDR);
+    FM_SaveChannels();
+}
+
+void FM_SaveChannels(void)
+{
+    const FM_StoreHeader_t hdr = { FM_STORE_MAGIC, FM_CHANNELS_MAX, FM_FLAGS_NAMES_OK };
+
+    // PY25Q16_WriteBuffer skips unchanged data and erases only when a bit has to go 0->1.
+    PY25Q16_WriteBuffer(FM_STORE_ADDR, &hdr, sizeof(hdr), false);
+    PY25Q16_WriteBuffer(FM_STORE_ADDR + sizeof(hdr), gFM_Channels, sizeof(gFM_Channels), false);
+}
+
+bool FM_FetchName(char *s, uint8_t Channel)
+{
+    uint8_t i;
+
+    s[0] = 0;
+    if (Channel >= FM_CHANNELS_MAX)
+        return false;
+
+    PY25Q16_ReadBuffer(FM_NAME_ADDR + (uint32_t)Channel * FM_NAME_LEN, s, FM_NAME_LEN);
+
+    for (i = 0; i < FM_NAME_LEN; i++)
+        // Shift_JIS: bytes 0x80..0xFE belong to the name; control codes and 0xFF end it
+        if ((uint8_t)s[i] < 32 || (uint8_t)s[i] == 127 || (uint8_t)s[i] == 0xFF)
+            break;
+    s[i] = 0;
+    while (i > 0 && s[i - 1] == ' ')
+        s[--i] = 0;
+
+    return s[0] != 0;
+}
 
 bool FM_CheckValidChannel(uint8_t Channel)
 {
@@ -124,15 +194,62 @@ void FM_TurnOff(void)
     #endif
 }
 
-void FM_EraseChannels(void)
+// The name belongs to the frequency the PC tool wrote it for. When the radio puts another
+// frequency in a slot (save, delete, auto-scan), the old name is cut off by programming a 0
+// over its first byte: a 1->0 change, so no sector erase. The PC tool rewrites names whole.
+static void FM_ClearName(uint8_t Slot)
 {
-    //PY25Q16_SectorErase(0x003000);
-    
-    uint8_t clearBuf[128];
-    memset(clearBuf, 0xFF, sizeof(clearBuf));
-    PY25Q16_WriteBuffer(0x00A028, clearBuf, sizeof(clearBuf), false);
+    const uint32_t Addr = FM_NAME_ADDR + (uint32_t)Slot * FM_NAME_LEN;
+    uint8_t First;
 
-    memset(gFM_Channels, 0xFF, sizeof(gFM_Channels));
+    PY25Q16_ReadBuffer(Addr, &First, 1);
+    if (First != 0x00 && First != 0xFF) {
+        const uint8_t Zero = 0;
+        PY25Q16_WriteBuffer(Addr, &Zero, 1, false);
+    }
+}
+
+static void FM_StoreSlot(uint8_t Slot, uint16_t Frequency)
+{
+    if (gFM_Channels[Slot] != Frequency)
+        FM_ClearName(Slot);
+    gFM_Channels[Slot] = Frequency;
+}
+
+// A slot is free when it holds no frequency that any FM band could use (0xFFFF or junk).
+static bool FM_SlotIsFree(uint8_t Slot)
+{
+    return gFM_Channels[Slot] < 640 || gFM_Channels[Slot] > 1080;
+}
+
+static uint8_t FM_FirstFreeSlot(void)
+{
+    for (uint8_t i = 0; i < FM_CHANNELS_MAX; i++)
+        if (FM_SlotIsFree(i))
+            return i;
+    return 0;
+}
+
+// Auto-scan: store a found station in the first free slot, skipping ones already stored.
+// Returns false when the table is full.
+static bool FM_AppendScanned(uint16_t Frequency)
+{
+    uint8_t Free = 0xFF;
+
+    for (uint8_t i = 0; i < FM_CHANNELS_MAX; i++) {
+        if (gFM_Channels[i] == Frequency)
+            return true;
+        if (Free == 0xFF && FM_SlotIsFree(i))
+            Free = i;
+    }
+
+    if (Free == 0xFF)
+        return false;
+
+    FM_StoreSlot(Free, Frequency);
+    if (gFM_ChannelPosition++ == 0)
+        gFM_ScanFirstAdded = Free;
+    return true;
 }
 
 uint16_t FM_WrapFrequency(uint16_t Frequency) {
@@ -183,8 +300,15 @@ void FM_PlayAndUpdate(void)
     gFM_ScanState = FM_SCAN_OFF;
 
     if (gFM_AutoScan) {
-        gEeprom.FM_IsMrMode        = true;
-        gEeprom.FM_SelectedChannel = 0;
+        if (gFM_ScanFirstAdded != 0xFF) {
+            // Land on the first station this scan added; with nothing added, stay as before.
+            gEeprom.FM_IsMrMode        = true;
+            gEeprom.FM_SelectedChannel = gFM_ScanFirstAdded;
+        }
+        // The counter is only a count while scanning; afterwards it is the save-slot
+        // cursor (gFM_Channels[gFM_ChannelPosition]): point it at the next free slot so
+        // that M (save) does not overwrite a stored station.
+        gFM_ChannelPosition = FM_FirstFreeSlot();
     }
 
     FM_ConfigureChannelState();
@@ -311,7 +435,7 @@ static void Key_DIGITS(KEY_Code_t Key, uint8_t state)
             gInputBoxIndex = 0;
             gKeyInputCountdown = 1;
             
-            Channel = ((gInputBox[0] * 10) + gInputBox[1]) - 1;
+            Channel = (gInputBox[0] * 10) + gInputBox[1];   // FM00..FM99
 
             if (State == STATE_MR_MODE) {
                 if (FM_CheckValidChannel(Channel)) {
@@ -479,14 +603,14 @@ static void Key_MENU(uint8_t state)
 
         if (!gEeprom.FM_IsMrMode) {
             if (gAskToSave) {
-                gFM_Channels[gFM_ChannelPosition] = gEeprom.FM_FrequencyPlaying;
+                FM_StoreSlot(gFM_ChannelPosition, gEeprom.FM_FrequencyPlaying);
                 gRequestSaveFM = true;
             }
             gAskToSave = !gAskToSave;
         }
         else {
             if (gAskToDelete) {
-                gFM_Channels[gEeprom.FM_SelectedChannel] = 0xFFFF;
+                FM_StoreSlot(gEeprom.FM_SelectedChannel, 0xFFFF);
 
                 FM_ConfigureChannelState();
                 FM_SetFrequency();
@@ -504,7 +628,7 @@ static void Key_MENU(uint8_t state)
         }
 
         if (gAskToSave) {
-            gFM_Channels[gFM_ChannelPosition] = gEeprom.FM_FrequencyPlaying;
+            FM_StoreSlot(gFM_ChannelPosition, gEeprom.FM_FrequencyPlaying);
             gRequestSaveFM = true;
         }
         gAskToSave = !gAskToSave;
@@ -627,11 +751,8 @@ void FM_Play(void)
             goto Display;
         }
 
-        if (gFM_ChannelPosition < FM_CHANNELS_MAX)
-            gFM_Channels[gFM_ChannelPosition++] = gEeprom.FM_FrequencyPlaying;
-        
-        if (gFM_ChannelPosition >= FM_CHANNELS_MAX) {
-            FM_PlayAndUpdate();
+        if (!FM_AppendScanned(gEeprom.FM_FrequencyPlaying)) {
+            FM_PlayAndUpdate();     // table full
 
             goto Display;
         }

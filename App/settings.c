@@ -267,8 +267,7 @@ gEeprom.FreqChannel[1]   = IS_FREQ_CHANNEL(Data16[5]) ? Data16[5] : (FREQ_CHANNE
         gEeprom.FM_IsMrMode        = fmCfg.isMrMode;
     }
 
-    // 0E40..0E67
-    PY25Q16_ReadBuffer(0x00A028, gFM_Channels, sizeof(gFM_Channels));
+    FM_LoadChannels();
     FM_ConfigureChannelState();
 #endif
 
@@ -840,6 +839,10 @@ void SETTINGS_FactoryReset(bool bIsAll)
     if (bIsAll)
     {
         PY25Q16_SectorErase(0x00A000);
+#ifdef ENABLE_FMRADIO
+        PY25Q16_SectorErase(FM_STORE_ADDR);     // FM memories
+        PY25Q16_SectorErase(FM_NAME_ADDR);      // and their names
+#endif
     }
 
     // Reset navigation in every edition and lock controls in RescueOps editions.
@@ -914,8 +917,7 @@ void SETTINGS_SaveFM(void)
         // 0E88
         PY25Q16_WriteBuffer(0x00A020, fmCfg.__raw, 8, false);
 
-        // 0E40
-        PY25Q16_WriteBuffer(0x00A028, gFM_Channels, sizeof(gFM_Channels), false);
+        FM_SaveChannels();
     }
 #endif
 

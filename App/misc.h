@@ -36,7 +36,9 @@
     #define SWAP(a, b) ({ __typeof__ (a) _c = (a);  a = b; b = _c; })
 #endif
 
-#define FM_CHANNELS_MAX 48
+// FM broadcast memories F00..F99. Stored in the dedicated sector FM_STORE_ADDR
+// (see fm.c); uint8_t channel numbers and the 0xFF "none" sentinel allow up to 254.
+#define FM_CHANNELS_MAX 100
 #define MR_CHANNELS_MAX 1024
 #define MR_CHANNELS_LIST 24
 #define SCAN_LIST_MODE_ALL       (MR_CHANNELS_LIST + 1u)

@@ -298,7 +298,7 @@
                 "ENABLE_FEAT_F4HWN_OVERLAY_APPS": false,
                 "ENABLE_FEAT_F4HWN_FULL_WATCH": true,
                 "EDITION_STRING": "UVK1-RxJa",
-                "RXJA_VERSION_STRING": "v1.3.0",
+                "RXJA_VERSION_STRING": "v2.0.0",
                 "TARGET": "f4hwn.rxja"
             }
         }

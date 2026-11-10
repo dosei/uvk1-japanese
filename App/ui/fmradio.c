@@ -43,6 +43,11 @@ void UI_DisplayFM(void)
     };
     char String[16];
     char *pPrintStr = String;
+#ifdef ENABLE_JAPANESE
+    char Name[FM_NAME_LEN + 1];
+    uint8_t NameChannel = 0xFF;     // station whose name goes on the status line
+    Name[0] = 0;
+#endif
     UI_DisplayClear();
 
 #ifdef ENABLE_FEAT_F4HWN
@@ -63,14 +68,20 @@ void UI_DisplayFM(void)
         pPrintStr = "DEL?";
     } else if (gFM_ScanState == FM_SCAN_OFF) {
         if (gEeprom.FM_IsMrMode) {
-            sprintf(String, "MR(CH%02u)", gEeprom.FM_SelectedChannel + 1);
+            sprintf(String, "MR(FM%02u)", gEeprom.FM_SelectedChannel);
             pPrintStr = String;
+#ifdef ENABLE_JAPANESE
+            NameChannel = gEeprom.FM_SelectedChannel;
+#endif
         } else {
             pPrintStr = "VFO";
             for (unsigned int i = 0; i < FM_CHANNELS_MAX; i++) {
                 if (gEeprom.FM_FrequencyPlaying == gFM_Channels[i]) {
-                    sprintf(String, "VFO(CH%02u)", i + 1);
+                    sprintf(String, "VFO(FM%02u)", i);
                     pPrintStr = String;
+#ifdef ENABLE_JAPANESE
+                    NameChannel = i;
+#endif
                     break;
                 }
             }
@@ -83,23 +94,33 @@ void UI_DisplayFM(void)
     }
 
 #ifdef ENABLE_JAPANESE
+    // A named station shows its name (12 px) in place of the status text; the number, which
+    // the status text carried, moves to the small line at the bottom.
+    bool named = false;
+    if (NameChannel != 0xFF && !gAskToSave && !gAskToDelete && gInputBoxIndex == 0
+            && UI_JaSjisReady() && FM_FetchName(Name, NameChannel)) {
+        named = true;
+        UI_JaPrintSjis(Name, 0, LCD_WIDTH, 26);
+        UI_PrintStringSmallNormal(pPrintStr, 128 - 7 * strlen(pPrintStr), 0, 6);   // 7 px per character
+    }
+    if (!named)
     if (!((gAskToSave || gAskToDelete) && UI_JaPrintText(pPrintStr, 0, LCD_WIDTH, 26)))
 #endif
     UI_PrintString(pPrintStr, 0, 127, 3, 10); // memory, vfo, scan
 
     if (gAskToSave || (gEeprom.FM_IsMrMode && gInputBoxIndex > 0)) {
         if (gInputBoxIndex == 0) {
-            sprintf(String, "CH-%02u", gFM_ChannelPosition + 1);
+            sprintf(String, "FM-%02u", gFM_ChannelPosition);
         } else {
-            String[0] = 'C';
-            String[1] = 'H';
+            String[0] = 'F';
+            String[1] = 'M';
             String[2] = '-';
             for (unsigned int i = 0; i < 2; i++)
                 String[i + 3] = (gInputBox[i] == 10) ? '-' : gInputBox[i] + '0';
             String[5] = '\0';
         }
     } else if (gAskToDelete) {
-        sprintf(String, "CH-%02u", gEeprom.FM_SelectedChannel + 1);
+        sprintf(String, "FM-%02u", gEeprom.FM_SelectedChannel);
     } else {
         if (gInputBoxIndex == 0) {
             sprintf(String, "%3d.%d", gEeprom.FM_FrequencyPlaying / 10, gEeprom.FM_FrequencyPlaying % 10);

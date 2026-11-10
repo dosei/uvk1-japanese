@@ -1477,14 +1477,19 @@ void UART_HandleCommand(uint32_t Port)
             gSerialConfigCountDown_500ms = 12; // keep serial mode alive (6 s)
             struct __attribute__((packed)) {
                 Header_t Header;
-                uint8_t  Flags;         // bit 0: Shift_JIS channel names, bit 1: Japanese data has their table
+                uint8_t  Flags;         // bit 0: Shift_JIS channel names, bit 1: Japanese data has their table,
+                                        // bit 2: FM stations with names in the EEPROM window (0xD000 / 0xE000)
                 uint8_t  Padding[3];
                 char     Version[16];   // RXJA_VERSION_STRING, NUL padded
             } Reply;
             memset(&Reply, 0, sizeof(Reply));
             Reply.Header.ID   = 0x0749;
             Reply.Header.Size = sizeof(Reply) - sizeof(Header_t);
-            Reply.Flags       = 0x01 | (UI_JaSjisReady() ? 0x02 : 0);
+            Reply.Flags       = 0x01 | (UI_JaSjisReady() ? 0x02 : 0)
+#ifdef ENABLE_FMRADIO
+                              | 0x04
+#endif
+                              ;
 #ifdef RXJA_VERSION_STRING
             strncpy(Reply.Version, RXJA_VERSION_STRING, sizeof(Reply.Version) - 1);
 #endif

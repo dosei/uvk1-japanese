@@ -645,8 +645,8 @@ static void ACTION_Scan_FM(bool bRestart)
 
     if (bRestart) {
         gFM_AutoScan = true;
-        gFM_ChannelPosition = 0;
-        FM_EraseChannels();
+        gFM_ChannelPosition = 0;        // counts the stations this scan adds
+        gFM_ScanFirstAdded = 0xFF;      // stored stations are kept; found ones fill free slots
         freq = BK1080_GetFreqLoLimit(gEeprom.FM_Band);
     } else {
         gFM_AutoScan = false;

@@ -74,6 +74,10 @@ static const AddrMapping_t ADDR_MAPPINGS[] = {
 
     _MK_MAPPING(0x010000, 0x00B000, 0x00B200),  // Calibration 512 Bytes!!!
 
+    // FM broadcast memories (RxJa v2.0.0, 0x0748 flag bit 2). Not part of the CHIRP image, which stops at 0xB18F.
+    _MK_MAPPING(0x00B000, 0x00D000, 0x00E000),  // 100 FM frequencies * 2 Bytes + 8 Bytes header (4 KB sector)
+    _MK_MAPPING(0x00C000, 0x00E000, 0x00F000),  // 100 FM names * 20 Bytes (4 KB sector)
+
     _MK_MAPPING(0x011000, 0x00C000, 0x00D000),  // Boot Logo sector (4 KB):
                                                 // [0x00..0x07] 8-byte header (reserved)
                                                 // [0x08..0x407] 128x64 monochrome bitmap, 1024 Bytes
