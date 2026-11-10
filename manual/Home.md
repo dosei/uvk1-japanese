@@ -54,6 +54,6 @@ UVK1-RxJa（以下 RxJa）は、Quansheng **UV-K1** / **UV-K1(8)** / **UV-K5 V3*
 
 ## 版について
 
-この説明書は **UVK1-RxJa v2.0.0**（F4HWN Fusion v6.3.0 ベース）に合わせて書いています。ファイルは [Releases](https://github.com/dosei/uvk1-japanese/releases) からダウンロードできます。
+この説明書は **UVK1-RxJa v2.0.1**（F4HWN Fusion v6.3.0 ベース）に合わせて書いています。ファイルは [Releases](https://github.com/dosei/uvk1-japanese/releases) からダウンロードできます。
 
 操作の多くは元の F4HWN と同じです。英語でよければ [F4HWN の Wiki](https://github.com/armel/uv-k1-k5v3-firmware-custom/wiki) にも詳しい説明があります（ただし送信関係の説明は RxJa には当てはまりません）。
