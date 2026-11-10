@@ -257,6 +257,15 @@ gEeprom.FreqChannel[1]   = IS_FREQ_CHANNEL(Data16[5]) ? Data16[5] : (FREQ_CHANNE
         gEeprom.FM_Band = fmCfg.band;
         //gEeprom.FM_Space = fmCfg.space;
 
+#ifdef ENABLE_JAPANESE
+        // RxJa: an erased FM block (first start, or the menu's ALL reset) reads as all 0xFF, whose
+        // 2-bit band field is 3 = 64-76 MHz. None of the Japanese stations (76-95 MHz) is inside
+        // that range, so the FM memories looked empty. Start from 76-108 MHz (band 1) instead.
+        // A saved block always holds an in-range selFreq, so 0xFFFF only means "never saved".
+        if (fmCfg.selFreq == 0xFFFFu)
+            gEeprom.FM_Band = 1;
+#endif
+
         uint16_t freqLoLimit = BK1080_GetFreqLoLimit(gEeprom.FM_Band);
 
         gEeprom.FM_SelectedFrequency = 
