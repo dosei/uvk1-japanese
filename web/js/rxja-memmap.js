@@ -12,6 +12,7 @@
 // (TX lock, busy lockout, DTMF, unused) are kept from the existing bytes.
 
 import { encodeName, decodeName as decodeSjisName } from './rxja-sjis.js';
+import { rowProb } from './rxja-csv.js?v=3';
 
 export const CHANNELS = 1024;
 export const LIST_COUNT = 24;
@@ -385,8 +386,10 @@ function nearestPower(watts) {
   return best;
 }
 
-// One CSV row (object keyed by header) -> { ch } or { error }. Missing columns
-// take CHIRP's defaults; rows CHIRP would drop (no location, 0 Hz) are errors.
+// One CSV row (object keyed by header) -> { ch, nameChanged, warnings } or { error, value }.
+// Missing columns take CHIRP's defaults; rows CHIRP would drop (no location,
+// 0 Hz) are errors. warnings = [{ code, args }] lists what was changed on the
+// way in, so that the page can tell (rxja-csv.js reports them with the line).
 export function rowToChannel(row) {
   const get = k => (row[k] ?? '').trim();
   const number = Number(get('Location'));
@@ -399,7 +402,9 @@ export function rowToChannel(row) {
   const mode = get('Mode') || 'FM';
   if (!MODES.includes(mode)) return { error: 'mode', value: mode };
 
+  const warnings = [];
   const num = (k, d) => { const v = Number(get(k)); return get(k) !== '' && Number.isFinite(v) ? v : d; };
+  if (!['', 'Tone', 'TSQL', 'DTCS', 'Cross'].includes(get('Tone'))) warnings.push({ code: 'tonemode', args: [get('Tone')] });
   const [txTone, rxTone] = tonesFromChirp(get('Tone'), num('rToneFreq', 88.5), num('cToneFreq', 88.5),
     num('DtcsCode', 23), num('RxDtcsCode', 23), get('CrossMode') || 'Tone->Tone', get('DtcsPolarity') || 'NN');
   for (const tone of [txTone, rxTone]) {
@@ -408,7 +413,13 @@ export function rowToChannel(row) {
   }
 
   let step = num('TStep', 12.5);
-  if (!STEPS.includes(step)) step = STEPS.find(s => Math.abs(s - step) < 0.005) ?? 12.5;
+  if (!STEPS.includes(step)) {
+    const near = STEPS.find(s => Math.abs(s - step) < 0.005);
+    if (near === undefined) warnings.push({ code: 'step', args: [get('TStep')] });
+    step = near ?? 12.5;
+  } else if (get('TStep') !== '' && !Number.isFinite(Number(get('TStep')))) {
+    warnings.push({ code: 'step', args: [get('TStep')] });
+  }
 
   const duplex = ['+', '-'].includes(get('Duplex')) ? get('Duplex') : '';
 
@@ -418,9 +429,13 @@ export function rowToChannel(row) {
   const nameJa = get('NameJa');
   if (nameJa && !rawName) rawName = nameJa;
   const nm = encodeName(rawName, NAME_LEN);
+  if (nm.bad.length) warnings.push({ code: 'name_chars', args: [nm.bad.join(' ')] });
+  if (nm.cut) warnings.push({ code: 'name_cut', args: [rawName, nm.text, NAME_LEN] });
   if (nameJa && nameJa !== nm.text) comment = comment ? `${nameJa} / ${comment}` : nameJa;
   const pw = get('Power').match(/^([\d.]+)\s*W$/i);
+  if (get('Power') !== '' && !pw) warnings.push({ code: 'power', args: [get('Power')] });
   const scanlist = parseScanlist(get('ScanList'));
+  if (scanlist === null) warnings.push({ code: 'scanlist', args: [get('ScanList')] });
 
   return {
     ch: {
@@ -439,7 +454,27 @@ export function rowToChannel(row) {
       rec: null,
     },
     nameChanged: nm.bad.length > 0 || nm.cut,
+    warnings,
   };
+}
+
+// Rows of a CSV table (rxja-csv.js readTable records) -> the channels they hold.
+//   -> { channels, errors, warnings }   problems as { code, args, line } (rxja-csv.js):
+//      errors   = rows left out (bad value, channel number used twice)
+//      warnings = rows taken, but with something changed on the way in
+export function importRecords(records) {
+  const channels = [], errors = [], warnings = [];
+  const seen = new Map();            // channel number -> line of the first row that has it
+  for (const r of records) {
+    const line = r.__line;
+    const x = rowToChannel(r);
+    if (!x.ch) { errors.push(rowProb(x.error, line, x.value)); continue; }
+    if (seen.has(x.ch.number)) { errors.push(rowProb('dup', line, x.ch.number, seen.get(x.ch.number))); continue; }
+    seen.set(x.ch.number, line);
+    for (const w of x.warnings) warnings.push(rowProb(w.code, line, ...w.args));
+    channels.push(x.ch);
+  }
+  return { channels, errors, warnings };
 }
 
 export function formatMHz(hz) {

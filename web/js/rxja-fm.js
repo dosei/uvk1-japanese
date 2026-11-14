@@ -9,8 +9,8 @@
 // Japanese data that has the Shift_JIS table (0x0748 flag bit 1).
 
 import { Radio, RadioError } from './rxja.js?v=3';
-import * as F from './rxja-fmmap.js?v=2';
-import { decodeText, readTable, writeCsv } from './rxja-csv.js';
+import * as F from './rxja-fmmap.js?v=3';
+import { loadTable, formatReport, writeCsv, prob } from './rxja-csv.js?v=3';
 import { encodeName, byteLength } from './rxja-sjis.js';
 
 const CHUNK = 128;
@@ -53,6 +53,7 @@ const el = {
   stop: $('rxjaFmStop'),
   panel: $('rxjaFmPanel'),
   status: $('rxjaFmStatus'),
+  report: $('rxjaFmReport'),
   fill: $('rxjaFmFill'),
   label: $('rxjaFmLabel'),
   summary: $('rxjaFmSummary'),
@@ -73,11 +74,14 @@ if (!el.table) throw new Error('FM editor markup missing');
 
 // ---------- status panel ----------
 
-function setStatus(stateName, text) {
+// report: the lines of a CSV that were left out or changed (rxja-csv.js formatReport); gone at the next status
+function setStatus(stateName, text, report = '') {
   el.panel.dataset.state = stateName;
   el.status.dataset.state = stateName;
   el.status.removeAttribute('data-i18n');
   el.status.textContent = text;
+  el.report.textContent = report;
+  el.report.hidden = !report;
 }
 
 function setBar(pct) {
@@ -507,39 +511,44 @@ el.exportBtn.addEventListener('click', () => {
 
 el.importBtn.addEventListener('click', () => { if (!job) el.file.click(); });
 
+// Parse a file: CSV, or a backup (.bin) this page downloaded
+//   -> { stations, errors, warnings, fatal }   problems as { code, args, line } (rxja-csv.js):
+//      errors = lines left out; warnings = lines taken with something changed; fatal = unreadable file
+function parseFile(file, bytes) {
+  if (/\.bin$/i.test(file.name)) {
+    if (bytes.length !== F.IMAGE_SIZE) throw new Error(t('rxja_fm_bin_bad'));
+    return { stations: F.decodeAll(bytes), errors: [], warnings: [], fatal: false };
+  }
+  const table = loadTable(bytes, ['Frequency'], [...F.CSV_COLUMNS, 'Location']);
+  if (!table.ok) return { stations: [], errors: table.problems, warnings: [], fatal: true };
+  const r = F.importRecords(table.records);
+  // a channel CSV (CHIRP columns) has no station in this range: say what the file is instead of listing every line
+  if (!r.stations.length && ['Mode', 'TStep', 'Duplex'].some(c => table.header.includes(c)))
+    return { stations: [], errors: [prob('wrong_mem')], warnings: [], fatal: true };
+  const byLine = (x, y) => x.line - y.line;
+  return { stations: r.stations, fatal: false, errors: [...table.problems, ...r.errors].sort(byLine), warnings: r.warnings.sort(byLine) };
+}
+
 el.file.addEventListener('change', async () => {
   const file = el.file.files[0];
   el.file.value = '';
   if (!file) return;
   commitEdit();
   try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    let stations;
-    const problems = [];
-    if (/\.bin$/i.test(file.name)) {
-      // a backup this page downloaded (image of the two FM sectors)
-      if (bytes.length !== F.IMAGE_SIZE) throw new Error(t('rxja_fm_bin_bad'));
-      stations = F.decodeAll(bytes);
-    } else {
-      const rows = readTable(decodeText(bytes));
-      stations = [];
-      const used = new Set(), seen = new Set();
-      rows.forEach((row, i) => {
-        const { station, problem } = F.rowToStation(row, [...Array(F.COUNT).keys()].find(k => !used.has(k)));
-        if (!station) { problems.push(t('rxja_fm_row_bad', i + 2, t(`rxja_fm_problem_${problem}`))); return; }
-        if (used.has(station.number)) { problems.push(t('rxja_fm_row_dup_no', i + 2, fmNo(station.number))); return; }
-        if (seen.has(station.freq)) { problems.push(t('rxja_fm_row_dup_freq', i + 2, F.formatMHz10(station.freq))); return; }
-        station.name = encodeName(station.name, F.NAME_LEN).text;
-        used.add(station.number); seen.add(station.freq);
-        stations.push(station);
-      });
+    const parsed = parseFile(file, new Uint8Array(await file.arrayBuffer()));
+    const report = formatReport(parsed, t, { heading: !parsed.fatal });
+    if (!parsed.stations.length && report) {
+      // nothing usable: say why, and leave the table as it is
+      setStatus('error', t('rxja_csv_failed', file.name), report);
+      return;
     }
-    if (state.stations.size && !confirm(t('rxja_fm_import_replace', stations.length))) return;
-    state.stations = new Map(stations.map(s => [s.number, s]));
+    const skipped = parsed.errors.length ? ' ' + t('rxja_csv_skipped_note', parsed.errors.length) : '';
+    if (state.stations.size && !confirm(t('rxja_fm_import_replace', parsed.stations.length) + skipped)) return;
+    state.stations = new Map(parsed.stations.map(s => [s.number, s]));
     state.selected.clear();
     render();
-    setStatus(problems.length ? 'error' : 'done',
-      t('rxja_fm_import_done', file.name, stations.length) + (problems.length ? '\n' + problems.slice(0, 8).join('\n') : ''));
+    setStatus(parsed.errors.length ? 'error' : 'done',
+      t('rxja_fm_import_done', file.name, parsed.stations.length) + skipped, report);
   } catch (error) {
     setStatus('error', t('rxja_mem_error', error.message || String(error)));
   }

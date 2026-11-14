@@ -11,8 +11,8 @@
 // frequency + name) so a later read from the radio gets them back.
 
 import { Radio, RadioError } from './rxja.js?v=3';
-import * as M from './rxja-memmap.js';
-import { decodeText, readTable, writeCsv } from './rxja-csv.js';
+import * as M from './rxja-memmap.js?v=2';
+import { loadTable, formatReport, writeCsv } from './rxja-csv.js?v=3';
 import { encodeName, byteLength, isAscii } from './rxja-sjis.js';
 
 const READ_CHUNK = 128;
@@ -58,6 +58,7 @@ const el = {
   stop: $('rxjaMemStop'),
   panel: $('rxjaMemPanel'),
   status: $('rxjaMemStatus'),
+  report: $('rxjaMemReport'),
   fill: $('rxjaMemFill'),
   label: $('rxjaMemLabel'),
   summary: $('rxjaMemSummary'),
@@ -87,11 +88,14 @@ if (!el.table) throw new Error('memory editor markup missing');
 
 // ---------- status panel ----------
 
-function setStatus(stateName, text) {
+// report: the lines of a CSV that were left out or changed (rxja-csv.js formatReport); gone at the next status
+function setStatus(stateName, text, report = '') {
   el.panel.dataset.state = stateName;
   el.status.dataset.state = stateName;
   el.status.removeAttribute('data-i18n');
   el.status.textContent = text;
+  el.report.textContent = report;
+  el.report.hidden = !report;
 }
 
 function setBar(pct) {
@@ -654,6 +658,9 @@ el.lists.addEventListener('change', () => render());
 // ---------- import ----------
 
 // Parse a file: CSV (CHIRP compatible) or a memory image (.bin backup, CHIRP .img)
+//   -> { channels, listNames, errors, warnings, fatal }
+//      errors / warnings: problems of rxja-csv.js (lines left out / lines changed)
+//      fatal: the file as a whole cannot be read (errors says why)
 async function parseFile(file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (/\.(bin|img)$/i.test(file.name)) {
@@ -661,38 +668,32 @@ async function parseFile(file) {
     const image = bytes.slice(0, M.IMAGE_SIZE);
     const channels = M.decodeAll(image);
     fillExtras(channels);
-    return { channels, listNames: M.decodeListNames(image), errors: [], renamed: 0 };
+    return { channels, listNames: M.decodeListNames(image), errors: [], warnings: [], fatal: false };
   }
-  return parseCsvText(decodeText(bytes).text);
+  return parseCsvBytes(bytes);
 }
 
-function parseCsvText(text) {
-  const { header, records, badLines } = readTable(text);
-  if (!header.includes('Location') || !header.includes('Frequency')) throw new Error(t('rxja_mem_not_chirp'));
-  const errors = badLines.map(line => t('rxja_mem_err_columns', line));
-  const channels = [];
-  let renamed = 0;
-  const seen = new Set();
-  for (const r of records) {
-    const x = M.rowToChannel(r);
-    if (!x.ch) { errors.push(t(`rxja_mem_err_${x.error}`, r.__line, x.value)); continue; }
-    if (seen.has(x.ch.number)) { errors.push(t('rxja_mem_err_dup', r.__line, x.ch.number)); continue; }
-    seen.add(x.ch.number);
-    if (x.nameChanged) renamed++;
-    channels.push(x.ch);
-  }
-  return { channels, listNames: null, errors, renamed };
+function parseCsvBytes(bytes) {
+  const table = loadTable(bytes, ['Location', 'Frequency'], [...M.CSV_COLUMNS, 'NameJa'],
+    header => (header.includes('No') && header.includes('Frequency') ? 'wrong_fm' : null));
+  if (!table.ok) return { channels: [], listNames: null, errors: table.problems, warnings: [], fatal: true };
+  const r = M.importRecords(table.records);
+  const byLine = (x, y) => x.line - y.line;
+  return {
+    channels: r.channels, listNames: null, fatal: false,
+    errors: [...table.problems, ...r.errors].sort(byLine),
+    warnings: r.warnings.sort(byLine),
+  };
 }
+
+const reportOf = parsed => formatReport(parsed, t, { heading: !parsed.fatal });
 
 function askImport(parsed, label) {
   return new Promise(resolve => {
-    el.importText.textContent = t('rxja_mem_import_text', label.key ? t(label.key) : label, parsed.channels.length)
-      + (parsed.renamed ? ' ' + t('rxja_mem_import_renamed', parsed.renamed) : '');
-    el.importErrors.hidden = !parsed.errors.length;
-    el.importErrors.textContent = parsed.errors.length
-      ? t('rxja_mem_import_errors', parsed.errors.length) + '\n' + parsed.errors.slice(0, 8).join('\n')
-        + (parsed.errors.length > 8 ? '\n…' : '')
-      : '';
+    el.importText.textContent = t('rxja_mem_import_text', label.key ? t(label.key) : label, parsed.channels.length);
+    const report = reportOf(parsed);
+    el.importErrors.hidden = !report;
+    el.importErrors.textContent = report;
     el.importMergeHint.hidden = Boolean(state.snapshot);
     el.importDialog.returnValue = '';
     el.importDialog.onclose = () => resolve(el.importDialog.returnValue);
@@ -702,7 +703,9 @@ function askImport(parsed, label) {
 
 async function importParsed(parsed, label) {
   if (!parsed.channels.length) {
-    setStatus('error', parsed.errors.length ? t('rxja_mem_import_none_err', parsed.errors[0]) : t('rxja_mem_import_none'));
+    // nothing to import: say why, and leave the table as it is
+    if (parsed.errors.length) setStatus('error', t('rxja_csv_failed', label.key ? t(label.key) : label), reportOf(parsed));
+    else setStatus('error', t('rxja_mem_import_none'));
     return;
   }
   const how = await askImport(parsed, label);
@@ -720,7 +723,9 @@ async function importParsed(parsed, label) {
   state.source = label.key ? label : { text: label };
   renderLists();
   render();
-  setStatus('done', t(how === 'replace' ? 'rxja_mem_imported_replace' : 'rxja_mem_imported_merge', parsed.channels.length));
+  const report = reportOf(parsed);
+  setStatus(parsed.errors.length ? 'error' : 'done', t(how === 'replace' ? 'rxja_mem_imported_replace' : 'rxja_mem_imported_merge', parsed.channels.length)
+    + (parsed.errors.length ? ' ' + t('rxja_csv_skipped_note', parsed.errors.length) : ''), report);
 }
 
 el.importBtn.addEventListener('click', () => { if (!job) el.file.click(); });
@@ -740,7 +745,7 @@ el.preset.addEventListener('click', async () => {
   try {
     const response = await fetch(PRESET.url, { cache: 'no-cache' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const parsed = parseCsvText(decodeText(new Uint8Array(await response.arrayBuffer())).text);
+    const parsed = parseCsvBytes(new Uint8Array(await response.arrayBuffer()));
     parsed.listNames = state.listNames.slice();
     PRESET.listNames.forEach((name, i) => { parsed.listNames[i] = name; });
     await importParsed(parsed, { key: 'rxja_mem_preset_label' });

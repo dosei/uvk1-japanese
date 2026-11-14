@@ -41,6 +41,24 @@
 #pane-tools .rxja-panel[data-state="error"] .rxja-status,
 #pane-tools .rxja-panel[data-state="timeout"] .rxja-status { color: var(--error); }
 
+/* Lines of an imported CSV that were left out (red) or changed (the list below the status) */
+#pane-tools .rxja-report {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  max-height: 16em;
+  overflow: auto;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+#pane-tools .rxja-report[hidden] { display: none; }
+
 #pane-tools .rxja-image {
   margin: 4px 0 12px;
   font-size: 13px;
@@ -233,7 +251,7 @@
 .rxja-dialog-errors {
   margin-top: 10px;
   padding: 8px 10px;
-  max-height: 10em;
+  max-height: 14em;
   overflow: auto;
   border-radius: 6px;
   background: var(--bg);

@@ -15,6 +15,7 @@
 // 48-entry table of v1.3.0 and earlier.
 
 import { encodeName, decodeName } from './rxja-sjis.js';
+import { rowProb } from './rxja-csv.js?v=3';
 
 export const COUNT = 100;
 export const NAME_LEN = 20;                 // bytes: ten full-width characters = one line of the screen
@@ -165,15 +166,61 @@ export function stationToRow(st) {
   return { No: String(st.number).padStart(2, '0'), Frequency: formatMHz10(st.freq), Name: st.name };
 }
 
-// -> { station, problem } ; station is null when the row has no frequency
+// "05" / "5" / "FM05" -> 5 ; "" -> '' (no number given) ; anything else -> null
+export function parseNo(raw) {
+  const s = String(raw ?? '').trim();
+  if (s === '') return '';
+  const m = s.match(/^(?:FM)?(\d{1,2})$/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// One CSV row -> { station, problem, value }. station is null when the row cannot be used:
+// problem = 'freq' (not a frequency) / 'range' (outside the radio's band) / 'number' (No is not
+// 0-99) / 'full' (No is empty and fallbackNumber, the number to give such a row, is undefined);
+// value = the text that was refused.
 export function rowToStation(row, fallbackNumber) {
-  const freq = parseMHz10(row.Frequency ?? row.frequency ?? '');
-  if (freq === null) return { station: null, problem: 'freq' };
-  if (!validFreq(freq)) return { station: null, problem: 'range' };
+  const rawFreq = String(row.Frequency ?? row.frequency ?? '').trim();
+  const freq = parseMHz10(rawFreq);
+  if (freq === null) return { station: null, problem: 'freq', value: rawFreq };
+  if (!validFreq(freq)) return { station: null, problem: 'range', value: rawFreq };
   const raw = String(row.No ?? row.no ?? row.Location ?? '').trim();
-  const number = /^\d{1,2}$/.test(raw) ? parseInt(raw, 10) : fallbackNumber;
-  if (!Number.isInteger(number) || number < 0 || number >= COUNT) return { station: null, problem: 'number' };
-  return { station: { number, freq, name: String(row.Name ?? row.name ?? '').trim() }, problem: null };
+  const given = parseNo(raw);
+  if (given === null) return { station: null, problem: 'number', value: raw };
+  let number = given;
+  if (given === '') {
+    if (!Number.isInteger(fallbackNumber)) return { station: null, problem: 'full', value: '' };
+    number = fallbackNumber;
+  }
+  if (number < 0 || number >= COUNT) return { station: null, problem: 'number', value: raw || String(number) };
+  return { station: { number, freq, name: String(row.Name ?? row.name ?? '').trim() }, problem: null, value: '' };
+}
+
+// Rows of a CSV table (rxja-csv.js readTable records) -> the stations they hold. A row without a
+// number takes the first number that no row asks for.
+//   -> { stations, errors, warnings }   problems as { code, args, line } (rxja-csv.js)
+export function importRecords(records) {
+  const stations = [], errors = [], warnings = [];
+  const asked = new Set();
+  for (const r of records) {
+    const n = parseNo(r.No ?? r.no ?? r.Location);
+    if (Number.isInteger(n)) asked.add(n);
+  }
+  const byNumber = new Map(), byFreq = new Map();       // -> line of the first row
+  for (const row of records) {
+    const line = row.__line;
+    const free = [...Array(COUNT).keys()].find(k => !byNumber.has(k) && !asked.has(k));
+    const { station, problem, value } = rowToStation(row, free);
+    if (!station) { errors.push(rowProb(`fm_${problem}`, line, value)); continue; }
+    if (byNumber.has(station.number)) { errors.push(rowProb('fm_dup_no', line, String(station.number).padStart(2, '0'), byNumber.get(station.number))); continue; }
+    if (byFreq.has(station.freq)) { errors.push(rowProb('fm_dup_freq', line, formatMHz10(station.freq), byFreq.get(station.freq))); continue; }
+    const nm = encodeName(station.name, NAME_LEN);
+    if (nm.bad.length) warnings.push(rowProb('name_chars', line, nm.bad.join(' ')));
+    if (nm.cut) warnings.push(rowProb('name_cut', line, station.name, nm.text, NAME_LEN));
+    station.name = nm.text;
+    byNumber.set(station.number, line); byFreq.set(station.freq, line);
+    stations.push(station);
+  }
+  return { stations, errors, warnings };
 }
 
 // ---------- presets (web/presets/fm-jp.json) ----------
