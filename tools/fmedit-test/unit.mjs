@@ -167,6 +167,27 @@ test('preset: all 47 prefectures are well formed', () => {
   }
 });
 
+test('preset: no station has an empty name (a name over 20 bytes must be shortened, not dropped)', () => {
+  const doc = presetDoc();
+  for (const pref of Object.values(doc.prefectures))
+    for (const st of pref.stations)
+      assert.ok(st.name && st.name.trim() === st.name, `${pref.name} ${st.mhz} MHz (${st.area}): empty name`);
+});
+
+test('preset: community FM names settled by the 2026-11-15 survey', () => {
+  const doc = presetDoc();
+  const name = (code, mhz) => doc.prefectures[code].stations.find(s => s.mhz === mhz).name;
+  assert.equal(name('JP08', 85.4), 'FMうしくうれしく放送');
+  assert.equal(name('JP11', 86.8), 'こしがやエフエム');
+  assert.equal(name('JP12', 89.2), 'SKYWAVE FM');
+  assert.equal(name('JP13', 84.0), 'Radio City');
+  assert.equal(name('JP13', 89.2), 'Hello FM');
+  assert.equal(name('JP14', 77.7), 'FMやまと');
+  assert.equal(name('JP14', 83.6), 'むらラジやまラジ836');
+  assert.equal(name('JP14', 85.6), '湘南マジックウェイブ');   // small ェ (the shop sign), not ウエ
+  assert.equal(name('JP14', 89.2), '茅ヶ崎FM');
+});
+
 test('preset: every prefecture has NHK-FM, and the file says what it leaves out', () => {
   const doc = presetDoc();
   for (const [code, pref] of Object.entries(doc.prefectures))
