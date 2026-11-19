@@ -555,8 +555,16 @@ gEeprom.FreqChannel[1]   = IS_FREQ_CHANNEL(Data16[5]) ? Data16[5] : (FREQ_CHANNE
         gSetting_set_inv = 0;
 #endif
         gSetting_set_lck = (Data[2] < SET_LCK_LEN) ? Data[2] : SET_LCK_KEYS;
+#ifdef ENABLE_JAPANESE
+        // RxJa: a blank display byte (or one the boot clears from 0xFF to 0xEF,
+        // which also sets bit 5) read as TINY/TINY before v3.0.0. Keep the
+        // v2.0.1 defaults, CLASSIC for both; SetCtr stays at the upstream 10.
+        gSetting_set_met = display_settings_valid ? ((tmp >> 2) & 0x01) : 1;
+        gSetting_set_gui = display_settings_valid ? ((tmp >> 3) & 0x01) : 1;
+#else
         gSetting_set_met = (tmp >> 2) & 0x01;
         gSetting_set_gui = (tmp >> 3) & 0x01;
+#endif
 #ifdef ENABLE_FEAT_F4HWN_SET_FNT
         gSetting_set_fnt = (Data[3] < FONT_VARIANT_COUNT)
                          ? Data[3]
