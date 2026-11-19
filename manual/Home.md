@@ -1,6 +1,6 @@
 # UVK1-RxJa（UV-K1 受信専用・日本語化ファーム）の使い方
 
-UVK1-RxJa（以下 RxJa）は、Quansheng **UV-K1** / **UV-K1(8)** / **UV-K5 V3** / **UV-K5(8) V3**（マイコン PY32F071 の機種。→ [[はじめに#対応機種]]）用の、**受信専用**で**日本語表示**のファームウェアです。人気の改造ファーム [F4HWN Fusion v6.3.0](https://github.com/armel/uv-k1-k5v3-firmware-custom) をもとにして、次の 2 つを加えています。
+UVK1-RxJa（以下 RxJa）は、Quansheng **UV-K1** / **UV-K1(8)** / **UV-K5 V3** / **UV-K5(8) V3**（マイコン PY32F071 の機種。→ [[はじめに#対応機種]]）用の、**受信専用**で**日本語表示**のファームウェアです。人気の改造ファーム [F4HWN Fusion v7.0.0](https://github.com/armel/uv-k1-k5v3-firmware-custom) をもとにして、次の 2 つを加えています。
 
 - **送信できないようにしてある**（PTT を押しても電波は出ません）
 - **メニューやメッセージを日本語で表示する**（漢字・かな・半角カナ）
