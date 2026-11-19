@@ -12,11 +12,11 @@ Quansheng UV-K1 / UV-K5 V3（PY32F071）用の [F4HWN Fusion ファームウェ�
 
 ビルドは `RxJa` プリセットです。ほかのプリセット（Fusion など）は元の F4HWN と同じ動きです。
 
-画面に出る名前と版は RxJa 自身のもの（起動画面・本体情報の「UVK1-RxJa v2.0.1」、マルチブートの「UVK1-RxJa MULTIBOOT」、本体情報の QR コードはこのリポジトリと Wiki）で、もとにした F4HWN の版は「F4HWN v6.3.0 ベース」として添えています。パソコンのツールが UART で読む版の文字列は「F4HWN v6.3.0」のままです（UV Studio などがこれを見て動きを変えるため）。
+画面に出る名前と版は RxJa 自身のもの（起動画面・本体情報の「UVK1-RxJa v3.0.0」、マルチブートの「UVK1-RxJa MULTIBOOT」、本体情報の QR コードはこのリポジトリと Wiki）で、もとにした F4HWN の版は「F4HWN v7.0.0 ベース」として添えています。パソコンのツールが UART で読む版の文字列は「F4HWN v7.0.0」のままです（UV Studio などがこれを見て動きを変えるため）。
 
-> [!WARNING]
-> まだ実機で確かめていないもの：**FM の 50µs への変更による音の違い**。
-> ほかの主な機能は、作者の UV-K1 で確かめています（版ごとの確認内容は、リリースの本文と各ページに書いています）。
+> [!NOTE]
+> 主な機能は、作者の UV-K1 で確かめています（版ごとの確認内容は、リリースの本文と各ページに書いています）。
+> FM ラジオの 50µs への変更（ディエンファシス）は、作者の耳では違いがはっきりとは分かりませんでした。音が気になるときは、[FM ラジオ](https://dosei.github.io/uvk1-japanese/docs/FMラジオ.html)のページを見てください。
 > 
 > 書き込みは自己責任でお願いします。最悪の場合、無線機が起動しなくなります。書き込んだら、まず**校正データのバックアップ**をとってください。
 
@@ -145,7 +145,7 @@ Anyway, have fun.
 
 # Donations
 
-Special thanks to Jean-Cyrille F6IWW (3 times), Fabrice 14RC123, David F4BPP (3 times), Olivier 14RC206, Frédéric F4ESO, Stéphane F5LGW (2 times), Jorge Ornelas (4 times), Laurent F4AXK, Christophe Morel, Clayton W0LED, Pierre Antoine F6FWB, Jean-Claude 14FRS3306, Thierry F4GVO, Eric F1NOU, PricelessToolkit, Ady M6NYJ, Tom McGovern (4 times), Joseph Roth, Pierre-Yves Colin, Frank DJ7FG, Marcel Testaz, Brian Frobisher, Yannick F4JFO, Paolo Bussola, Dirk DL8DF, Levente Szőke (2 times), Bernard-Michel Herrera, Jérôme Saintespes, Paul Davies, RS (3 times), Johan F4WAT, Robert Wörle, Rafael Sundorf, Paul Harker, Peter Fintl, Pascal F4ICR (2 times), Mike DL2MF (3 times), Eric KI1C / F4WFS (3 times), Phil G0ELM, Jérôme Lambert, Eliot Vedel, Alfonso EA7KDF, Jean-François F1EVM, Robert DC1RDB (2 times), Ian KE2CHJ, Daryl VK3AWA, Roberto Brunelli, Robert Boardman, Stephen Oliver, Nicolas F4INE, William Bruno, Daniel OK2VLK, Tayler Chew, Peter DL7RFP, Philippe Kopp, Rune LA6YMA, Jeremy Luna, Steef Wagenaar (2 times), Zhuo BG7SGA, Jamie M0JLB, Antoine LIBERT, Vince K0DKR, Julia DF7JA, Ken 2E0UMK, Victor TI2SYS, Tobi DG9LAY, Deaglan K4DFQ, Catherine PALMER, Brian WA6JFK, Stéphane Hintzy, Roger F1HCN, Marcin Kusaj, Flavio Cottarelli, Bob N1MLZ, Carlos EA1IJ, Brian M7YLF, Giuseppe IT9LLH, 邓 月, Jon M1JRH, Antonios Chouchoumis, Cédric Thomas, Justin White, Gordon Campbell, Per Georg Fostad, Edward Phillips, Peter Kintscher and Jerome Lambert for their [donations](https://www.paypal.com/paypalme/F4HWN). That’s so kind of them. Thanks so much 🙏🏻
+Special thanks to Jean-Cyrille F6IWW (3 times), Fabrice 14RC123, Olivier 14RC206, Frédéric F4ESO, Stéphane F5LGW (2 times), Jorge Ornelas (4 times), Laurent F4AXK, Christophe Morel, Clayton W0LED, Pierre Antoine F6FWB, Jean-Claude 14FRS3306, Thierry F4GVO, Eric F1NOU, PricelessToolkit, Ady M6NYJ, Tom McGovern (4 times), Joseph Roth, Pierre-Yves Colin, Frank DJ7FG, Marcel Testaz, Brian Frobisher, Paolo Bussola, Dirk DL8DF, Levente Szőke (2 times), Bernard-Michel Herrera, Jérôme Saintespes, Paul Davies, RS (3 times), Johan F4WAT, Robert Wörle, Rafael Sundorf, Paul Harker, Peter Fintl, Pascal F4ICR (2 times), Mike DL2MF (3 times), Eric KI1C / F4WFS (3 times), Phil G0ELM, Jérôme Lambert, Eliot Vedel, Alfonso EA7KDF, Jean-François F1EVM, Robert DC1RDB (2 times), Ian KE2CHJ, Daryl VK3AWA, Roberto Brunelli, Robert Boardman, Stephen Oliver, Nicolas F4INE, William Bruno, Daniel OK2VLK, Tayler Chew, Peter DL7RFP, Philippe Kopp, Rune LA6YMA, Jeremy Luna, Steef Wagenaar (2 times), Zhuo BG7SGA, Jamie M0JLB, Antoine LIBERT, Vince K0DKR, Julia DF7JA, Ken 2E0UMK, Victor TI2SYS, Tobi DG9LAY, Deaglan K4DFQ, Catherine PALMER, Brian WA6JFK, Stéphane Hintzy, Roger F1HCN, Marcin Kusaj, Flavio Cottarelli, Bob N1MLZ, Carlos EA1IJ, Brian M7YLF, Giuseppe IT9LLH, 邓 月, Jon M1JRH, Antonios Chouchoumis, Cédric Thomas, Justin White, Gordon Campbell, Per Georg Fostad, Edward Phillips, Peter Kintscher, Jerome Lambert, Andy G0FTD, Yannig F4IUJ, Alessandro IW6OTU and Frederick Volk for their [donations](https://www.paypal.com/paypalme/F4HWN). That’s so kind of them. Thanks so much 🙏🏻
 
 ## Table of Contents
 
@@ -174,16 +174,11 @@ for everyday use and is the base inherited by the specialized editions. It inclu
 - Multiboot with one protected Main backup and four user firmware slots,
 - independent Multiconfig banks, switchable at runtime through `SetCfg`.
 
-Specialized presets extend Fusion for specific uses:
+Fusion also includes the overlay-apps platform: applications are loaded from
+external Flash and run in a 4 KiB RAM overlay. The additional presets are:
 
-- **Transfer** adds AirCopy and BEAM wireless channel transfer.
-- **FieldOps** adds first-responder controls, Fox Hunt and Morse Beacon support.
-- **Labs** is the experimental edition. It carries the broad feature selection of the
-  other releases and adds the overlay-apps platform (apps loaded from external Flash and
-  run in a 4 KiB RAM overlay) — the newest, least-settled work. Expect rough edges. It is
-  not a strict superset of every other edition: features may be exchanged between releases
-  to preserve stability and memory headroom.
-- **Custom** remains a manually configured build based directly on the hidden technical default.
+- **Service**, which adds AirCopy, BEAM and external-Flash service operations.
+- **Custom**, a manually configured build based directly on the hidden technical default.
 
 ### Multiboot and Multiconfig
 
@@ -239,7 +234,28 @@ remains available for navigation and operation.
 
 ### Overlay applications and APRS
 
-Labs can store up to 48 applications from the current collection of 36 in
+In the Apps menu, use `UP` / `DOWN` or type the displayed slot number to select
+an installed app, then press `MENU` to run it. A digit selects its slot
+immediately. A second digit entered in less than one second first tries the
+two-digit slot (for example, `1` then `2` selects `12`); if it is not installed,
+the second digit is tried on its own. Uninstalled slots leave the selection
+unchanged. Even if slot `01` is empty, `1` then `2` can still select `12`.
+A successful pair completes the number; a non-digit key or a one-second pause
+starts a new number. `*` toggles app size / version, and `EXIT` closes the menu.
+
+If the radio is switched off while an app is running, it starts again in that
+app at the next power-on, with the settings the app had saved, as if launched
+from the Apps menu: `EXIT` then comes back to the menu. A setting reaches the
+flash at most 2 seconds after its key, so one changed just before switching
+off can be lost. Each run of an app has room for at least 25 of these saves
+(4 in APRS Edit and CW Mem Edit, which write the large settings of another
+app); past that, the run's later changes are kept only when
+leaving with `EXIT`, and switching off resumes on the last one saved. To start on the
+main screen instead, hold `EXIT` while switching the radio on. A newly flashed
+firmware always starts on the main screen, so that UV Studio can write its
+assets.
+
+Fusion can store up to 64 applications from the current collection of 44 in
 external Flash. Each app is loaded into a dedicated 4 KiB RAM overlay only
 while it is running, while larger read-only assets such as text, fonts, bitmaps
 and lookup tables remain in external Flash.
@@ -248,10 +264,11 @@ The current app collection includes:
 
 - radio tools: Broadcast FM, Fox Hunt, Beacon, Beam, Signal Finder, Spectrum3D
   and ToneCall,
-- digital and signal apps: ACARS RX, AIS RX, ATIS RX, APRS RX, APRS TX, APRS Edit,
-  APRS DIGI, KISS TNC, CW Decode, CW Keyer, CW USB, SSTV, POCSAG RX, Sonde M10,
-  Sonde M20, Sonde RS41 and EPIRB 406,
-- tools and diagnostics: AF Scope, AF Spectro, Resistor, System Info and Flash Map,
+- digital and signal apps: ACARS RX, AIS RX, ATIS RX, ATIS DSC RX, APRS RX,
+  APRS TX, APRS Edit, APRS DIGI, KISS TNC, CW Decode, CW Keyer, CW Mem,
+  CW Mem Edit, CW Trainer, CW USB, SSTV, POCSAG RX, Sonde M10, Sonde M20, Sonde RS41, GeoNav, EPIRB 406 and Scan 406,
+- tools and diagnostics: ChannelBook, AF Scope, AF Spectro, QR Map, Resistor,
+  System Info and Flash Map,
 - games and demos: Breakout, Cube3D, Hell Maze, Minesweeper, Plasma, Rapid Roll,
   Snake, Sokoban, Space Impact and Tetris.
 
@@ -260,11 +277,19 @@ common position formats and Mic-E data, and keeps a five-frame history. APRS TX
 uses an editable callsign (with boot-message fallback) and transmits a position beacon; its companion
 APRS Edit app edits the callsign, SSID, digipeater path, position, symbol and
 89-character comment.
+GeoNav reuses that APRS position as the home QTH and shows the bearing and
+distance to a position handed off by the RS41, M10 or M20 radiosonde app.
 APRS DIGI is a deliberately limited `WIDE1-1` fill-in digipeater with
 path-independent duplicate suppression and channel-busy protection.
 KISS TNC makes the radio the TNC of APRSdroid (or any KISS client) over the
 USB-C cable: the phone runs the APRS application, the radio demodulates and
 transmits.
+
+ChannelBook is a visual browser for the active Multiconfig memory bank. It groups
+channels by scan list, alphanumeric directory (`0-9`, `ABC` ... `WXYZ`, plus
+`NO NAME`) or 100-memory number ranges, provides direct memory-number access,
+and applies the selected channel to the current VFO with `MENU`. It resumes at
+the same directory, group and index/content level on the next launch.
 
 ACARS RX receives the 2400 bit/s AM-MSK aircraft data link, checks odd parity
 and CRC, and keeps a three-message history with aircraft address, flight ID,
@@ -281,9 +306,12 @@ the spectrum and a sonogram, the two main peaks and the level difference
 between two tones (DTMF, FSK, Bell 202...). Both work in FM, AM and USB.
 
 > [!IMPORTANT]
-> Overlay apps, including APRS RX, APRS TX and APRS DIGI, are experimental and intended for
-> Labs. Use the app files supplied with the same firmware release so their ABI
+> Overlay apps, including APRS RX, APRS TX and APRS DIGI, are experimental parts of
+> Fusion. Use the app files supplied with the same firmware release so their ABI
 > and required capabilities match the installed firmware.
+
+To write your own app and share it through UV Studio's Community tab, see
+[Writing an overlay app](https://github.com/armel/uv-k1-k5v3-firmware-custom/wiki/Writing-an-overlay-app) in the Wiki.
 
 > [!CAUTION]
 > Transmitting apps must only be used on frequencies, power levels and modes
@@ -404,6 +432,8 @@ between two tones (DTMF, FSK, Bell 202...). Both work in FM, AM and USB.
   - optional callsign identification,
   - configurable TX and idle periods,
   - live TX and idle countdowns,
+  - a safe `READY` screen where only `MENU` starts the cycle; `PTT` is ignored
+    to reject spurious events caused by dual-jack cable or UART activity,
   - persisted Beacon settings,
   - interactive control during transmission,
   - shared long-press `F` keypad lock,
@@ -434,7 +464,7 @@ between two tones (DTMF, FSK, Bell 202...). Both work in FM, AM and USB.
 - Firmware flashing, calibration backup and restore, and boot-logo management from the same interface.
 - BEAM transfer of complete channel settings between compatible radios.
 
-#### AirCopy (Transfer edition)
+#### AirCopy (Service edition)
 
 AirCopy can transfer one 128-channel bank, the radio settings, or all memory
 banks and settings in one operation. Version 6.1 adds a stop-and-wait protocol
@@ -480,6 +510,7 @@ the receiving radio must be restarted after a successful Flash clone.
   - `SetMet`: S-meter style,
   - `SetGUI`: VFO information style,
   - `SetRxA`: RX audio profile,
+  - `SetRxG`: RX audio noise gate (ON mutes the hiss between words, OFF keeps very weak modulation audible; always ON while the RX compander is active),
   - `SetTmr`: RX and TX timers,
   - `SetOff`: automatic deep-sleep delay,
   - `SetNFM`: narrow-FM bandwidth,
@@ -511,7 +542,7 @@ the receiving radio must be restarted after a successful Flash clone.
   - RF Log,
   - Fox Hunt,
   - Beacon,
-  - ToneCall (launches the ToneCall overlay app, Labs).
+  - ToneCall (launches the ToneCall overlay app).
 
 ### Reliability and optimization
 
@@ -607,19 +638,15 @@ The default preset is **Fusion**. Available presets are:
 
 - **Custom**
 - **Fusion**
-- **Transfer**
-- **FieldOps**
-- **Labs**
-- **All** (Fusion, Transfer, FieldOps and Labs)
+- **Service**
+- **All** (Fusion and Service)
 
 Examples:
 
 ```bash
 ./compile-firmware.sh
 ./compile-firmware.sh Fusion
-./compile-firmware.sh Transfer
-./compile-firmware.sh FieldOps
-./compile-firmware.sh Labs
+./compile-firmware.sh Service
 ./compile-firmware.sh All
 ```
 
@@ -631,7 +658,7 @@ These are forwarded directly to `cmake --preset` inside the container.
 Examples:
 
 ```bash
-./compile-firmware.sh FieldOps -DENABLE_VOX=OFF
+./compile-firmware.sh Service -DENABLE_VOX=OFF
 ./compile-firmware.sh Fusion -DENABLE_FEAT_F4HWN_GAME=ON
 ./compile-firmware.sh Fusion -DSQL_TONE=600
 ```
@@ -733,3 +760,8 @@ You may obtain a copy of the License at
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+The M5Stack companion apps in `tools/m5stack/` (Tab5 and Cardputer K1Viewer)
+are not covered by this license: they are distributed under the GNU General
+Public License version 3 or later. See the `LICENSE` file in each of their
+folders.

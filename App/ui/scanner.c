@@ -67,55 +67,50 @@ static void PrintLine(const char *pStr, uint8_t line)
 void UI_DisplayScanner(void)
 {
     char String[16];
-    char *pPrintStr = String;
 
     UI_DisplayClear();
 
     // 1st line
     if (gScannerSaveState == SCAN_SAVE_CHANNEL) {
-        pPrintStr = "Save?";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_SAVE_PROMPT);
     } else if (gScannerSaveState == SCAN_SAVE_CHAN_SEL) {
-        strcpy(String, "Save:");
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_SAVE_PREFIX);
         UI_GenerateChannelStringEx(String + 5, gShowChPrefix, gScanChannel);
-        pPrintStr = String;
     } else if ((gScanCssState < SCAN_CSS_STATE_FOUND) && ((gScanProgressIndicator & 1u) != 0)) {
-        pPrintStr = "";
+        String[0] = '\0';
     } else if (gScanCssState == SCAN_CSS_STATE_OFF) {
-        pPrintStr = "Search Freq";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_SEARCH_FREQ);
     } else if (gScanCssState == SCAN_CSS_STATE_SCANNING) {
-        pPrintStr = "Search Tone";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_SEARCH_TONE);
     } else if (gScanCssState == SCAN_CSS_STATE_FOUND) {
-        pPrintStr = "Scan Complete";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_COMPLETE);
     } else {
-        pPrintStr = "Scan Failed";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_FAILED);
     }
 
-    PrintLine(pPrintStr, 1);
+    PrintLine(String, 1);
 
     // 2nd line
     if (gScanSingleFrequency || (gScanCssState != SCAN_CSS_STATE_OFF && gScanCssState != SCAN_CSS_STATE_FAILED)) {
         sprintf(String, "Freq:%u.%05u", gScanFrequency / 100000, gScanFrequency % 100000);
-        pPrintStr = String;
     } else {
-        pPrintStr = "Freq:---.-----";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_FREQ_UNKNOWN);
     }
 
-    PrintLine(pPrintStr, 3);
+    PrintLine(String, 3);
 
     // 3rd line
     if (gScanCssState < SCAN_CSS_STATE_FOUND) {
-        pPrintStr = "Tone:---";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_TONE_UNKNOWN);
     } else if (!gScanUseCssResult) {
-        pPrintStr = "Tone:None";
+        UI_LoadText(String, sizeof(String), UI_TEXT_SCANNER_TONE_NONE);
     } else if (gScanCssResultType == CODE_TYPE_CONTINUOUS_TONE) {
         sprintf(String, "CTCSS:%u.%uHz", CTCSS_Options[gScanCssResultCode] / 10, CTCSS_Options[gScanCssResultCode] % 10);
-        pPrintStr = String;
     } else {
         sprintf(String, "DCS:D%03oN", DCS_GetOption(gScanCssResultCode));
-        pPrintStr = String;
     }
  
-    PrintLine(pPrintStr, 5);
+    PrintLine(String, 5);
 
     ST7565_BlitFullScreen();
 }

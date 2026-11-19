@@ -50,6 +50,7 @@ SetLck	ﾛｯｸ対象
 SetMet	Sﾒｰﾀｰ
 SetGUI	画面様式
 SetRxA	受信音質
+SetRxG	ﾉｲｽﾞｹﾞｰﾄ
 SetTmr	タイマー
 SetOff	自動OFF
 SetNFM	狭帯域

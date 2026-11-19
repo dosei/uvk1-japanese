@@ -49,6 +49,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 MENU_C = HERE.parent.parent / 'App' / 'ui' / 'menu.c'
+MENU_LIST = HERE.parent.parent / 'App' / 'ui' / 'menu_list.def'   # MENU_ITEM("name", id), since F4HWN v7.0.0
 MAIN_C = HERE.parent.parent / 'App' / 'ui' / 'main.c'
 # other files with translated strings, searched for the keys
 SOURCES = [MAIN_C] + [HERE.parent.parent / 'App' / f for f in (
@@ -173,10 +174,11 @@ def check_against_menu(pairs):
     if not MENU_C.exists():
         return
     src = MENU_C.read_text(encoding='utf-8', errors='replace')
+    if MENU_LIST.exists():      # the menu names themselves, since F4HWN v7.0.0
+        src += MENU_LIST.read_text(encoding='utf-8', errors='replace')
     other = ''.join(p.read_text(encoding='utf-8', errors='replace') for p in SOURCES if p.exists())
-    menu = src[src.index('MenuList[] ='):]
-    menu = menu[:menu.index('};')]
-    names = re.findall(r'\{"([^"]+)",', menu)
+    menu = MENU_LIST.read_text(encoding='utf-8', errors='replace') if MENU_LIST.exists() else ''
+    names = re.findall(r'MENU_ITEM\("([^"]+)",', menu)
     keys = {k for k, _ in pairs}
     for k in sorted(keys):
         menu, _, value = k.rpartition('|')

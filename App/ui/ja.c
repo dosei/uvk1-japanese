@@ -31,13 +31,13 @@
 #define SJIS_TRAILS     188u    // 0x40..0x7E, 0x80..0xFC
 #define SJIS_LEADS      39u     // 0x81..0x84, 0x88..0x9F, 0xE0..0xEA (JIS X 0208 rows)
 
-// The resource image sits at 0x122000, inside what F4HWN v6.3.0 calls its overlay
-// app region (0x102000, 48 slots x 8 KiB, up to 0x162000): zero-based slots
-// 16..36 cover us, and 37..47 run on over the factory voice prompts (0x14C000).
+// The resource image sits at 0x122000, inside what F4HWN v7.0.0 calls its overlay
+// app region (0x102000, 64 slots x 8 KiB, up to 0x182000): zero-based slots
+// 16..36 cover us, and 37..63 run on over the factory voice prompts (0x14C000).
 // Only the overlay loader writes or erases those slots, and RxJa never builds
-// it: keep it so. (Other editions can still overwrite the image: Labs installing
-// into app slots 17..37 (1-based), a Transfer FLASH COPY, a raw flash restore on
-// Labs or Service_; the manual says so.)
+// it: keep it so. (Other editions can still overwrite the image: Fusion installing
+// into app slots 17..37 (1-based), a Service FLASH COPY or a raw flash restore;
+// the manual says so.)
 #ifdef ENABLE_FEAT_F4HWN_OVERLAY_APPS
 #error "RxJa keeps the Japanese data inside the overlay-app flash region: build without ENABLE_FEAT_F4HWN_OVERLAY_APPS"
 #endif

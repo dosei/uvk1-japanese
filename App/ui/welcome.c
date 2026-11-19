@@ -21,6 +21,7 @@
 #include "driver/st7565.h"
 #include "external/printf/printf.h"
 #include "font.h"
+#include "fw_assets.h"
 #include "helper/battery.h"
 #include "settings.h"
 #include "misc.h"
@@ -191,11 +192,16 @@ static void QR_Draw(const uint8_t *bitmap, uint8_t size, uint8_t origin_x, uint8
 
 void UI_DrawQRCode(bool wiki, uint8_t origin_x, uint8_t origin_y)
 {
+    uint8_t bitmap[sizeof(BITMAP_QR_GitHub_Compressed)];
+
+    _Static_assert(sizeof(BITMAP_QR_GitHub_Wiki_Compressed) == sizeof(BITMAP_QR_GitHub_Compressed),
+                   "both QR codes share one buffer");
+
 //  QR_Draw(wiki ? (const uint8_t *)BITMAP_QR_GitHub_Wiki
 //               : (const uint8_t *)BITMAP_QR_GitHub,
-    QR_Draw(wiki ? (const uint8_t *)BITMAP_QR_GitHub_Wiki_Compressed
-                 : (const uint8_t *)BITMAP_QR_GitHub_Compressed,
-            33, origin_x, origin_y);
+    FW_ASSETS_Read(wiki ? BITMAP_QR_GitHub_Wiki_Compressed : BITMAP_QR_GitHub_Compressed,
+                   bitmap, sizeof(bitmap));
+    QR_Draw(bitmap, 33, origin_x, origin_y);
 }
 #endif
 
