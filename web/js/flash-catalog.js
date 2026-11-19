@@ -120,9 +120,16 @@
 
   // Keep only current, stable, non-SA818 firmware images (v5.0 and newer).
   function isOffered(entry) {
-    return entry.isDevelopment ||
-      (!entry.isBeta && !entry.isSa818 && majorVersion(entry.version) >= MIN_MAJOR_VERSION);
+    if (entry.isDevelopment) return true;
+    if (entry.brand === 'f4hwn' && majorVersion(entry.version) > MAX_IMAGE_MAJOR_VERSION) return false;
+    return !entry.isBeta && !entry.isSa818 && majorVersion(entry.version) >= MIN_MAJOR_VERSION;
   }
+
+  // RxJa Tools does not offer F4HWN v7 and later in the list. From v7 the
+  // firmware file is a package (image + asset pack, see cmake/pack_fw_assets.py);
+  // this list writes only the image, so the radio would start with blank text
+  // and menus. Until the package is supported here, keep v6 and older.
+  const MAX_IMAGE_MAJOR_VERSION = 6;
 
   // Multiboot slots offer stable v6+ F4HWN editions. Older images, the rolling
   // development build and Quansheng stock images do not embed multiboot.
