@@ -72,6 +72,9 @@ let firmwareFileName = 'firmware.bin';
 // Out-of-order guard: only the most recent selection may commit firmwareData.
 let firmwareLoadSeq = 0;
 let firmwareLoadAbort = null;
+// What the status line under the firmware picker shows:
+// { state: 'loading' | 'pick' } | { state: 'ready', name, size, hash } | { state: 'error', message }
+let firmwareImage = null;
 // Version of the CHIRP driver currently offered for download, or null when none.
 let chirpDriverVersion = null;
 let calibData = null;
@@ -108,7 +111,6 @@ const dumpBtn = document.getElementById('dumpBtn');
 const restoreBtn = document.getElementById('restoreBtn');
 const firmwareFileInput = document.getElementById('firmwareFile');
 const calibFileInput = document.getElementById('calibFile');
-const labelFwFileEl = document.getElementById('labelFirmwareFile');
 const labelCalibFileEl = document.getElementById('labelCalibFile');
 const logDiv = document.getElementById('log');
 const infoBoxEl = document.getElementById('infoBox');
@@ -127,6 +129,7 @@ const chirpDriverText = document.getElementById('chirpDriverText');
 const fileLabel = document.getElementById('fileLabel');
 const fileName = document.getElementById('fileName');
 const fileButton = document.getElementById('fileButton');
+const firmwareImageEl = document.getElementById('firmwareImage');
 const calibFileLabel = document.getElementById('calibFileLabel');
 const calibFileName = document.getElementById('calibFileName');
 const calibFileButton = document.getElementById('calibFileButton');
@@ -190,7 +193,6 @@ function t(key, ...args) {
 
 // ========== UI UPDATE ==========
 function refreshLocalizedToolsState() {
-  if (labelFwFileEl) labelFwFileEl.textContent = t('labelFirmwareFile');
   if (labelCalibFileEl) labelCalibFileEl.textContent = t('labelCalibFile');
 
   // Update info box based on active tab
@@ -247,6 +249,8 @@ function refreshLocalizedToolsState() {
     logToggle.textContent = visible ? t('logHide') : t('logShow');
     logToggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
   }
+
+  renderFirmwareImage();
 
   // File names
   if (fileName && !firmwareData) {
@@ -333,15 +337,68 @@ if (logToggle) {
 }
 
 // ========== FIRMWARE FILE INPUT ==========
+function loadLocalFirmwareFile(file) {
+  const seq = beginFirmwareLoad('local');
+  setFirmwareImage({ state: 'loading' });
+  const fr = new FileReader();
+  fr.onload = (ev) => { if (seq === firmwareLoadSeq) setFirmwareBuffer(ev.target.result, file.name); };
+  fr.onerror = () => {
+    if (seq !== firmwareLoadSeq) return;
+    clearFirmware();
+    setFirmwareImage({ state: 'error', message: String(fr.error?.message ?? fr.error ?? '') });
+  };
+  fr.readAsArrayBuffer(file);
+}
+
 if (firmwareFileInput) {
   firmwareFileInput.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const seq = beginFirmwareLoad('local');
-    const fr = new FileReader();
-    fr.onload = (ev) => { if (seq === firmwareLoadSeq) setFirmwareBuffer(ev.target.result, file.name); };
-    fr.readAsArrayBuffer(file);
+    loadLocalFirmwareFile(file);
   });
+}
+
+// The catalog picker switched to "use a file on this computer": drop whatever
+// the previous source loaded and, if a file is already in the input, use it.
+function useLocalFirmware() {
+  const file = firmwareFileInput?.files?.[0];
+  if (file) { loadLocalFirmwareFile(file); return; }
+  beginFirmwareLoad('local');
+  clearFirmware();
+  setFirmwareImage({ state: 'pick' });
+}
+
+// One status line under the picker says what is loaded (or loading / failed),
+// the same way the Japanese data view does, now that the file name is hidden
+// unless the user chose to browse for a file.
+function setFirmwareImage(next) {
+  firmwareImage = next;
+  renderFirmwareImage();
+}
+
+function renderFirmwareImage() {
+  if (!firmwareImageEl) return;
+  let text = '';
+  let bad = false;
+  if (firmwareImage) {
+    if (firmwareImage.state === 'loading') text = t('flash_image_loading');
+    else if (firmwareImage.state === 'pick') text = t('flash_image_pickfile');
+    else if (firmwareImage.state === 'error') { text = firmwareImage.message; bad = true; }
+    else if (firmwareImage.hash) text = t('flash_image_ready', firmwareImage.name, firmwareImage.size, firmwareImage.hash.slice(0, 12));
+    else text = t('flash_image_ready_nohash', firmwareImage.name, firmwareImage.size);
+  }
+  firmwareImageEl.textContent = text;
+  firmwareImageEl.dataset.bad = String(bad);
+}
+
+async function sha256Hex(bytes) {
+  if (!(window.crypto && window.crypto.subtle)) return '';
+  try {
+    const digest = await window.crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) {
+    return '';
+  }
 }
 
 // Start a new firmware selection: bump the generation so any earlier in-flight
@@ -353,6 +410,7 @@ function beginFirmwareLoad(source) {
   // The previous firmware is no longer current: make it unavailable so Flash is
   // disabled until the new selection has finished loading.
   firmwareData = null;
+  setFirmwareImage(null);
   updateFlashButton();
   if (source === 'url' && firmwareFileInput) firmwareFileInput.value = '';
   window.dispatchEvent(new CustomEvent('uvstudio:firmwareselect', { detail: { source } }));
@@ -361,6 +419,7 @@ function beginFirmwareLoad(source) {
 
 function clearFirmware() {
   firmwareData = null;
+  setFirmwareImage(null);
   if (fileName) { fileName.textContent = t('fileNoFile'); fileName.classList.remove('has-file'); }
   if (fileLabel) fileLabel.classList.remove('has-file');
   updateFlashButton();
@@ -377,6 +436,13 @@ function setFirmwareBuffer(buf, name = 'firmware.bin') {
   if (fileLabel) fileLabel.classList.add('has-file');
   log(t('firmwareLoaded', name, firmwareData.length), 'success');
   updateFlashButton();
+
+  const data = firmwareData;
+  const info = { state: 'ready', name, size: data.length, hash: '' };
+  setFirmwareImage(info);
+  void sha256Hex(data).then(hash => {
+    if (firmwareImage === info && firmwareData === data) setFirmwareImage(Object.assign({}, info, { hash }));
+  });
 }
 
 // ---------- CHIRP driver offer ----------
@@ -457,6 +523,7 @@ async function loadFirmwareFromURL(url) {
   const seq = beginFirmwareLoad('url');
   const controller = new AbortController();
   firmwareLoadAbort = controller;
+  setFirmwareImage({ state: 'loading' });
   try {
     log(t('loadingFromUrl', url), 'info');
 
@@ -482,7 +549,10 @@ async function loadFirmwareFromURL(url) {
   } catch (err) {
     if (err && err.name === 'AbortError') return; // cancelled by a newer selection
     log(`${t('urlFetchError')} ${err?.message ?? String(err)}`, 'error');
-    if (seq === firmwareLoadSeq) clearFirmware();
+    if (seq === firmwareLoadSeq) {
+      clearFirmware();
+      setFirmwareImage({ state: 'error', message: `${t('urlFetchError')} ${err?.message ?? String(err)}` });
+    }
   } finally {
     if (firmwareLoadAbort === controller) firmwareLoadAbort = null;
   }
@@ -502,6 +572,7 @@ async function maybeLoadFirmwareFromQuery() {
 // Minimal entry point so the firmware catalog picker can reuse the URL loader.
 window.UVStudioFlash = Object.freeze({
   loadFirmwareFromURL,
+  useLocalFirmware,
   loadSlotFirmwareFromURL,
   loadAppFromURL,
   clearAppFromCatalog: () => beginAppImageLoad('catalog'),

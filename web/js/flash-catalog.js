@@ -40,6 +40,8 @@
 
   // Group labels are technical terms shared across every language.
   const RXJA_MANIFEST_URL = 'firmware/index.json';
+  // Value of the flash picker's "use a file on this computer" entry (not a URL).
+  const FILE_OPTION = '__file__';
 
   const GROUP_ORDER = [
     'rxja', 'fusion', 'fieldops', 'transfer', 'labs',
@@ -249,8 +251,7 @@
 
   function boot() {
     const select = document.getElementById('firmwareCatalogSelect');
-    const section = document.getElementById('firmwareCatalogSection');
-    const divider = document.getElementById('firmwareCatalogOr');
+    const fileSection = document.getElementById('firmwareFileSection');
     const slotSelect = document.getElementById('slotFirmwareCatalogSelect');
     const slotSection = document.getElementById('slotFirmwareCatalogSection');
     const slotDivider = document.getElementById('slotFirmwareCatalogOr');
@@ -276,11 +277,17 @@
       return window.uvStudioI18n ? window.uvStudioI18n.t(key) : key;
     }
 
-    function showCatalog(flashVisible, slotVisible = flashVisible) {
-      if (section) section.hidden = !flashVisible;
-      if (divider) divider.hidden = !flashVisible;
+    // The flash picker is always visible: its last entry is "use a file on this
+    // computer", so it still works with no network. Only the multiboot slot picker
+    // keeps the older "list, or a local file" layout and hides when it is empty.
+    function showCatalog(slotVisible) {
       if (slotSection) slotSection.hidden = !slotVisible;
       if (slotDivider) slotDivider.hidden = !slotVisible;
+    }
+
+    // The file chooser is only shown while "use a file" is the chosen source.
+    function syncFileSection() {
+      if (fileSection && select) fileSection.hidden = select.value !== FILE_OPTION;
     }
 
     async function fetchDevelopmentFile() {
@@ -299,7 +306,7 @@
     }
 
     // Build the menu and return how many firmware options it holds.
-    function renderSelect(targetSelect, entryFilter = () => true) {
+    function renderSelect(targetSelect, entryFilter = () => true, withFileOption = false) {
       const previous = targetSelect.value;
       targetSelect.textContent = '';
 
@@ -327,6 +334,13 @@
         targetSelect.appendChild(optgroup);
       });
 
+      if (withFileOption) {
+        const fileOption = document.createElement('option');
+        fileOption.value = FILE_OPTION;
+        fileOption.textContent = t('flash_catalog_file');
+        targetSelect.appendChild(fileOption);
+      }
+
       // Preserve the current choice across a re-render (e.g. language change).
       if (previous && targetSelect.querySelector(`option[value="${CSS.escape(previous)}"]`)) {
         targetSelect.value = previous;
@@ -337,7 +351,7 @@
     function render() {
       if (!groups) return { flash: 0, slots: 0 };
       return {
-        flash: select ? renderSelect(select) : 0,
+        flash: select ? renderSelect(select, undefined, true) : 0,
         slots: slotSelect ? renderSelect(slotSelect, isSlotOffered) : 0
       };
     }
@@ -396,7 +410,8 @@
         }
         groups.set('rxja', rxjaEntries || []);
         const counts = render();
-        showCatalog(counts.flash > 0, counts.slots > 0);
+        syncFileSection();
+        showCatalog(counts.slots > 0);
         loaded = Boolean(rxjaEntries) && upstreamLoaded;
       } finally {
         loading = false;
@@ -410,9 +425,15 @@
     if (select) {
       select.addEventListener('change', () => {
         const url = select.value;
+        syncFileSection();
         if (!url) return;
-        window.RxJaData?.setPending(findEntry(url));
         const flash = window.UVStudioFlash;
+        if (url === FILE_OPTION) {
+          window.RxJaData?.setPending(null);
+          if (flash && typeof flash.useLocalFirmware === 'function') flash.useLocalFirmware();
+          return;
+        }
+        window.RxJaData?.setPending(findEntry(url));
         if (flash && typeof flash.loadFirmwareFromURL === 'function') {
           flash.loadFirmwareFromURL(url);
         }
@@ -440,13 +461,19 @@
       if (groups) render();
     });
 
-    // Mutual exclusivity: when a local file is picked, drop the catalog selection
-    // back to its placeholder so only one firmware source ever looks selected.
+    // Keep the picker and the file chooser in step with the actual source: a local
+    // file always means the "use a file" entry is selected (and its chooser shown);
+    // a firmware loaded from a URL that did not come from this picker (?fw=) must
+    // not leave the file entry selected.
     window.addEventListener('uvstudio:firmwareselect', event => {
-      if (select && event.detail && event.detail.source === 'local' && select.options.length) {
-        select.selectedIndex = 0;
+      if (!select || !event.detail) return;
+      if (event.detail.source === 'local') {
+        select.value = FILE_OPTION;
         window.RxJaData?.setPending(null);
+      } else if (select.value === FILE_OPTION) {
+        select.selectedIndex = 0;
       }
+      syncFileSection();
     });
 
     window.addEventListener('uvstudio:slotfirmwareselect', event => {

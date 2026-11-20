@@ -313,24 +313,24 @@
         <section class="pane" id="pane-tools">
           <div class="container">
             <div class="tool-view active" id="flash-content" role="region">
-                <section class="section firmware-catalog" id="firmwareCatalogSection" aria-labelledby="firmwareCatalogLabel" hidden>
-                    <label id="firmwareCatalogLabel" for="firmwareCatalogSelect" data-i18n="flash_catalog_label">Official F4HWN firmware</label>
+                <section class="section" id="firmwareCatalogSection" aria-labelledby="firmwareCatalogLabel">
+                    <label id="firmwareCatalogLabel" for="firmwareCatalogSelect" data-i18n="flash_catalog_label">Choose firmware</label>
                     <select id="firmwareCatalogSelect" class="firmware-catalog-select">
                         <option value="" disabled selected data-i18n="flash_catalog_placeholder">— Select a version —</option>
+                        <option value="__file__" data-i18n="flash_catalog_file">Use a file on this computer</option>
                     </select>
                 </section>
-                <p class="rxja-hint" id="rxjaFlashHint"></p>
-                <p class="catalog-or" id="firmwareCatalogOr" data-i18n="flash_catalog_or" hidden>or load a local file</p>
-                <section class="section" aria-labelledby="labelFirmwareFile">
-                    <label id="labelFirmwareFile" for="firmwareFile">Firmware File (.bin)</label>
+                <section class="section" id="firmwareFileSection" hidden>
                     <div class="file-input-wrapper">
-                        <input type="file" id="firmwareFile" accept=".bin" />
+                        <input type="file" id="firmwareFile" accept=".bin" aria-label="Firmware File (.bin)" data-i18n-aria-label="labelFirmwareFile" />
                         <div class="file-input-label" id="fileLabel">
                             <span class="file-name" id="fileName">No file selected</span>
                             <span class="file-button" id="fileButton">Choose file</span>
                         </div>
                     </div>
                 </section>
+                <p class="rxja-status rxja-image" id="firmwareImage"></p>
+                <p class="rxja-hint" id="rxjaFlashHint"></p>
                 <button id="flashBtn" disabled aria-live="polite">Flash firmware</button>
                 <section class="rxja-panel" id="rxjaChain" data-state="idle" aria-live="polite" hidden>
                     <h3 class="rxja-panel-title" id="rxjaChainTitle"></h3>
@@ -880,16 +880,16 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja21"></script>
-<script src="locales/ja.js?v=rxja22"></script>
+<script src="locales/en.js?v=rxja22"></script>
+<script src="locales/ja.js?v=rxja23"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
 <script src="js/rf-log.js?v=5"></script>
     <script src="js/k5viewer.js?v=31"></script>
 <script src="js/keypad-detach.js?v=1"></script>
-<script src="js/flash.js?v=23"></script>
-<script src="js/flash-catalog.js?v=18"></script>
+<script src="js/flash.js?v=24"></script>
+<script src="js/flash-catalog.js?v=19"></script>
 <script src="js/app-catalog.js?v=1"></script>
 <script src="js/studio.js?v=16"></script>
 <script type="module" src="js/rxja-ja.js?v=5"></script>
