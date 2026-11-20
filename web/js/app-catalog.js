@@ -1,5 +1,10 @@
 // Overlay-app catalog: discovers versioned .app archives from
 // archive/apps/v<firmware-version>/ on the main firmware repository.
+//
+// Modified by the RxJa project: the app picker always ends with "choose a file"
+// and the local .app chooser is shown only while that entry is selected, the same
+// way as the flash, multiboot slot and Japanese data views. The picker stays
+// visible when the listing cannot be fetched, so a local file still works.
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -19,6 +24,8 @@
   const BRANCH = 'main';
   const APPS_PATH = 'archive/apps';
   const API_ROOT = `https://api.github.com/repos/${REPO}/contents`;
+  // Value of the app picker's "choose a file" entry (not a URL).
+  const FILE_OPTION = '__file__';
 
   function contentsURL(path) {
     const encodedPath = String(path).split('/').map(encodeURIComponent).join('/');
@@ -79,11 +86,10 @@
   }
 
   function boot() {
-    const section = document.getElementById('appCatalogSection');
-    const divider = document.getElementById('appCatalogOr');
     const versionSelect = document.getElementById('appCatalogVersionSelect');
     const appSelect = document.getElementById('appCatalogSelect');
-    if (!section || !versionSelect || !appSelect) return;
+    const fileSection = document.getElementById('appFileSection');
+    if (!versionSelect || !appSelect) return;
 
     let versions = [];
     let loaded = false;
@@ -104,32 +110,43 @@
       select.appendChild(option);
     }
 
-    function hideCatalog() {
-      section.hidden = true;
-      if (divider) divider.hidden = true;
+    function appendFileOption() {
+      const option = document.createElement('option');
+      option.value = FILE_OPTION;
+      option.textContent = t('flash_catalog_file');
+      appSelect.appendChild(option);
     }
 
-    function showCatalog() {
-      section.hidden = false;
-      if (divider) divider.hidden = false;
+    // The app picker: placeholder, the listed apps (if any), then "choose a file".
+    // It is never disabled, so a local .app can be used without the listing.
+    function resetAppSelect() {
+      resetSelect(appSelect, 'app_catalog_app_placeholder');
+      appendFileOption();
+    }
+
+    // The local .app chooser is only shown while "choose a file" is selected.
+    function syncFileSection() {
+      if (fileSection) fileSection.hidden = appSelect.value !== FILE_OPTION;
     }
 
     async function loadApps(versionEntry) {
       const seq = ++appLoadSeq;
-      resetSelect(appSelect, 'app_catalog_app_placeholder');
-      appSelect.disabled = true;
+      // Keep "choose a file" selected while the list for another version loads.
+      const keepFile = appSelect.value === FILE_OPTION;
+      resetAppSelect();
+      if (keepFile) appSelect.value = FILE_OPTION;
       const response = await fetch(contentsURL(versionEntry.path), { cache: 'no-cache' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const apps = listApps(await response.json());
       if (seq !== appLoadSeq) return;
+      const fileOption = appSelect.querySelector(`option[value="${FILE_OPTION}"]`);
       apps.forEach(app => {
         const option = document.createElement('option');
         option.value = app.url;
         option.dataset.appName = app.name;
         option.textContent = formatAppLabel(app);
-        appSelect.appendChild(option);
+        appSelect.insertBefore(option, fileOption);
       });
-      appSelect.disabled = apps.length === 0;
     }
 
     async function load() {
@@ -149,11 +166,11 @@
           versionSelect.appendChild(option);
         });
         versionSelect.value = versions[0].directory;
+        versionSelect.disabled = false;
         await loadApps(versions[0]);
-        showCatalog();
         loaded = true;
       } catch (error) {
-        hideCatalog();
+        // No listing: the version picker stays disabled, "choose a file" still works.
       } finally {
         loading = false;
       }
@@ -162,27 +179,40 @@
     versionSelect.addEventListener('change', () => {
       const selected = versions.find(entry => entry.directory === versionSelect.value);
       if (!selected) return;
-      const flash = window.UVStudioFlash;
-      if (flash && typeof flash.clearAppFromCatalog === 'function') flash.clearAppFromCatalog();
+      // A local file does not depend on the firmware version: keep it.
+      if (appSelect.value !== FILE_OPTION) {
+        const flash = window.UVStudioFlash;
+        if (flash && typeof flash.clearAppFromCatalog === 'function') flash.clearAppFromCatalog();
+      }
       loadApps(selected).catch(() => {
-        resetSelect(appSelect, 'app_catalog_app_placeholder');
-        appSelect.disabled = true;
+        const keepFile = appSelect.value === FILE_OPTION;
+        resetAppSelect();
+        if (keepFile) appSelect.value = FILE_OPTION;
+        syncFileSection();
       });
     });
 
     appSelect.addEventListener('change', () => {
       const option = appSelect.options[appSelect.selectedIndex];
       const url = appSelect.value;
+      syncFileSection();
       if (!url || !option) return;
       const flash = window.UVStudioFlash;
+      if (url === FILE_OPTION) {
+        if (flash && typeof flash.useLocalApp === 'function') flash.useLocalApp();
+        return;
+      }
       if (flash && typeof flash.loadAppFromURL === 'function') {
         flash.loadAppFromURL(url, option.dataset.appName || 'application.app');
       }
     });
 
+    // A local file always means "choose a file" is the selected entry. Clearing for
+    // a version change ('catalog') leaves the picker as it is.
     window.addEventListener('uvstudio:appselect', event => {
-      if (event.detail && event.detail.source === 'local' && appSelect.options.length) {
-        appSelect.selectedIndex = 0;
+      if (event.detail && event.detail.source === 'local') {
+        appSelect.value = FILE_OPTION;
+        syncFileSection();
       }
     });
 
@@ -193,6 +223,8 @@
       const appPlaceholder = appSelect.options[0];
       if (versionPlaceholder) versionPlaceholder.textContent = t('app_catalog_version_placeholder');
       if (appPlaceholder) appPlaceholder.textContent = t('app_catalog_app_placeholder');
+      const fileOption = appSelect.querySelector(`option[value="${FILE_OPTION}"]`);
+      if (fileOption) fileOption.textContent = t('flash_catalog_file');
       if (selectedVersion) versionSelect.value = selectedVersion;
       if (selectedApp) appSelect.value = selectedApp;
     });

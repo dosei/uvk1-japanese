@@ -574,7 +574,9 @@ window.UVStudioFlash = Object.freeze({
   loadFirmwareFromURL,
   useLocalFirmware,
   loadSlotFirmwareFromURL,
+  useLocalSlotFirmware: () => useLocalSlotFirmware(),
   loadAppFromURL,
+  useLocalApp: () => useLocalApp(),
   clearAppFromCatalog: () => beginAppImageLoad('catalog'),
   hasFirmware: () => Boolean(firmwareData)
 });
@@ -2375,17 +2377,29 @@ async function loadSlotFirmwareFromURL(url) {
   }
 }
 
+function loadLocalSlotFile(file) {
+  const seq = beginSlotImageLoad('local');
+  const fr = new FileReader();
+  fr.onload = (ev) => {
+    if (seq === slotImageLoadSeq) setSlotImageBuffer(ev.target.result, file.name);
+  };
+  fr.readAsArrayBuffer(file);
+}
+
 if (slotFileInput) {
   slotFileInput.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const seq = beginSlotImageLoad('local');
-    const fr = new FileReader();
-    fr.onload = (ev) => {
-      if (seq === slotImageLoadSeq) setSlotImageBuffer(ev.target.result, file.name);
-    };
-    fr.readAsArrayBuffer(file);
+    loadLocalSlotFile(file);
   });
+}
+
+// The slot picker switched to "choose a file": drop the image the list loaded
+// and, if a file is already in the input, use it (same as the flash view).
+function useLocalSlotFirmware() {
+  const file = slotFileInput?.files?.[0];
+  if (file) { loadLocalSlotFile(file); return; }
+  beginSlotImageLoad('local');
 }
 if (slotNameInput) slotNameInput.addEventListener('input', updateActionButtons);
 if (slotWriteBtn) slotWriteBtn.addEventListener('click', () => { void slotWriteFlow(); });
@@ -2753,17 +2767,29 @@ async function loadAppFromURL(url, catalogName = 'application.app') {
   }
 }
 
+function loadLocalAppFile(file) {
+  const seq = beginAppImageLoad('local');
+  const fr = new FileReader();
+  fr.onload = (ev) => {
+    if (seq === appImageLoadSeq) setAppImageBuffer(ev.target.result, file.name);
+  };
+  fr.readAsArrayBuffer(file);
+}
+
 if (appFileInput) {
   appFileInput.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const seq = beginAppImageLoad('local');
-    const fr = new FileReader();
-    fr.onload = (ev) => {
-      if (seq === appImageLoadSeq) setAppImageBuffer(ev.target.result, file.name);
-    };
-    fr.readAsArrayBuffer(file);
+    loadLocalAppFile(file);
   });
+}
+
+// The app picker switched to "choose a file": drop the app the list loaded and,
+// if a file is already in the input, use it (same as the flash view).
+function useLocalApp() {
+  const file = appFileInput?.files?.[0];
+  if (file) { loadLocalAppFile(file); return; }
+  beginAppImageLoad('local');
 }
 if (appInstallBtn) appInstallBtn.addEventListener('click', () => { void appInstallFlow(); });
 if (appsRefreshBtn) appsRefreshBtn.addEventListener('click', () => { void appRefreshFlow(); });

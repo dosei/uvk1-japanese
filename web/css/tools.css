@@ -117,10 +117,6 @@
 }
 
 /* ---------- Firmware catalog picker ---------- */
-#pane-tools .firmware-catalog {
-  margin-bottom: 14px;
-}
-
 #pane-tools .firmware-catalog-select {
   width: 100%;
   /* Override the compact, fixed-height core.css select so the field grows to a
@@ -175,30 +171,6 @@
   #pane-tools .app-catalog-grid {
     grid-template-columns: 1fr;
   }
-}
-
-/* The hidden attribute must beat the display rules below (class selectors would
-   otherwise override the UA [hidden] { display: none } and keep them visible). */
-#pane-tools .firmware-catalog[hidden],
-#pane-tools .catalog-or[hidden] {
-  display: none;
-}
-
-#pane-tools .catalog-or {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 18px;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-#pane-tools .catalog-or::before,
-#pane-tools .catalog-or::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
 }
 
 /* ---------- Primary action buttons (contained, centered CTA) ---------- */
@@ -576,11 +548,12 @@
   min-width: 0;
 }
 #pane-tools .slot-meta {
-  margin: 10px 0 0;
-  min-height: 18px;
+  margin: 0 0 4px;
   font-size: 13px;
   color: var(--text-secondary);
 }
+/* Nothing loaded yet: no empty line between the picker and the write row. */
+#pane-tools .slot-meta:empty { display: none; }
 #pane-tools .slots-write-row {
   display: flex;
   align-items: center;

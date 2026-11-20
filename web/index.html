@@ -19,7 +19,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/uv-studio-radio.svg">
 <link href="css/core.css?v=3" rel="stylesheet">
 <link href="css/viewer.css?v=13" rel="stylesheet">
-<link href="css/tools.css?v=11" rel="stylesheet">
+<link href="css/tools.css?v=12" rel="stylesheet">
 <link href="css/studio.css?v=19" rel="stylesheet">
 <link href="css/rxja.css?v=8" rel="stylesheet">
 </head>
@@ -633,22 +633,23 @@
                     </div>
                     <button id="slotsRefreshBtn" class="slots-refresh"><span data-i18n="slotsRefresh">Refresh slots</span></button>
                 </section>
-                <section class="section firmware-catalog" id="slotFirmwareCatalogSection" aria-labelledby="slotFirmwareCatalogLabel" hidden>
+                <section class="section" id="slotFirmwareCatalogSection" aria-labelledby="slotFirmwareCatalogLabel">
                     <label id="slotFirmwareCatalogLabel" for="slotFirmwareCatalogSelect" data-i18n="slot_catalog_label">Multiboot-compatible F4HWN firmware</label>
                     <select id="slotFirmwareCatalogSelect" class="firmware-catalog-select">
                         <option value="" disabled selected data-i18n="flash_catalog_placeholder">— Select a version —</option>
+                        <option value="__file__" data-i18n="flash_catalog_file">Choose a file</option>
                     </select>
                 </section>
-                <p class="catalog-or" id="slotFirmwareCatalogOr" data-i18n="flash_catalog_or" hidden>or load a local file</p>
-                <section class="section" aria-labelledby="labelSlotFile">
-                    <label id="labelSlotFile" for="slotFile" data-i18n="slotFileLabel">Firmware file (.bin)</label>
+                <section class="section" id="slotFileSection" hidden>
                     <div class="file-input-wrapper">
-                        <input type="file" id="slotFile" accept=".bin" />
+                        <input type="file" id="slotFile" accept=".bin" aria-label="Firmware file (.bin)" data-i18n-aria-label="slotFileLabel" />
                         <div class="file-input-label" id="slotFileLabel">
                             <span class="file-name" id="slotFileName" data-i18n="fileNoFile">No file selected</span>
                             <span class="file-button" id="slotFileButton" data-i18n="fileChoose">Choose file</span>
                         </div>
                     </div>
+                </section>
+                <section class="section">
                     <p class="slot-meta" id="slotMeta" aria-live="polite"></p>
                     <div class="slots-write-row">
                         <label for="slotTarget" data-i18n="slotTargetLabel">Target slot</label>
@@ -687,33 +688,34 @@
                     </div>
                     <button id="appsRefreshBtn" class="slots-refresh"><span data-i18n="appsRefresh">Refresh apps</span></button>
                 </section>
-                <section class="section firmware-catalog app-catalog" id="appCatalogSection" aria-labelledby="appCatalogLabel" hidden>
-                    <label id="appCatalogLabel" data-i18n="app_catalog_label">Official overlay apps</label>
+                <section class="section" id="appCatalogSection" aria-labelledby="appCatalogLabel">
+                    <label id="appCatalogLabel" data-i18n="app_catalog_label">Overlay apps</label>
                     <div class="app-catalog-grid">
                         <div>
                             <label for="appCatalogVersionSelect" data-i18n="app_catalog_version_label">Firmware version</label>
-                            <select id="appCatalogVersionSelect" class="firmware-catalog-select">
+                            <select id="appCatalogVersionSelect" class="firmware-catalog-select" disabled>
                                 <option value="" disabled selected data-i18n="app_catalog_version_placeholder">— Select a firmware version —</option>
                             </select>
                         </div>
                         <div>
                             <label for="appCatalogSelect" data-i18n="app_catalog_app_label">Application</label>
-                            <select id="appCatalogSelect" class="firmware-catalog-select" disabled>
+                            <select id="appCatalogSelect" class="firmware-catalog-select">
                                 <option value="" disabled selected data-i18n="app_catalog_app_placeholder">— Select an app —</option>
+                                <option value="__file__" data-i18n="flash_catalog_file">Choose a file</option>
                             </select>
                         </div>
                     </div>
                 </section>
-                <p class="catalog-or" id="appCatalogOr" data-i18n="app_catalog_or" hidden>or load a local file</p>
-                <section class="section" aria-labelledby="labelAppFile">
-                    <label id="labelAppFile" for="appFile" data-i18n="appFileLabel">App file (.app)</label>
+                <section class="section" id="appFileSection" hidden>
                     <div class="file-input-wrapper">
-                        <input type="file" id="appFile" accept=".app" />
+                        <input type="file" id="appFile" accept=".app" aria-label="App file (.app)" data-i18n-aria-label="appFileLabel" />
                         <div class="file-input-label" id="appFileLabel">
                             <span class="file-name" id="appFileName" data-i18n="fileNoFile">No file selected</span>
                             <span class="file-button" id="appFileButton" data-i18n="fileChoose">Choose file</span>
                         </div>
                     </div>
+                </section>
+                <section class="section">
                     <p class="slot-meta" id="appMeta" aria-live="polite"></p>
                     <div class="slots-write-row">
                         <label for="appTarget" data-i18n="appTargetLabel">Target slot</label>
@@ -880,17 +882,17 @@
 </div>
 
 <!-- ═══════════ Scripts (all local, file://-friendly) ═══════════ -->
-<script src="locales/en.js?v=rxja22"></script>
-<script src="locales/ja.js?v=rxja23"></script>
+<script src="locales/en.js?v=rxja23"></script>
+<script src="locales/ja.js?v=rxja24"></script>
 <script src="js/studio-preferences.js?v=1"></script>
 <script src="js/studio-i18n.js?v=4"></script>
 <script src="js/studio-serial.js?v=2"></script>
 <script src="js/rf-log.js?v=5"></script>
     <script src="js/k5viewer.js?v=31"></script>
 <script src="js/keypad-detach.js?v=1"></script>
-<script src="js/flash.js?v=24"></script>
-<script src="js/flash-catalog.js?v=19"></script>
-<script src="js/app-catalog.js?v=1"></script>
+<script src="js/flash.js?v=25"></script>
+<script src="js/flash-catalog.js?v=20"></script>
+<script src="js/app-catalog.js?v=2"></script>
 <script src="js/studio.js?v=16"></script>
 <script type="module" src="js/rxja-ja.js?v=5"></script>
 <script type="module" src="js/rxja-mem.js?v=5"></script>
