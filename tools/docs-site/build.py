@@ -305,6 +305,22 @@ def mark_current(nav, page):
     return re.sub(href, r'\g<0> aria-current="page"', nav, count=1)
 
 
+# Pages whose first paragraph makes a description too short for search engines
+# (Bing Webmaster Tools flags short meta descriptions). Written by hand,
+# about 140-160 characters; other pages still use their first paragraph.
+DESCRIPTIONS = {
+    "Home": ("UVK1-RxJa は、Quansheng UV-K1 / UV-K1(8) / UV-K5 V3 / UV-K5(8) V3 用の、"
+             "送信できない受信専用で日本語表示のファームウェアです。書き込み方、キー操作、"
+             "メニュー全項目の説明、困ったときの対処を日本語で解説します。"),
+    "CHIRP": ("無料ソフト CHIRP で、UVK1-RxJa を入れた UV-K1 / UV-K5 V3 のチャンネルを編集する手順です。"
+              "F4HWN v7.0.0 用ドライバーの読み込み、無線機からの読み出しと書き込み、"
+              "編集できる項目、うまくいかないときの対処を説明します。"),
+    "UV-Studio": ("ブラウザだけで使える UV Studio と、それを UVK1-RxJa 向けに日本語化した RxJa Tools の機能一覧です。"
+                  "インストール不要で、ファームの書き込み、画面ミラーとリモート操作、受信ログ、"
+                  "校正データのバックアップ、起動ロゴの変更ができます。"),
+}
+
+
 TOOLS_DESCRIPTION = ("ブラウザ（パソコン版の Chrome / Edge）で、RxJa のファームと"
                      "日本語データの書き込み、メモリーチャンネルの編集などができるツールです。")
 
@@ -375,7 +391,7 @@ def main():
         body, title, description = wiki.render(wiki.read(page), page)
         title = title or page.replace("-", " ")
         full_title = title if page == HOME else f"{title} | {TITLE_SUFFIX}"
-        description = shorten(description or title)
+        description = DESCRIPTIONS.get(page) or shorten(description or title)
         descriptions[page] = description
         values = {
             "title": html.escape(full_title),
